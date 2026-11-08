@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class StormcallerEffects {
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, Stormcaller.MODID);
 
-    /** "Shocked": stages of extra lightning damage taken, for targets that are not stunned (bosses). */
+    /** "Shocked": stages of extra lightning damage taken, every shock adds one (all targets). */
     public static final DeferredHolder<MobEffect, MobEffect> SHOCKED = EFFECTS.register("shocked", ShockedEffect::new);
 
     /** Short slow of a shocked target, hidden (no icon, no particles). */

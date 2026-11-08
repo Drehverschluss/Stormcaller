@@ -124,17 +124,40 @@ public final class FxClient {
     }
 
     /**
-     * Short arc that crawls over the surface of an entity's hitbox and moves with the entity (Static Shield).
+     * Short arc that crawls over the surface of an entity's hitbox and moves with the entity (Static Shield, Shocked).
      *
      * @param minHeight lowest point as a fraction of the hitbox height
      * @param maxHeight highest point as a fraction of the hitbox height
      * @param alpha     strength (1 = normal)
      */
     public static void addBodyArc(Entity entity, float minHeight, float maxHeight, float alpha, RandomSource random) {
+        addBodyArc(entity, minHeight, maxHeight, alpha, 1.0F, false, random);
+    }
+
+    /**
+     * Like {@link #addBodyArc(Entity, float, float, float, RandomSource)}, with a width factor.
+     *
+     * @param width 1 = normal thickness
+     * @param shock true for the arcs of "Shocked" (counted separately, see {@link #activeShockArcs()})
+     */
+    public static void addBodyArc(Entity entity, float minHeight, float maxHeight, float alpha, float width, boolean shock,
+                                  RandomSource random) {
         if (!StormcallerClientConfig.arcsEnabled()) {
             return;
         }
-        addArc(new BodyArcFx(entity.getId(), entity.getBbWidth(), entity.getBbHeight(), minHeight, maxHeight, alpha, random.nextInt()));
+        addArc(new BodyArcFx(entity.getId(), entity.getBbWidth(), entity.getBbHeight(), minHeight, maxHeight, alpha, width,
+                shock, random.nextInt()));
+    }
+
+    /** Body arcs of "Shocked" alive right now. */
+    public static int activeShockArcs() {
+        int count = 0;
+        for (Effect effect : EFFECTS) {
+            if (effect instanceof BodyArcFx body && body.shock) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static void addArc(Effect arc) {
@@ -380,6 +403,8 @@ public final class FxClient {
     private static final class BodyArcFx extends Effect {
         private final int entityId;
         private final float alpha;
+        private final float width;
+        private final boolean shock;
         private final int seed;
         private final double radius;
         private final double startAngle;
@@ -388,13 +413,16 @@ public final class FxClient {
         private final double y1;
         private List<Vec3> offsets = List.of();
 
-        BodyArcFx(int entityId, float width, float height, float minHeight, float maxHeight, float alpha, int seed) {
+        BodyArcFx(int entityId, float bbWidth, float height, float minHeight, float maxHeight, float alpha, float width,
+                  boolean shock, int seed) {
             super(5);
             this.entityId = entityId;
             this.alpha = alpha;
+            this.width = width;
+            this.shock = shock;
             this.seed = seed;
             RandomSource random = RandomSource.create(seed);
-            this.radius = width * 0.5 + 0.12 + random.nextDouble() * 0.12;
+            this.radius = bbWidth * 0.5 + 0.12 + random.nextDouble() * 0.12;
             this.startAngle = random.nextDouble() * Math.PI * 2.0;
             this.span = Math.toRadians(50.0 + random.nextDouble() * 60.0) * (random.nextBoolean() ? 1.0 : -1.0);
             double low = height * minHeight;
@@ -444,7 +472,7 @@ public final class FxClient {
                 points.add(base.add(offset));
             }
             float a = fade(pt) * alpha * (ctx.reduced() ? 0.75F : 1.0F);
-            float widthScale = ctx.reduced() ? 0.7F : 1.0F;
+            float widthScale = width * (ctx.reduced() ? 0.7F : 1.0F);
             ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), points, 0.03F * widthScale, 0.15F * widthScale, a, false);
         }
     }

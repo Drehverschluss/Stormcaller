@@ -1,9 +1,10 @@
 {
   "attribute.name.stormcaller.shock_chance": "Schockchance",
+  "attribute.name.stormcaller.shock_chance.desc": "Kommt zur Grundchance jedes Treffers eines Blitzzaubers dazu. Ein Schock gibt eine Stufe Geschockt und betäubt kurz (Bosse werden stattdessen gebremst).",
   "effect.stormcaller.shock_slow": "Schocklähmung",
   "effect.stormcaller.shock_slow.description": "Von einem Schock gebremst.",
   "effect.stormcaller.shocked": "Geschockt",
-  "effect.stormcaller.shocked.description": "Erleidet mit jeder Stufe mehr Blitzschaden und wird von jedem neuen Schock kurz gebremst.",
+  "effect.stormcaller.shocked.description": "Erleidet pro Stufe 5 %% mehr Blitzschaden (bis zu 5 Stufen). Jeder neue Schock gibt eine Stufe dazu und frischt die Dauer auf.",
   "effect.stormcaller.static_shield": "Statikschild",
   "effect.stormcaller.static_shield.description": "Trifft Angreifer im Nahkampf mit Blitzen und verringert den erlittenen Schaden.",
   "item.stormcaller.lightning_robe_chest": "Blitzrobe Oberteil",
@@ -26,12 +27,14 @@
   "spell.stormcaller.chain_lightning.name": "Kettenblitz",
   "spell.stormcaller.lightning_bolt.description": "Schleudert einen sehr schnellen Blitz, der auf {ricochet} weitere Ziele in der Nähe überspringt und bei jedem Treffer {damage} Blitzzauber-Schaden verursacht.",
   "spell.stormcaller.lightning_bolt.name": "Blitzschlag",
-  "spell.stormcaller.lightning_nova.description": "Entlädt Blitze um dich herum, verursacht {damage} Blitzzauber-Schaden, stößt Ziele zurück und betäubt sie für 1,5 Sekunden. Bosse werden stattdessen geschockt.",
+  "spell.stormcaller.lightning_nova.description": "Entlädt Blitze um dich herum, verursacht {damage} Blitzzauber-Schaden und stößt Ziele zurück. Betäubt 1,5 Sekunden, Bosse werden stattdessen gebremst.",
   "spell.stormcaller.lightning_nova.name": "Blitznova",
   "spell.stormcaller.lightning_strike.description": "Ruft einen Blitz vom Himmel auf das Ziel herab, der innerhalb von {impact_range} Blöcken {damage} Blitzzauber-Schaden verursacht.",
   "spell.stormcaller.lightning_strike.name": "Blitzeinschlag",
   "spell.stormcaller.spark.description": "Schießt einen Funken ab, der auf {ricochet} weiteres Ziel in der Nähe überspringt und bei jedem Treffer {damage} Blitzzauber-Schaden verursacht.",
   "spell.stormcaller.spark.name": "Funke",
   "spell.stormcaller.static_shield.description": "Lädt dich {stash_duration} Sekunden lang statisch auf. Angreifer im Nahkampf bekommen einen Rückschlag mit {damage} Blitzzauber-Schaden, und du erleidest 10 %% weniger Schaden.",
-  "spell.stormcaller.static_shield.name": "Statikschild"
+  "spell.stormcaller.static_shield.name": "Statikschild",
+  "spell.tooltip.stormcaller.shock_always": "Schockt immer.",
+  "spell.tooltip.stormcaller.shock_chance": "Schockchance: {chance} %%"
 }

@@ -84,7 +84,7 @@
       "action": {
         "type": "DAMAGE",
         "damage": {
-          "spell_power_coefficient": 0.4,
+          "spell_power_coefficient": 0.38,
           "knockback": 0.6
         }
       },
@@ -112,6 +112,15 @@
         "volume": 0.4,
         "pitch": 1.5,
         "randomness": 0.15
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:shock/50"
+        }
       }
     }
   ],

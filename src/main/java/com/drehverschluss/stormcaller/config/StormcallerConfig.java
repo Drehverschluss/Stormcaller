@@ -18,9 +18,9 @@ public final class StormcallerConfig {
     public static final ModConfigSpec.DoubleValue SHOCK_STUN_SECONDS;
     public static final ModConfigSpec.DoubleValue NOVA_STUN_SECONDS;
     public static final ModConfigSpec.BooleanValue SHOCK_STUN_PLAYERS;
-    public static final ModConfigSpec.DoubleValue RESISTANT_DAMAGE_PER_STAGE;
-    public static final ModConfigSpec.IntValue RESISTANT_MAX_STAGES;
-    public static final ModConfigSpec.DoubleValue RESISTANT_STAGE_SECONDS;
+    public static final ModConfigSpec.DoubleValue SHOCKED_DAMAGE_PER_STAGE;
+    public static final ModConfigSpec.IntValue SHOCKED_MAX_STAGES;
+    public static final ModConfigSpec.DoubleValue SHOCKED_SECONDS;
     public static final ModConfigSpec.BooleanValue SLOW_ENABLED;
     public static final ModConfigSpec.DoubleValue SLOW_AMOUNT;
     public static final ModConfigSpec.DoubleValue SLOW_SECONDS;
@@ -50,41 +50,47 @@ public final class StormcallerConfig {
                 .defineInRange("wizard_staff_lightning", 5.0, 0.0, 1000.0);
         builder.pop();
 
-        builder.comment("Shock: every hit of spell_power:lightning damage may shock the target, with the shock chance",
-                        "(stormcaller:shock_chance) of the caster, or of the owner for summons.",
-                        "Normal targets are stunned (spell_engine:stun). Targets in #stormcaller:shock_resistant (bosses)",
-                        "get the effect stormcaller:shocked instead: more lightning damage per stage and a short slow.",
-                        "Targets in #stormcaller:shock_immune get nothing.")
+        builder.comment("Shock: a hit with spell_power:lightning damage may shock the target. One roll per hit.",
+                        "Stormcaller spells: base chance of the spell (shock impact in the spell JSON, e.g. stormcaller:shock/15)",
+                        "plus the shock chance (stormcaller:shock_chance) of the caster, at most 100%.",
+                        "Lightning damage of other mods: only the shock chance. For summons the shock chance of the owner counts.",
+                        "Every shock gives one stage of stormcaller:shocked (more lightning damage taken) to every target.",
+                        "On top, normal targets are stunned (spell_engine:stun), targets in #stormcaller:shock_resistant (bosses)",
+                        "are slowed briefly instead. Targets in #stormcaller:shock_immune get nothing.")
                 .push("shock");
         SHOCK_STUN_SECONDS = builder
                 .comment("Stun duration of a shock on normal targets, in seconds.")
                 .defineInRange("stun_seconds", 0.5, 0.0, 60.0);
         NOVA_STUN_SECONDS = builder
-                .comment("Stun duration of Lightning Nova on normal targets, in seconds (it always stuns, no chance roll).")
+                .comment("Stun duration of Lightning Nova on normal targets, in seconds (it always shocks).")
                 .defineInRange("nova_stun_seconds", 1.5, 0.0, 60.0);
         SHOCK_STUN_PLAYERS = builder
-                .comment("true: players are stunned like normal targets. false: players get 'Shocked' like bosses.")
+                .comment("true: players are stunned like normal targets. false: players are slowed like bosses.",
+                         "Players get the 'Shocked' stages either way.")
                 .define("stun_players", false);
-        RESISTANT_DAMAGE_PER_STAGE = builder
-                .comment("'Shocked': extra lightning damage taken per stage (0.05 = +5%). Other damage types are not changed.")
-                .defineInRange("resistant_damage_per_stage", 0.05, 0.0, 10.0);
-        RESISTANT_MAX_STAGES = builder
-                .comment("'Shocked': highest stage.")
-                .defineInRange("resistant_max_stages", 5, 1, 255);
-        RESISTANT_STAGE_SECONDS = builder
-                .comment("'Shocked': duration in seconds. Every new shock adds a stage and refreshes the duration.")
-                .defineInRange("resistant_stage_seconds", 8.0, 0.0, 600.0);
+        SHOCKED_DAMAGE_PER_STAGE = builder
+                .comment("'Shocked' (all targets): extra lightning damage taken per stage (0.05 = +5%).",
+                         "Other damage types are not changed.")
+                .defineInRange("shocked_damage_per_stage", 0.05, 0.0, 10.0);
+        SHOCKED_MAX_STAGES = builder
+                .comment("'Shocked' (all targets): highest stage.")
+                .defineInRange("shocked_max_stages", 5, 1, 255);
+        SHOCKED_SECONDS = builder
+                .comment("'Shocked' (all targets): duration in seconds. Every new shock adds a stage and refreshes the duration.",
+                         "0 turns the stages off.")
+                .defineInRange("shocked_seconds", 8.0, 0.0, 600.0);
         SLOW_ENABLED = builder
-                .comment("'Shocked': slow the target briefly on each shock.")
+                .comment("Bosses (#stormcaller:shock_resistant): slow the target briefly on a shock instead of stunning it.")
                 .define("slow_enabled", true);
         SLOW_AMOUNT = builder
-                .comment("Movement speed reduction of the slow (0.5 = -50%).")
+                .comment("Bosses: movement speed reduction of the slow (0.5 = -50%).")
                 .defineInRange("slow_amount", 0.5, 0.0, 1.0);
         SLOW_SECONDS = builder
-                .comment("Duration of the slow, in seconds.")
+                .comment("Bosses: duration of the slow, in seconds.")
                 .defineInRange("slow_seconds", 1.0, 0.0, 60.0);
         SLOW_COOLDOWN_SECONDS = builder
-                .comment("After a slow ends, the same target cannot be slowed again for this many seconds. Stages still stack.")
+                .comment("Bosses: after a slow ends, the same target cannot be slowed again for this many seconds.",
+                         "Stages of 'Shocked' still stack in that time.")
                 .defineInRange("slow_cooldown_seconds", 3.0, 0.0, 600.0);
         builder.pop();
 
