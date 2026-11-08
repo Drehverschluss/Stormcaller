@@ -3,6 +3,7 @@ package com.drehverschluss.stormcaller;
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
+import com.drehverschluss.stormcaller.entity.StormcallerEntities;
 import com.drehverschluss.stormcaller.fx.FxSpellHooks;
 import com.drehverschluss.stormcaller.fx.StormcallerFx;
 import com.drehverschluss.stormcaller.item.StormcallerItems;
@@ -33,6 +34,7 @@ public class Stormcaller {
         StormcallerItems.init();
         modEventBus.addListener(RegisterEvent.class, StormcallerItems::onRegister);
         modEventBus.addListener(RegisterEvent.class, StaticShield::onRegister);
+        modEventBus.addListener(RegisterEvent.class, StormcallerEntities::onRegister);
         StaticShield.init();
         NeoForge.EVENT_BUS.addListener(ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
         ShockHandler.register();

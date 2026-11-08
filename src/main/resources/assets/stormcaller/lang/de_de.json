@@ -7,6 +7,8 @@
   "effect.stormcaller.shocked.description": "Erleidet pro Stufe 5 %% mehr Blitzschaden (bis zu 5 Stufen). Jeder neue Schock gibt eine Stufe dazu und frischt die Dauer auf.",
   "effect.stormcaller.static_shield": "Statikschild",
   "effect.stormcaller.static_shield.description": "Trifft Angreifer im Nahkampf mit Blitzen und verringert den erlittenen Schaden.",
+  "entity.stormcaller.storm_cloud": "Gewitterwolke",
+  "entity.stormcaller.storm_elemental": "Sturmelementar",
   "item.stormcaller.lightning_robe_chest": "Blitzrobe Oberteil",
   "item.stormcaller.lightning_robe_feet": "Blitzstiefel",
   "item.stormcaller.lightning_robe_head": "Blitzhut",
@@ -33,8 +35,12 @@
   "spell.stormcaller.lightning_strike.name": "Blitzeinschlag",
   "spell.stormcaller.spark.description": "Schießt einen Funken ab, der auf {ricochet} weiteres Ziel in der Nähe überspringt und bei jedem Treffer {damage} Blitzzauber-Schaden verursacht.",
   "spell.stormcaller.spark.name": "Funke",
-  "spell.stormcaller.static_shield.description": "Lädt dich {stash_duration} Sekunden lang statisch auf. Angreifer im Nahkampf bekommen einen Rückschlag mit {damage} Blitzzauber-Schaden, und du erleidest 10 %% weniger Schaden.",
+  "spell.stormcaller.static_shield.description": "Lädt dich {stash_duration} Sekunden lang statisch auf. Angreifer im Nahkampf bekommen einen Rückschlag mit {damage} Blitzzauber-Schaden, und du erleidest {effect|stormcaller:static_shield|0|spell_engine:damage_taken|abs} weniger Schaden.",
   "spell.stormcaller.static_shield.name": "Statikschild",
+  "spell.stormcaller.storm_elemental.description": "Beschwört einen Sturmelementar, der {summon_duration} Sek. an deiner Seite bleibt und Blitzschläge auf deine Gegner schleudert, verstärkt durch deine Blitz-Zauberkraft.",
+  "spell.stormcaller.storm_elemental.name": "Sturmelementar",
+  "spell.stormcaller.thunderstorm.description": "Ruft für {cloud_duration} Sekunden eine Gewitterwolke über das Ziel. Jede Sekunde treffen ihre Blitze alle Gegner unter ihr im Umkreis von {cloud_radius} Blöcken und verursachen {damage} Blitzzauber-Schaden.",
+  "spell.stormcaller.thunderstorm.name": "Gewitter",
   "spell.tooltip.stormcaller.shock_always": "Schockt immer.",
   "spell.tooltip.stormcaller.shock_chance": "Schockchance: {chance} %%"
 }

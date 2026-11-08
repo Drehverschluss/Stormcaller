@@ -4,6 +4,7 @@
   "package": "com.drehverschluss.stormcaller.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "SpellImpactsMixin",
     "SpellProjectileMixin"
   ],
   "injectors": {

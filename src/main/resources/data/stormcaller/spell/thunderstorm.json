@@ -1,0 +1,132 @@
+{
+  "school": "spell_power:lightning",
+  "range": 32.0,
+  "tier": 4,
+  "group": "lightning_storm",
+  "learn": {},
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_area_release"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294928127,
+            "motion": "BURST",
+            "scale": 0.8
+          },
+          "batch": {
+            "count": 12.0,
+            "shape": "SPHERE",
+            "anchor": "LAUNCH_POINT",
+            "min_speed": 0.05,
+            "max_speed": 0.25
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "spell_engine:generic_lightning_release",
+      "volume": 1.0,
+      "pitch": 1.0
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {
+      "sticky": true
+    }
+  },
+  "deliver": {
+    "type": "CLOUD",
+    "clouds": [
+      {
+        "entity_type_id": "stormcaller:storm_cloud",
+        "spawn_ticks": 10,
+        "despawn_ticks": 10,
+        "volume": {
+          "radius": 4.0,
+          "area": {
+            "distance_dropoff": "NONE"
+          },
+          "sound": {
+            "id": "minecraft:entity.lightning_bolt.impact",
+            "volume": 0.4,
+            "pitch": 0.85,
+            "randomness": 0.15
+          }
+        },
+        "time_to_live_seconds": 6.0,
+        "impact_tick_interval": 20,
+        "spawn": {
+          "sound": {
+            "id": "minecraft:entity.lightning_bolt.thunder",
+            "volume": 0.45,
+            "pitch": 0.55,
+            "randomness": 0.05
+          }
+        }
+      }
+    ]
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_cloud_bolt"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.33,
+          "knockback": 0.0
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 4294928127,
+              "motion": "BURST",
+              "scale": 0.7
+            },
+            "batch": {
+              "count": 6.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.15,
+              "max_speed": 0.5
+            }
+          }
+        ]
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:shock/25"
+        }
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.4,
+    "cooldown": {
+      "duration": 24.0
+    },
+    "item": {
+      "id": "runes:lightning_stone"
+    }
+  }
+}

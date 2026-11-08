@@ -2,12 +2,15 @@ package com.drehverschluss.stormcaller.fx;
 
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
+import com.drehverschluss.stormcaller.entity.StormCloudEntity;
+import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.event.SpellEvents;
@@ -33,7 +36,9 @@ import org.jetbrains.annotations.Nullable;
  *     {@code stormcaller:fx_impact}, {@code stormcaller:fx_impact_small} (flash and arcs at the hit point) and
  *     {@code stormcaller:fx_arc_from_caster} (arc in style {@link ArcStyle#STRONG} from the caster to the target),
  *     {@code stormcaller:fx_arc_from_center} (thinner {@link ArcStyle#STRONG} arc from the impact center, e.g. the
- *     center of an {@code area_impact}, to the target).</li>
+ *     center of an {@code area_impact}, to the target),
+ *     {@code stormcaller:fx_cloud_bolt} (Thunderstorm: bolt from the storm cloud above the target down to it, plus a
+ *     small impact at the target; the impact position must be the ground point of a cloud).</li>
  * </ul>
  */
 public final class FxSpellHooks {
@@ -48,11 +53,14 @@ public final class FxSpellHooks {
     public static final ResourceLocation IMPACT_SMALL = Stormcaller.id("fx_impact_small");
     public static final ResourceLocation ARC_FROM_CASTER = Stormcaller.id("fx_arc_from_caster");
     public static final ResourceLocation ARC_FROM_CENTER = Stormcaller.id("fx_arc_from_center");
+    public static final ResourceLocation CLOUD_BOLT = Stormcaller.id("fx_cloud_bolt");
 
     /** Ring radius of {@code fx/shield_burst}. */
     private static final float SHIELD_RING_RADIUS = 1.6F;
     /** Start height of the {@code fx/sky_strike} bolt above the landing point. */
     private static final float SKY_STRIKE_HEIGHT = 16.0F;
+    /** Width of the Thunderstorm bolts (style STRIKE). */
+    private static final float CLOUD_BOLT_WIDTH = 0.5F;
 
     private static final SpellHandlers.ImpactResult NO_EFFECT = new SpellHandlers.ImpactResult(false, false);
 
@@ -76,7 +84,29 @@ public final class FxSpellHooks {
             }
             return NO_EFFECT;
         });
+        SpellHandlers.registerCustomImpact(CLOUD_BOLT, (spell, power, caster, target, context) -> {
+            if (target != null && context.position() != null && target.level() instanceof ServerLevel level) {
+                cloudBolt(level, context.position(), target);
+            }
+            return NO_EFFECT;
+        });
         SpellEvents.SPELL_CAST.register(FxSpellHooks::onSpellCast);
+    }
+
+    /** Bolt from the storm cloud above {@code target} down into it, plus a small impact. */
+    private static void cloudBolt(ServerLevel level, Vec3 ground, Entity target) {
+        // the cloud of this impact sits exactly at the impact position; its cached base height is what the client draws
+        List<StormCloudEntity> clouds = level.getEntitiesOfClass(StormCloudEntity.class, new AABB(ground, ground).inflate(0.05));
+        double base = clouds.isEmpty() ? StormCloudEntity.computeBase(level, ground, 4.0) : clouds.get(0).cloudBase();
+        Vec3 center = StormcallerFx.center(target);
+        double jitterX = (level.getRandom().nextDouble() - 0.5) * 1.2;
+        double jitterZ = (level.getRandom().nextDouble() - 0.5) * 1.2;
+        Vec3 from = new Vec3(target.getX() + jitterX, ground.y + base + 0.2, target.getZ() + jitterZ);
+        Vec3 to = target.position().add(0.0, target.getBbHeight() * 0.65, 0.0);
+        if (from.y > to.y + 0.5) {
+            StormcallerFx.arc(level, from, to, ArcStyle.STRIKE, CLOUD_BOLT_WIDTH);
+        }
+        StormcallerFx.impact(level, center, 0.8F, 2);
     }
 
     private static SpellHandlers.ImpactResult impact(@Nullable Entity target, @Nullable Vec3 position, float size, int arcs) {

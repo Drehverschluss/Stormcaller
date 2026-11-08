@@ -7,6 +7,8 @@
   "effect.stormcaller.shocked.description": "Takes 5%% more lightning damage per stage (up to 5 stages). Every new shock adds a stage and refreshes the duration.",
   "effect.stormcaller.static_shield": "Static Shield",
   "effect.stormcaller.static_shield.description": "Strikes melee attackers with lightning and reduces damage taken.",
+  "entity.stormcaller.storm_cloud": "Thunder Cloud",
+  "entity.stormcaller.storm_elemental": "Storm Elemental",
   "item.stormcaller.lightning_robe_chest": "Lightning Robe Top",
   "item.stormcaller.lightning_robe_feet": "Lightning Boots",
   "item.stormcaller.lightning_robe_head": "Lightning Hat",
@@ -33,8 +35,12 @@
   "spell.stormcaller.lightning_strike.name": "Lightning Strike",
   "spell.stormcaller.spark.description": "Launches a spark that jumps to {ricochet} additional nearby target, causing {damage} lightning spell damage on each hit.",
   "spell.stormcaller.spark.name": "Spark",
-  "spell.stormcaller.static_shield.description": "Charges you with static electricity for {stash_duration} seconds. Melee attackers are struck back, taking {damage} lightning spell damage, and you take 10%% less damage.",
+  "spell.stormcaller.static_shield.description": "Charges you with static electricity for {stash_duration} seconds. Melee attackers are struck back, taking {damage} lightning spell damage, and you take {effect|stormcaller:static_shield|0|spell_engine:damage_taken|abs} less damage.",
   "spell.stormcaller.static_shield.name": "Static Shield",
+  "spell.stormcaller.storm_elemental.description": "Summons a Storm Elemental for {summon_duration} sec. It follows you and hurls Lightning Bolts at your enemies, empowered by your Lightning Spell Power.",
+  "spell.stormcaller.storm_elemental.name": "Storm Elemental",
+  "spell.stormcaller.thunderstorm.description": "Calls a thunder cloud above the target for {cloud_duration} seconds. Every second its lightning strikes all enemies below it within {cloud_radius} blocks, causing {damage} lightning spell damage.",
+  "spell.stormcaller.thunderstorm.name": "Thunderstorm",
   "spell.tooltip.stormcaller.shock_always": "Always shocks.",
   "spell.tooltip.stormcaller.shock_chance": "Shock chance: {chance}%%"
 }

@@ -48,9 +48,15 @@ public final class FxClient {
     public static void init() {
         ProjectileTrails.registerDefaults();
         StormcallerFx.setClientHandler(FxClient::accept);
-        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> tick());
+        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
+            tick();
+            SummonFx.tick();
+        });
         NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, FxClient::render);
-        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> EFFECTS.clear());
+        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
+            EFFECTS.clear();
+            StormCloudFx.clear();
+        });
     }
 
     // ------------------------------------------------------------------------------------------------ state for tests and debugging
@@ -80,6 +86,11 @@ public final class FxClient {
 
     // ------------------------------------------------------------------------------------------------ receive
 
+    /** Client-only effect (no packet), e.g. the random arcs of a storm cloud. Same limits and settings as all others. */
+    static void local(FxPayload payload) {
+        accept(payload);
+    }
+
     private static void accept(FxPayload payload) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
@@ -92,6 +103,8 @@ public final class FxClient {
                 if (arcs) {
                     addArc(new ArcFx(payload.a(), payload.b(), ArcStyle.byId(payload.style()), payload.size(), payload.seed()));
                 }
+                // a bolt that starts inside a storm cloud lights it up
+                StormCloudFx.onArc(payload.a());
             }
             case FLASH -> addFlash(level, payload.a(), payload.size(), random);
             case IMPACT -> {
@@ -498,17 +511,31 @@ public final class FxClient {
         }
     }
 
+    /**
+     * Ring of lightning: many short segments with a slow wobble plus a fine jitter that changes every tick, so the line
+     * looks electric instead of like a polygon with straight edges.
+     */
     private static final class RingFx extends Effect {
         private static final int EXPAND_TICKS = 5;
         private final Vec3 center;
         private final float radius;
         private final int seed;
+        /** Phases and frequencies of the slow wobble (fixed per ring). */
+        private final double phase1;
+        private final double phase2;
+        private final int freq1;
+        private final int freq2;
 
         RingFx(Vec3 center, float radius, int seed) {
             super(9);
             this.center = center;
             this.radius = radius;
             this.seed = seed;
+            RandomSource random = RandomSource.create(seed);
+            this.phase1 = random.nextDouble() * Math.PI * 2.0;
+            this.phase2 = random.nextDouble() * Math.PI * 2.0;
+            this.freq1 = 5 + random.nextInt(4);
+            this.freq2 = 11 + random.nextInt(6);
         }
 
         @Override
@@ -523,13 +550,22 @@ public final class FxClient {
             float r = Math.max(0.3F, radius * (1.0F - (1.0F - x) * (1.0F - x)));
             float alpha = t < EXPAND_TICKS ? 1.0F : Mth.clamp(1.0F - (t - EXPAND_TICKS) / (life - EXPAND_TICKS), 0.0F, 1.0F);
             RandomSource random = RandomSource.create(seed * 31L + age);
-            int n = Mth.clamp((int) (r * 9.0F), 12, 96);
-            double amp = 0.12 + r * 0.03;
+            // about 5 segments per block of circumference, at least 40
+            int n = Mth.clamp((int) (r * Math.PI * 2.0 * 5.0), 40, 240);
+            double wobble = 0.03 + r * 0.015;
+            double jitter = 0.03 + r * 0.006;
+            double drift = age * 0.35;
             List<Vec3> points = new ArrayList<>(n + 1);
             for (int i = 0; i < n; i++) {
                 double angle = Math.PI * 2.0 * i / n;
-                double rr = r + (random.nextDouble() * 2.0 - 1.0) * amp;
-                double dy = (random.nextDouble() * 2.0 - 1.0) * amp * 0.6;
+                double offset = wobble * (0.6 * Math.sin(angle * freq1 + phase1 + drift) + 0.4 * Math.sin(angle * freq2 + phase2 - drift))
+                        + (random.nextDouble() * 2.0 - 1.0) * jitter;
+                // now and then a small spike, like a branch starting
+                if (random.nextFloat() < 0.04F) {
+                    offset += (random.nextBoolean() ? 1.0 : -1.0) * (0.05 + r * 0.012);
+                }
+                double rr = r + offset;
+                double dy = (random.nextDouble() * 2.0 - 1.0) * jitter * 0.8;
                 points.add(center.add(Math.cos(angle) * rr, dy, Math.sin(angle) * rr));
             }
             points.add(points.get(0));

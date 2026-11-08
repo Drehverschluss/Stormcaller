@@ -1,0 +1,215 @@
+{
+  "school": "spell_power:lightning",
+  "range": 16.0,
+  "tier": 4,
+  "group": "lightning_ward",
+  "learn": {},
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_healing_release"
+    },
+    "sound": {
+      "id": "spell_engine:generic_lightning_release",
+      "volume": 1.0,
+      "pitch": 1.0
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "SUMMON",
+        "summon": {
+          "entity_type_id": "stormcaller:storm_elemental",
+          "behaviour": {
+            "spawn_fx": {
+              "particles": [
+                {
+                  "id": "spell_engine:magic_spark",
+                  "appearance": {
+                    "color": 4294928127,
+                    "motion": "BURST",
+                    "scale": 0.8
+                  },
+                  "batch": {
+                    "count": 40.0,
+                    "shape": "PILLAR",
+                    "anchor": "ENTITY",
+                    "min_speed": 0.1,
+                    "max_speed": 0.5,
+                    "vertical_origin": 0.1,
+                    "extent": 0.5
+                  }
+                }
+              ]
+            },
+            "despawn_fx": {
+              "particles": [
+                {
+                  "id": "spell_engine:magic_spark",
+                  "appearance": {
+                    "color": 4294928127,
+                    "motion": "BURST",
+                    "scale": 0.7
+                  },
+                  "batch": {
+                    "count": 30.0,
+                    "shape": "SPHERE",
+                    "anchor": "ENTITY",
+                    "min_speed": 0.1,
+                    "max_speed": 0.4
+                  }
+                }
+              ]
+            },
+            "movement": {
+              "follow": {
+                "teleport_after_distance": 32.0
+              }
+            },
+            "targeting": {
+              "automatic_targeting": "HOSTILE"
+            },
+            "lifespan": {
+              "spawn_ticks": 20,
+              "active_seconds": 30,
+              "despawn_ticks": 20
+            },
+            "sounds": {
+              "spawn": {
+                "id": "minecraft:entity.lightning_bolt.thunder",
+                "volume": 0.6,
+                "pitch": 1.4,
+                "randomness": 0.1
+              },
+              "despawn": {
+                "id": "minecraft:entity.lightning_bolt.impact",
+                "volume": 0.5,
+                "pitch": 1.3,
+                "randomness": 0.1
+              },
+              "ambient": {
+                "id": "spell_engine:generic_lightning_release",
+                "volume": 0.2,
+                "pitch": 1.6,
+                "randomness": 0.2
+              }
+            },
+            "actions": [
+              {
+                "type": "SPELL_CAST",
+                "spell_cast": {
+                  "spell_id": "stormcaller:lightning_bolt",
+                  "cooldown": 20,
+                  "range": {
+                    "max": 0.75
+                  }
+                }
+              }
+            ]
+          },
+          "attribute_scaling": {
+            "entries": [
+              {
+                "attribute_id": "minecraft:generic.max_health",
+                "modifiers": [
+                  {
+                    "attribute_id": "spell_power:lightning",
+                    "operation": "ADD_VALUE",
+                    "base": 0.0,
+                    "coefficient": 1.0
+                  }
+                ]
+              },
+              {
+                "attribute_id": "minecraft:generic.armor",
+                "modifiers": [
+                  {
+                    "attribute_id": "spell_power:lightning",
+                    "operation": "ADD_VALUE",
+                    "base": 5.0,
+                    "coefficient": 0.05
+                  }
+                ]
+              },
+              {
+                "attribute_id": "minecraft:generic.attack_damage",
+                "modifiers": [
+                  {
+                    "attribute_id": "spell_power:lightning",
+                    "operation": "ADD_VALUE",
+                    "base": 0.0,
+                    "coefficient": 0.5
+                  }
+                ]
+              },
+              {
+                "attribute_id": "spell_power:lightning",
+                "modifiers": [
+                  {
+                    "attribute_id": "spell_power:lightning",
+                    "operation": "ADD_VALUE",
+                    "base": 1.5,
+                    "coefficient": 0.45
+                  }
+                ]
+              },
+              {
+                "attribute_id": "minecraft:generic.attack_knockback",
+                "modifiers": [
+                  {
+                    "attribute_id": "spell_power:lightning",
+                    "operation": "ADD_VALUE",
+                    "base": 0.0,
+                    "coefficient": 0.1
+                  }
+                ]
+              },
+              {
+                "attribute_id": "minecraft:generic.knockback_resistance",
+                "modifiers": [
+                  {
+                    "attribute_id": "spell_power:lightning",
+                    "operation": "ADD_VALUE",
+                    "base": 2.5,
+                    "coefficient": 0.025
+                  }
+                ]
+              }
+            ]
+          },
+          "placements": [
+            {
+              "location_offset_by_look": 2.0,
+              "apply_yaw": true,
+              "location_yaw_offset": 90.0
+            },
+            {
+              "location_offset_by_look": 2.0,
+              "apply_yaw": true,
+              "location_yaw_offset": 270.0
+            },
+            {
+              "location_offset_by_look": 2.0,
+              "apply_yaw": true
+            },
+            {
+              "location_offset_by_look": 2.0,
+              "apply_yaw": true,
+              "location_yaw_offset": 180.0
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "duration": 30.0,
+      "haste_affected": false
+    },
+    "item": {
+      "id": "runes:lightning_stone"
+    }
+  }
+}

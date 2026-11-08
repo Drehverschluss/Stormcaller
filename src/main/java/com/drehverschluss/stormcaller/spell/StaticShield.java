@@ -1,9 +1,7 @@
 package com.drehverschluss.stormcaller.spell;
 
 import com.drehverschluss.stormcaller.Stormcaller;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +16,9 @@ import net.spell_engine.api.effect.Effects;
 import net.spell_engine.api.effect.Synchronized;
 import net.spell_engine.api.entity.SpellEntityPredicates;
 import net.spell_engine.rpg_series.config.AttributeModifier;
+import net.spell_engine.rpg_series.config.ConfigFile;
 import net.spell_engine.rpg_series.config.EffectConfig;
+import net.tiny_config.ConfigManager;
 
 /**
  * Static Shield (tier 3): the status effect {@code stormcaller:static_shield} and the entity predicate that limits the
@@ -33,7 +33,7 @@ public final class StaticShield {
     public static final ResourceLocation EFFECT_ID = Stormcaller.id("static_shield");
     /** Electric yellow (Spell Engine Color.ELECTRIC). */
     public static final int COLOR = 0xFFFF66;
-    /** Damage taken while the shield is up: -10 %. */
+    /** Default of the damage taken while the shield is up: -10 %. Packs change it in {@link #EFFECTS_CONFIG}. */
     public static final float DAMAGE_TAKEN = -0.1F;
 
     /**
@@ -49,8 +49,15 @@ public final class StaticShield {
             new CustomStatusEffect(MobEffectCategory.BENEFICIAL, COLOR),
             new EffectConfig(List.of(new AttributeModifier("spell_engine:damage_taken", DAMAGE_TAKEN, Operation.ADD_MULTIPLIED_BASE))));
 
-    /** Effect configs by id, as Spell Engine expects them. Not saved to a file, the values are fixed. */
-    private static final Map<String, EffectConfig> CONFIG = new HashMap<>();
+    /**
+     * {@code config/stormcaller/effects.json}: attribute modifiers of the Stormcaller status effects, same format as
+     * {@code config/wizards/effects.json}. Read once when the effects are registered, so changes need a restart.
+     */
+    public static final ConfigManager<ConfigFile.Effects> EFFECTS_CONFIG = new ConfigManager<>("effects", new ConfigFile.Effects())
+            .builder()
+            .setDirectory(Stormcaller.MODID)
+            .sanitize(true)
+            .build();
 
     private StaticShield() {}
 
@@ -65,7 +72,10 @@ public final class StaticShield {
         }
         // synchronized to all tracking clients, they draw the arcs around the body (fx.client.ShieldAura)
         Synchronized.configure(EFFECT.effect, true);
-        Effects.register(List.of(EFFECT), CONFIG);
+        EFFECTS_CONFIG.refresh();
+        // takes the values from the file (or writes the defaults into it)
+        Effects.register(List.of(EFFECT), EFFECTS_CONFIG.value.effects);
+        EFFECTS_CONFIG.save();
     }
 
     public static MobEffect effect() {
