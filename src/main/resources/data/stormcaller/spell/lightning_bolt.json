@@ -1,0 +1,157 @@
+{
+  "school": "spell_power:lightning",
+  "range": 64.0,
+  "tier": 1,
+  "group": "lightning_weapon",
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 1.1,
+      "animation": {
+        "id": "spell_engine:one_handed_projectile_charge"
+      },
+      "sound": {
+        "id": "spell_engine:generic_lightning_casting",
+        "randomness": 0.0
+      },
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294928127
+          },
+          "batch": {
+            "count": 0.6,
+            "shape": "PIPE",
+            "anchor": "ENTITY",
+            "min_speed": 0.05,
+            "max_speed": 0.15,
+            "width_factor": 1.5
+          }
+        }
+      ]
+    }
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_projectile_release"
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {}
+  },
+  "deliver": {
+    "type": "PROJECTILE",
+    "projectile": {
+      "launch_properties": {
+        "velocity": 1.6,
+        "sound": {
+          "id": "spell_engine:generic_lightning_release"
+        }
+      },
+      "projectile": {
+        "homing_angle": 8.0,
+        "perks": {
+          "ricochet": 2,
+          "ricochet_range": 7.0
+        },
+        "client_data": {
+          "light_level": 12,
+          "travel_particles": [
+            {
+              "id": "spell_engine:lightning_arc_a",
+              "appearance": {},
+              "batch": {
+                "count": 0.6,
+                "shape": "SPHERE",
+                "anchor": "ENTITY",
+                "max_speed": 0.05
+              }
+            },
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 4294928127,
+                "motion": "BURST"
+              },
+              "batch": {
+                "count": 2.0,
+                "shape": "CIRCLE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "min_speed": 0.05,
+                "max_speed": 0.15
+              }
+            }
+          ],
+          "composite_model": {
+            "models": [
+              {
+                "rotate_degrees_per_tick": 24.0,
+                "fx": {
+                  "model_id": "stormcaller:spell_projectile/lightning_bolt",
+                  "scale": 1.2,
+                  "light_emission": "GLOW"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.8
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:lightning_arc_a",
+            "appearance": {},
+            "batch": {
+              "count": 3.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.05,
+              "max_speed": 0.2
+            }
+          },
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 4294928127,
+              "motion": "BURST"
+            },
+            "batch": {
+              "count": 24.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.2,
+              "max_speed": 0.7
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "minecraft:entity.lightning_bolt.impact",
+        "volume": 0.35,
+        "pitch": 1.3,
+        "randomness": 0.15
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "group": "weapon"
+    },
+    "item": {
+      "id": "runes:lightning_stone"
+    }
+  }
+}

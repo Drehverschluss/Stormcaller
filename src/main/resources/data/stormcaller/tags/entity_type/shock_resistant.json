@@ -1,0 +1,14 @@
+{
+  "values": [
+    {
+      "id": "#c:bosses",
+      "required": false
+    },
+    {
+      "id": "#mrpg_lib:stun_immune",
+      "required": false
+    },
+    "minecraft:warden",
+    "minecraft:elder_guardian"
+  ]
+}

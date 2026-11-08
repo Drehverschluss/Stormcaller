@@ -4,6 +4,8 @@ import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.item.StormcallerItems;
+import com.drehverschluss.stormcaller.shock.ShockHandler;
+import com.drehverschluss.stormcaller.shock.StormcallerEffects;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -23,9 +25,11 @@ public class Stormcaller {
     public Stormcaller(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.SERVER, StormcallerConfig.SPEC);
         StormcallerAttributes.register(modEventBus);
+        StormcallerEffects.register(modEventBus);
         StormcallerItems.init();
         modEventBus.addListener(RegisterEvent.class, StormcallerItems::onRegister);
         NeoForge.EVENT_BUS.addListener(ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
+        ShockHandler.register();
     }
 
     public static ResourceLocation id(String path) {

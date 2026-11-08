@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "wizards:item/medium_staff",
   "textures": {
     "layer0": "stormcaller:item/staff_netherite_lightning"
   }
