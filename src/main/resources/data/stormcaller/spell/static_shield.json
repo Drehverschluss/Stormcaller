@@ -1,0 +1,127 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 3,
+  "group": "lightning_ward",
+  "learn": {},
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_area_release"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294928127,
+            "scale": 0.7
+          },
+          "batch": {
+            "count": 26.0,
+            "shape": "PILLAR",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.08,
+            "max_speed": 0.25
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "spell_engine:generic_lightning_release",
+      "volume": 1.0,
+      "pitch": 1.1,
+      "randomness": 0.1
+    }
+  },
+  "target": {
+    "type": "CASTER"
+  },
+  "deliver": {
+    "type": "STASH_EFFECT",
+    "stash_effect": {
+      "id": "stormcaller:static_shield",
+      "duration": 8.0,
+      "triggers": [
+        {
+          "type": "DAMAGE_TAKEN",
+          "cap_per_tick": 1,
+          "damage": {
+            "damage_type": "!#stormcaller:static_shield/ignored"
+          },
+          "target_conditions": [
+            {
+              "entity_predicate_id": "stormcaller:melee_range",
+              "entity_predicate_param": "4.0"
+            }
+          ]
+        }
+      ],
+      "consume": 0
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_arc_from_caster"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_impact"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.4,
+          "knockback": 0.6
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 4294928127,
+              "motion": "BURST",
+              "scale": 0.7
+            },
+            "batch": {
+              "count": 8.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.15,
+              "max_speed": 0.5
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "minecraft:entity.lightning_bolt.impact",
+        "volume": 0.4,
+        "pitch": 1.5,
+        "randomness": 0.15
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.3,
+    "cooldown": {
+      "duration": 30.0
+    },
+    "item": {
+      "id": "runes:lightning_stone"
+    }
+  }
+}

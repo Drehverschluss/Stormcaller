@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -19,6 +20,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * the next tick checks the whole way to the new target.
  * <p>
  * The same place knows the old and the new target, so it also sends the arc between them.
+ * <p>
+ * Second hook: right before a falling projectile (METEOR) performs its impacts, for the strike from the sky of
+ * Lightning Strike.
  */
 @Mixin(SpellProjectile.class)
 public abstract class SpellProjectileMixin {
@@ -38,5 +42,14 @@ public abstract class SpellProjectileMixin {
             this.skipTravel = true;
         }
         FxSpellHooks.onRicochet(self.getSpellEntry(), target, self.getFollowedTarget());
+    }
+
+    /** Falling projectiles (METEOR): visuals at the landing point, for the spells in {@code #stormcaller:fx/sky_strike}. */
+    @Inject(method = "finishFalling", at = @At("HEAD"))
+    private void stormcaller$beforeFallImpact(CallbackInfo ci) {
+        SpellProjectile self = (SpellProjectile) (Object) this;
+        if (!self.level().isClientSide()) {
+            FxSpellHooks.onFallFinished(self.getSpellEntry(), self, self.position());
+        }
     }
 }

@@ -4,6 +4,8 @@
   "effect.stormcaller.shock_slow.description": "Slowed by a shock.",
   "effect.stormcaller.shocked": "Shocked",
   "effect.stormcaller.shocked.description": "Takes more lightning damage with every stage, and is slowed briefly by each new shock.",
+  "effect.stormcaller.static_shield": "Static Shield",
+  "effect.stormcaller.static_shield.description": "Strikes melee attackers with lightning and reduces damage taken.",
   "item.stormcaller.lightning_robe_chest": "Lightning Robe Top",
   "item.stormcaller.lightning_robe_feet": "Lightning Boots",
   "item.stormcaller.lightning_robe_head": "Lightning Hat",
@@ -26,6 +28,10 @@
   "spell.stormcaller.lightning_bolt.name": "Lightning Bolt",
   "spell.stormcaller.lightning_nova.description": "Discharges lightning around you, causing {damage} lightning spell damage, knocking targets back and stunning them for 1.5 seconds. Bosses are shocked instead.",
   "spell.stormcaller.lightning_nova.name": "Lightning Nova",
+  "spell.stormcaller.lightning_strike.description": "Calls a bolt of lightning down from the sky onto the target, causing {damage} lightning spell damage within {impact_range} blocks.",
+  "spell.stormcaller.lightning_strike.name": "Lightning Strike",
   "spell.stormcaller.spark.description": "Launches a spark that jumps to {ricochet} additional nearby target, causing {damage} lightning spell damage on each hit.",
-  "spell.stormcaller.spark.name": "Spark"
+  "spell.stormcaller.spark.name": "Spark",
+  "spell.stormcaller.static_shield.description": "Charges you with static electricity for {stash_duration} seconds. Melee attackers are struck back, taking {damage} lightning spell damage, and you take 10%% less damage.",
+  "spell.stormcaller.static_shield.name": "Static Shield"
 }

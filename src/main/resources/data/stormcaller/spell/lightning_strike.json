@@ -1,0 +1,178 @@
+{
+  "school": "spell_power:lightning",
+  "range": 32.0,
+  "tier": 3,
+  "group": "lightning_storm",
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 1.0,
+      "animation": {
+        "id": "spell_engine:one_handed_projectile_charge"
+      },
+      "sound": {
+        "id": "spell_engine:generic_lightning_casting",
+        "randomness": 0.0
+      },
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294928127,
+            "scale": 0.9
+          },
+          "batch": {
+            "count": 1.5,
+            "shape": "SPHERE",
+            "anchor": "LAUNCH_POINT",
+            "min_speed": 0.03,
+            "max_speed": 0.1
+          }
+        }
+      ]
+    }
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_area_release"
+    },
+    "sound": {
+      "id": "spell_engine:generic_lightning_release"
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {
+      "sticky": true
+    }
+  },
+  "deliver": {
+    "type": "METEOR",
+    "meteor": {
+      "launch_height": 16.0,
+      "launch_radius": 0.0,
+      "launch_properties": {
+        "velocity": 4.0
+      },
+      "projectile": {
+        "client_data": {
+          "light_level": 15,
+          "travel_particles": [
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 4294928127,
+                "scale": 0.6
+              },
+              "batch": {
+                "count": 1.0,
+                "shape": "SPHERE",
+                "anchor": "ENTITY",
+                "min_speed": 0.02,
+                "max_speed": 0.08
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_arc_from_center"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 1.0,
+          "knockback": 0.8
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 4294928127,
+              "motion": "BURST",
+              "scale": 0.7
+            },
+            "batch": {
+              "count": 10.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.15,
+              "max_speed": 0.5
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "minecraft:entity.lightning_bolt.impact",
+        "volume": 0.6,
+        "pitch": 1.1,
+        "randomness": 0.15
+      }
+    }
+  ],
+  "area_impact": {
+    "radius": 3.0,
+    "area": {
+      "distance_dropoff": "NONE"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294928127,
+            "motion": "BURST",
+            "scale": 0.8
+          },
+          "batch": {
+            "count": 40.0,
+            "shape": "CIRCLE",
+            "anchor": "ENTITY",
+            "min_speed": 0.4,
+            "max_speed": 1.2
+          }
+        },
+        {
+          "id": "spell_engine:area_effect_473",
+          "appearance": {
+            "color": 4294928025,
+            "scale": 1.5,
+            "facing": "GROUND"
+          },
+          "batch": {
+            "count": 1.0,
+            "shape": "NONE",
+            "anchor": "GROUND"
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "minecraft:entity.lightning_bolt.thunder",
+      "volume": 1.2,
+      "pitch": 1.1,
+      "randomness": 0.1
+    }
+  },
+  "cost": {
+    "exhaust": 0.3,
+    "cooldown": {
+      "duration": 10.0
+    },
+    "item": {
+      "id": "runes:lightning_stone"
+    }
+  }
+}

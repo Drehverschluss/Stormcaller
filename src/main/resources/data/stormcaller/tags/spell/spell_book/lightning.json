@@ -1,6 +1,8 @@
 {
   "values": [
     "stormcaller:chain_lightning",
-    "stormcaller:lightning_nova"
+    "stormcaller:lightning_nova",
+    "stormcaller:static_shield",
+    "stormcaller:lightning_strike"
   ]
 }

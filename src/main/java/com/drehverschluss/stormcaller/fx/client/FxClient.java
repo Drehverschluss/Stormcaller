@@ -123,6 +123,20 @@ public final class FxClient {
         }
     }
 
+    /**
+     * Short arc that crawls over the surface of an entity's hitbox and moves with the entity (Static Shield).
+     *
+     * @param minHeight lowest point as a fraction of the hitbox height
+     * @param maxHeight highest point as a fraction of the hitbox height
+     * @param alpha     strength (1 = normal)
+     */
+    public static void addBodyArc(Entity entity, float minHeight, float maxHeight, float alpha, RandomSource random) {
+        if (!StormcallerClientConfig.arcsEnabled()) {
+            return;
+        }
+        addArc(new BodyArcFx(entity.getId(), entity.getBbWidth(), entity.getBbHeight(), minHeight, maxHeight, alpha, random.nextInt()));
+    }
+
     private static void addArc(Effect arc) {
         int max = StormcallerClientConfig.maxArcs();
         if (max <= 0) {
@@ -359,6 +373,79 @@ public final class FxClient {
             for (List<Vec3> branch : branches) {
                 ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), branch, core * 0.6F, glow * 0.6F, alpha * 0.85F, true);
             }
+        }
+    }
+
+    /** Arc on the surface of a (moving) entity, see {@link #addBodyArc}. Offsets are relative to the entity position. */
+    private static final class BodyArcFx extends Effect {
+        private final int entityId;
+        private final float alpha;
+        private final int seed;
+        private final double radius;
+        private final double startAngle;
+        private final double span;
+        private final double y0;
+        private final double y1;
+        private List<Vec3> offsets = List.of();
+
+        BodyArcFx(int entityId, float width, float height, float minHeight, float maxHeight, float alpha, int seed) {
+            super(5);
+            this.entityId = entityId;
+            this.alpha = alpha;
+            this.seed = seed;
+            RandomSource random = RandomSource.create(seed);
+            this.radius = width * 0.5 + 0.12 + random.nextDouble() * 0.12;
+            this.startAngle = random.nextDouble() * Math.PI * 2.0;
+            this.span = Math.toRadians(50.0 + random.nextDouble() * 60.0) * (random.nextBoolean() ? 1.0 : -1.0);
+            double low = height * minHeight;
+            double high = height * maxHeight;
+            this.y0 = low + random.nextDouble() * (high - low);
+            this.y1 = Mth.clamp(y0 + (random.nextDouble() * 2.0 - 1.0) * height * 0.25, low, high);
+            rebuild();
+        }
+
+        @Override
+        boolean countsAsArc() {
+            return true;
+        }
+
+        @Override
+        void tick() {
+            rebuild();
+        }
+
+        private void rebuild() {
+            RandomSource random = RandomSource.create(seed * 31L + age);
+            int n = 7;
+            List<Vec3> points = new ArrayList<>(n);
+            for (int i = 0; i < n; i++) {
+                double t = i / (double) (n - 1);
+                double angle = startAngle + span * t;
+                double jitter = (i == 0 || i == n - 1) ? 0.0 : 1.0;
+                double r = radius + (random.nextDouble() * 2.0 - 1.0) * 0.07 * jitter;
+                double y = Mth.lerp(t, y0, y1) + (random.nextDouble() * 2.0 - 1.0) * 0.09 * jitter;
+                points.add(new Vec3(Math.cos(angle) * r, y, Math.sin(angle) * r));
+            }
+            offsets = points;
+        }
+
+        @Override
+        void render(RenderContext ctx) {
+            ClientLevel level = Minecraft.getInstance().level;
+            Entity entity = level == null ? null : level.getEntity(entityId);
+            if (entity == null || entity.isRemoved()) {
+                return;
+            }
+            float pt = ctx.partialTick();
+            Vec3 base = new Vec3(Mth.lerp(pt, entity.xo, entity.getX()), Mth.lerp(pt, entity.yo, entity.getY()),
+                    Mth.lerp(pt, entity.zo, entity.getZ()));
+            List<Vec3> points = new ArrayList<>(offsets.size());
+            for (Vec3 offset : offsets) {
+                points.add(base.add(offset));
+            }
+            float a = fade(pt) * alpha * (ctx.reduced() ? 0.75F : 1.0F);
+            float widthScale = ctx.reduced() ? 0.7F : 1.0F;
+            ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), points, 0.03F * widthScale, 0.15F * widthScale, a, false);
         }
     }
 

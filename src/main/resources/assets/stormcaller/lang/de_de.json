@@ -4,6 +4,8 @@
   "effect.stormcaller.shock_slow.description": "Von einem Schock gebremst.",
   "effect.stormcaller.shocked": "Geschockt",
   "effect.stormcaller.shocked.description": "Erleidet mit jeder Stufe mehr Blitzschaden und wird von jedem neuen Schock kurz gebremst.",
+  "effect.stormcaller.static_shield": "Statikschild",
+  "effect.stormcaller.static_shield.description": "Trifft Angreifer im Nahkampf mit Blitzen und verringert den erlittenen Schaden.",
   "item.stormcaller.lightning_robe_chest": "Blitzrobe Oberteil",
   "item.stormcaller.lightning_robe_feet": "Blitzstiefel",
   "item.stormcaller.lightning_robe_head": "Blitzhut",
@@ -26,6 +28,10 @@
   "spell.stormcaller.lightning_bolt.name": "Blitzschlag",
   "spell.stormcaller.lightning_nova.description": "Entlädt Blitze um dich herum, verursacht {damage} Blitzzauber-Schaden, stößt Ziele zurück und betäubt sie für 1,5 Sekunden. Bosse werden stattdessen geschockt.",
   "spell.stormcaller.lightning_nova.name": "Blitznova",
+  "spell.stormcaller.lightning_strike.description": "Ruft einen Blitz vom Himmel auf das Ziel herab, der innerhalb von {impact_range} Blöcken {damage} Blitzzauber-Schaden verursacht.",
+  "spell.stormcaller.lightning_strike.name": "Blitzeinschlag",
   "spell.stormcaller.spark.description": "Schießt einen Funken ab, der auf {ricochet} weiteres Ziel in der Nähe überspringt und bei jedem Treffer {damage} Blitzzauber-Schaden verursacht.",
-  "spell.stormcaller.spark.name": "Funke"
+  "spell.stormcaller.spark.name": "Funke",
+  "spell.stormcaller.static_shield.description": "Lädt dich {stash_duration} Sekunden lang statisch auf. Angreifer im Nahkampf bekommen einen Rückschlag mit {damage} Blitzzauber-Schaden, und du erleidest 10 %% weniger Schaden.",
+  "spell.stormcaller.static_shield.name": "Statikschild"
 }
