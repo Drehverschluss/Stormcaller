@@ -18,15 +18,15 @@
         {
           "id": "spell_engine:magic_spark",
           "appearance": {
-            "color": 4294928127
+            "color": 4294928127,
+            "scale": 0.9
           },
           "batch": {
-            "count": 0.6,
-            "shape": "PIPE",
-            "anchor": "ENTITY",
-            "min_speed": 0.05,
-            "max_speed": 0.15,
-            "width_factor": 1.5
+            "count": 1.5,
+            "shape": "SPHERE",
+            "anchor": "LAUNCH_POINT",
+            "min_speed": 0.03,
+            "max_speed": 0.1
           }
         }
       ]
@@ -39,39 +39,18 @@
     "visuals": {
       "particles": [
         {
-          "id": "spell_engine:lightning_arc_a",
-          "appearance": {},
-          "batch": {
-            "count": 40.0,
-            "shape": "CIRCLE",
-            "anchor": "GROUND",
-            "min_speed": 0.3,
-            "max_speed": 0.6
-          }
-        },
-        {
-          "id": "spell_engine:lightning_arc_b",
-          "appearance": {},
-          "batch": {
-            "count": 40.0,
-            "shape": "CIRCLE",
-            "anchor": "GROUND",
-            "min_speed": 0.4,
-            "max_speed": 0.8
-          }
-        },
-        {
           "id": "spell_engine:magic_spark",
           "appearance": {
             "color": 4294928127,
-            "motion": "BURST"
+            "motion": "BURST",
+            "scale": 0.7
           },
           "batch": {
-            "count": 140.0,
+            "count": 24.0,
             "shape": "CIRCLE",
             "anchor": "GROUND",
-            "min_speed": 0.4,
-            "max_speed": 0.9
+            "min_speed": 0.3,
+            "max_speed": 0.7
           }
         },
         {
@@ -104,6 +83,15 @@
   "impacts": [
     {
       "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_arc_from_caster"
+        }
+      }
+    },
+    {
+      "action": {
         "type": "DAMAGE",
         "damage": {
           "spell_power_coefficient": 0.5,
@@ -113,28 +101,18 @@
       "visuals": {
         "particles": [
           {
-            "id": "spell_engine:lightning_arc_a",
-            "appearance": {},
-            "batch": {
-              "count": 2.5,
-              "shape": "SPHERE",
-              "anchor": "ENTITY",
-              "min_speed": 0.05,
-              "max_speed": 0.2
-            }
-          },
-          {
             "id": "spell_engine:magic_spark",
             "appearance": {
               "color": 4294928127,
-              "motion": "BURST"
+              "motion": "BURST",
+              "scale": 0.7
             },
             "batch": {
-              "count": 20.0,
+              "count": 8.0,
               "shape": "SPHERE",
               "anchor": "ENTITY",
-              "min_speed": 0.2,
-              "max_speed": 0.7
+              "min_speed": 0.15,
+              "max_speed": 0.5
             }
           }
         ]

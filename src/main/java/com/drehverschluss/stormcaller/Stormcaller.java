@@ -3,6 +3,8 @@ package com.drehverschluss.stormcaller;
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
+import com.drehverschluss.stormcaller.fx.FxSpellHooks;
+import com.drehverschluss.stormcaller.fx.StormcallerFx;
 import com.drehverschluss.stormcaller.item.StormcallerItems;
 import com.drehverschluss.stormcaller.shock.ShockHandler;
 import com.drehverschluss.stormcaller.shock.StormcallerEffects;
@@ -14,6 +16,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
@@ -30,6 +33,8 @@ public class Stormcaller {
         modEventBus.addListener(RegisterEvent.class, StormcallerItems::onRegister);
         NeoForge.EVENT_BUS.addListener(ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
         ShockHandler.register();
+        modEventBus.addListener(RegisterPayloadHandlersEvent.class, StormcallerFx::registerPayloads);
+        FxSpellHooks.register();
     }
 
     public static ResourceLocation id(String path) {

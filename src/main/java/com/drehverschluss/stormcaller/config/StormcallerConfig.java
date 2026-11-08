@@ -26,6 +26,8 @@ public final class StormcallerConfig {
     public static final ModConfigSpec.DoubleValue SLOW_SECONDS;
     public static final ModConfigSpec.DoubleValue SLOW_COOLDOWN_SECONDS;
 
+    public static final ModConfigSpec.BooleanValue RICOCHET_FIX_ALL_SPELLS;
+
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
@@ -84,6 +86,15 @@ public final class StormcallerConfig {
         SLOW_COOLDOWN_SECONDS = builder
                 .comment("After a slow ends, the same target cannot be slowed again for this many seconds. Stages still stack.")
                 .defineInRange("slow_cooldown_seconds", 3.0, 0.0, 600.0);
+        builder.pop();
+
+        builder.comment("Ricochet fix: Spell Engine moves a projectile a full step right after it ricochets, without a hit",
+                        "check, so fast projectiles fly through the next target. The fix keeps the projectile in place for",
+                        "that one tick. It always applies to the spells in #stormcaller:fx/ricochet_fix.")
+                .push("ricochet");
+        RICOCHET_FIX_ALL_SPELLS = builder
+                .comment("Apply the ricochet fix to the projectiles of all spells, also those of other mods.")
+                .define("fix_all_spells", false);
         builder.pop();
 
         SPEC = builder.build();

@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.drehverschluss.stormcaller.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SpellProjectileMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

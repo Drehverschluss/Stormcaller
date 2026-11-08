@@ -18,15 +18,15 @@
         {
           "id": "spell_engine:magic_spark",
           "appearance": {
-            "color": 4294928127
+            "color": 4294928127,
+            "scale": 0.9
           },
           "batch": {
-            "count": 0.6,
-            "shape": "PIPE",
-            "anchor": "ENTITY",
-            "min_speed": 0.05,
-            "max_speed": 0.15,
-            "width_factor": 1.5
+            "count": 1.5,
+            "shape": "SPHERE",
+            "anchor": "LAUNCH_POINT",
+            "min_speed": 0.03,
+            "max_speed": 0.1
           }
         }
       ]
@@ -60,48 +60,34 @@
           "light_level": 12,
           "travel_particles": [
             {
-              "id": "spell_engine:lightning_arc_a",
-              "appearance": {},
-              "batch": {
-                "count": 0.6,
-                "shape": "SPHERE",
-                "anchor": "ENTITY",
-                "max_speed": 0.05
-              }
-            },
-            {
               "id": "spell_engine:magic_spark",
               "appearance": {
                 "color": 4294928127,
-                "motion": "BURST"
+                "scale": 0.5
               },
               "batch": {
-                "count": 2.0,
-                "shape": "CIRCLE",
+                "count": 0.4,
+                "shape": "SPHERE",
                 "anchor": "ENTITY",
-                "alignment": "LOOK",
-                "min_speed": 0.05,
-                "max_speed": 0.15
+                "min_speed": 0.02,
+                "max_speed": 0.08
               }
             }
-          ],
-          "composite_model": {
-            "models": [
-              {
-                "rotate_degrees_per_tick": 24.0,
-                "fx": {
-                  "model_id": "stormcaller:spell_projectile/spark",
-                  "scale": 1.0,
-                  "light_emission": "GLOW"
-                }
-              }
-            ]
-          }
+          ]
         }
       }
     }
   },
   "impacts": [
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_impact_small"
+        }
+      }
+    },
     {
       "action": {
         "type": "DAMAGE",
@@ -112,28 +98,18 @@
       "visuals": {
         "particles": [
           {
-            "id": "spell_engine:lightning_arc_a",
-            "appearance": {},
-            "batch": {
-              "count": 3.0,
-              "shape": "SPHERE",
-              "anchor": "ENTITY",
-              "min_speed": 0.05,
-              "max_speed": 0.2
-            }
-          },
-          {
             "id": "spell_engine:magic_spark",
             "appearance": {
               "color": 4294928127,
-              "motion": "BURST"
+              "motion": "BURST",
+              "scale": 0.7
             },
             "batch": {
-              "count": 24.0,
+              "count": 6.0,
               "shape": "SPHERE",
               "anchor": "ENTITY",
-              "min_speed": 0.2,
-              "max_speed": 0.7
+              "min_speed": 0.15,
+              "max_speed": 0.5
             }
           }
         ]
