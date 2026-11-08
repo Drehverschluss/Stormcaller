@@ -1,0 +1,17 @@
+{
+  "values": [
+    {
+      "id": "#rpg_series:weapon_type/damage_staff",
+      "required": false
+    },
+    {
+      "id": "#rpg_series:weapon_type/damage_wand",
+      "required": false
+    },
+    {
+      "id": "#wizards:armor_type/generic_robes",
+      "required": false
+    },
+    "#stormcaller:armor_type/lightning_robes"
+  ]
+}

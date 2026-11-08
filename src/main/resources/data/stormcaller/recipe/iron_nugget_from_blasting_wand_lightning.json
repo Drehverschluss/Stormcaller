@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "group": "stormcaller_melt_down",
+  "ingredient": {
+    "item": "stormcaller:wand_lightning"
+  },
+  "result": {
+    "id": "minecraft:iron_nugget"
+  },
+  "experience": 0.1,
+  "cookingtime": 150
+}

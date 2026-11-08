@@ -1,1 +1,16 @@
-{}
+{
+  "itemGroup.stormcaller.general": "Stormcaller",
+  "attribute.name.stormcaller.shock_chance": "Schockchance",
+  "item.stormcaller.lightning_robe_head": "Blitzhut",
+  "item.stormcaller.lightning_robe_chest": "Blitzrobe Oberteil",
+  "item.stormcaller.lightning_robe_legs": "Blitzrobe Unterteil",
+  "item.stormcaller.lightning_robe_feet": "Blitzstiefel",
+  "item.stormcaller.netherite_lightning_robe_head": "Blitz Netheritehut",
+  "item.stormcaller.netherite_lightning_robe_chest": "Blitz Netheriterobe Oberteil",
+  "item.stormcaller.netherite_lightning_robe_legs": "Blitz Netheriterobe Unterteil",
+  "item.stormcaller.netherite_lightning_robe_feet": "Blitz Netheritestiefel",
+  "item.stormcaller.wand_lightning": "Blitz-Zauberstab",
+  "item.stormcaller.staff_lightning": "Blitzstab",
+  "item.stormcaller.wand_netherite_lightning": "Blitz-Netheritezauberstab",
+  "item.stormcaller.staff_netherite_lightning": "Blitz-Netheritestab"
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "group": "stormcaller_melt_down",
+  "ingredient": {
+    "item": "stormcaller:lightning_robe_chest"
+  },
+  "result": {
+    "id": "minecraft:copper_ingot"
+  },
+  "experience": 0.1,
+  "cookingtime": 150
+}

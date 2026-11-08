@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "stormcaller:item/netherite_lightning_robe_legs"
+  }
+}

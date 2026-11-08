@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:lightning_robe_head",
+      "required": false
+    },
+    {
+      "id": "stormcaller:lightning_robe_chest",
+      "required": false
+    },
+    {
+      "id": "stormcaller:lightning_robe_legs",
+      "required": false
+    },
+    {
+      "id": "stormcaller:lightning_robe_feet",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:wand_lightning",
+      "required": false
+    },
+    {
+      "id": "stormcaller:staff_lightning",
+      "required": false
+    }
+  ]
+}

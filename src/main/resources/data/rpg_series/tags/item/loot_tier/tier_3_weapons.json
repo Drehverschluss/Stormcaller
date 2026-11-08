@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:wand_netherite_lightning",
+      "required": false
+    },
+    {
+      "id": "stormcaller:staff_netherite_lightning",
+      "required": false
+    }
+  ]
+}

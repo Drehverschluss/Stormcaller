@@ -131,6 +131,8 @@ dependencies {
     compileOnly "maven.modrinth:spell-power:${spell_power_version}"
     compileOnly("maven.modrinth:wizards:${wizards_version}") { transitive = false }
     compileOnly("maven.modrinth:armor-model-api:${armor_model_api_version}") { transitive = false }
+    // tiny_config (ConfigManager for equipment.json), shipped jar-in-jar by Spell Engine and Spell Power
+    compileOnly("maven.modrinth:tiny-config:${tiny_config_version}") { transitive = false }
 
     // Local test mods, only present in the dev runs
     localRuntime fileTree(dir: 'libs/test', include: '*.jar')

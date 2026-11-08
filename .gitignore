@@ -46,3 +46,6 @@ Konzept/
 CurseforgeSachen/
 *-Prompt.txt
 libs/
+
+### Probe test (dedicated server dir)
+run-server/

@@ -1,1 +1,16 @@
-{}
+{
+  "itemGroup.stormcaller.general": "Stormcaller",
+  "attribute.name.stormcaller.shock_chance": "Shock Chance",
+  "item.stormcaller.lightning_robe_head": "Lightning Hat",
+  "item.stormcaller.lightning_robe_chest": "Lightning Robe Top",
+  "item.stormcaller.lightning_robe_legs": "Lightning Robe Bottom",
+  "item.stormcaller.lightning_robe_feet": "Lightning Boots",
+  "item.stormcaller.netherite_lightning_robe_head": "Netherite Lightning Hat",
+  "item.stormcaller.netherite_lightning_robe_chest": "Netherite Lightning Robe Top",
+  "item.stormcaller.netherite_lightning_robe_legs": "Netherite Lightning Robe Bottom",
+  "item.stormcaller.netherite_lightning_robe_feet": "Netherite Lightning Boots",
+  "item.stormcaller.wand_lightning": "Lightning Wand",
+  "item.stormcaller.staff_lightning": "Lightning Staff",
+  "item.stormcaller.wand_netherite_lightning": "Netherite Lightning Wand",
+  "item.stormcaller.staff_netherite_lightning": "Netherite Lightning Staff"
+}

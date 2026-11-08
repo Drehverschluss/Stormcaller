@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:lightning_robe_feet",
+      "required": false
+    },
+    {
+      "id": "stormcaller:netherite_lightning_robe_feet",
+      "required": false
+    }
+  ]
+}
