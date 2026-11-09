@@ -8,29 +8,25 @@ import net.rpg_foundation.armor_api.client.GeoArmorRenderer;
 import net.spell_engine.rpg_series.item.Armor;
 
 /**
- * Armor looks of the lightning robes: the robe model of Wizards (referenced by ID, not shipped), own textures with a
- * glow mask ({@code <texture>_glowmask.png}) and the trim textures of Wizards (also by ID).
+ * Armor looks of the lightning robes: one own model ({@code stormcaller:geo/lightning_robe.geo.json}) for tier 2 and
+ * tier 3, a texture per tier with a glow mask ({@code <texture>_glowmask.png}).
  */
 public final class StormcallerArmorRenderers {
-    private static final ResourceLocation ROBE_MODEL = ResourceLocation.fromNamespaceAndPath("wizards", "geo/wizard_robes.geo.json");
-    private static final ResourceLocation TRIM_T2 = ResourceLocation.fromNamespaceAndPath("wizards", "armor/trim/spec_robe_generic");
-    private static final ResourceLocation TRIM_T3 = ResourceLocation.fromNamespaceAndPath("wizards", "armor/trim/netherite_spec_robe_generic");
+    private static final ResourceLocation ROBE_MODEL = Stormcaller.id("geo/lightning_robe.geo.json");
 
     private StormcallerArmorRenderers() {}
 
     public static void register() {
-        register(StormcallerItems.lightningRobe, "lightning_robe", TRIM_T2);
-        register(StormcallerItems.netheriteLightningRobe, "netherite_lightning_robe", TRIM_T3);
+        register(StormcallerItems.lightningRobe, "lightning_robe");
+        register(StormcallerItems.netheriteLightningRobe, "netherite_lightning_robe");
     }
 
-    private static void register(Armor.Set<?> set, String texture, ResourceLocation trim) {
+    private static void register(Armor.Set<?> set, String texture) {
         if (set == null) {
             Stormcaller.LOGGER.error("Armor set {} is not registered, no armor renderer", texture);
             return;
         }
-        GeoArmorRenderer renderer = GeoArmorRenderer.of(ROBE_MODEL, Stormcaller.id("textures/armor/" + texture + ".png"))
-                .glow()
-                .trim(trim, false);
+        GeoArmorRenderer renderer = GeoArmorRenderer.of(ROBE_MODEL, Stormcaller.id("textures/armor/" + texture + ".png")).glow();
         ArmorRenderers.register(renderer, set.head, set.chest, set.legs, set.feet);
     }
 }
