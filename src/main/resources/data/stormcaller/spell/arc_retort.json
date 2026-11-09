@@ -1,0 +1,17 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 3,
+  "type": "MODIFIER",
+  "modifiers": [
+    {
+      "spell_pattern": "stormcaller:static_shield",
+      "replacing_area_impact": {
+        "radius": 4.0,
+        "area": {
+          "distance_dropoff": "NONE"
+        }
+      }
+    }
+  ]
+}

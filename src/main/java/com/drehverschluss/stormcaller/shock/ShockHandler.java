@@ -156,13 +156,27 @@ public final class ShockHandler {
         return onShockImpact(target, caster, baseChance, stunTicks, extraSlowTicks);
     }
 
-    /** One roll: base chance + shock chance of {@code source}, at most 100 %. */
+    /**
+     * One roll: base chance + shock chance of {@code source}, at most 100 %. With "Charged Roll" (skill tree) on the
+     * source the roll always succeeds; the effect is used up by the first shock.
+     */
     private static Result roll(LivingEntity target, LivingEntity source, double baseChance, int stunTicks, int extraSlowTicks) {
-        double chance = Math.min(1.0, Math.max(0.0, baseChance) + StormcallerAttributes.shockChance(source));
+        boolean charged = source.hasEffect(StormcallerEffects.CHARGED_ROLL);
+        double chance = charged ? 1.0 : Math.min(1.0, Math.max(0.0, baseChance) + StormcallerAttributes.shockChance(source));
         if (chance <= 0.0 || (chance < 1.0 && target.getRandom().nextDouble() >= chance)) {
             return Result.NONE;
         }
-        return shock(target, source, stunTicks, extraSlowTicks);
+        Result result = shock(target, source, stunTicks, extraSlowTicks);
+        if (charged && result != Result.NONE) {
+            source.removeEffect(StormcallerEffects.CHARGED_ROLL);
+        }
+        return result;
+    }
+
+    /** Bosses ({@code #stormcaller:shock_resistant}) and players unless {@code stun_players}: slowed instead of stunned. */
+    public static boolean isResistant(LivingEntity target) {
+        return target.getType().is(SHOCK_RESISTANT)
+                || (target instanceof Player && !StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_PLAYERS));
     }
 
     // ------------------------------------------------------------------------------------------------ damage bonus
@@ -214,9 +228,7 @@ public final class ShockHandler {
             return Result.NONE;
         }
         addShockedStage(target, source);
-        boolean resistant = target.getType().is(SHOCK_RESISTANT)
-                || (target instanceof Player && !StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_PLAYERS));
-        if (resistant) {
+        if (isResistant(target)) {
             return slow(target, source, extraSlowTicks) ? Result.SLOWED : Result.SHOCKED_ONLY;
         }
         if (stunTicks <= 0) {

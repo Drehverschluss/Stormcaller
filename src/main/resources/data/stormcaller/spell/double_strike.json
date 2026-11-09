@@ -1,0 +1,16 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 3,
+  "type": "MODIFIER",
+  "modifiers": [
+    {
+      "spell_pattern": "stormcaller:lightning_strike",
+      "projectile_launch": {
+        "velocity": 0.0,
+        "extra_launch_count": 1,
+        "extra_launch_delay": 8
+      }
+    }
+  ]
+}

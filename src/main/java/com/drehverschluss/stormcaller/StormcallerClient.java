@@ -33,6 +33,8 @@ public class StormcallerClient {
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
             event.registerEntityRenderer(StormcallerEntities.STORM_CLOUD, StormCloudRenderer::new);
             event.registerEntityRenderer(StormcallerEntities.STORM_ELEMENTAL, StormElementalRenderer::new);
+            // the static field draws itself through server visuals (ring and arcs)
+            event.registerEntityRenderer(StormcallerEntities.STATIC_FIELD, net.minecraft.client.renderer.entity.NoopRenderer::new);
         });
         ShockTooltips.register();
         FxClient.init();

@@ -51,42 +51,42 @@
     "y": 62
   },
   "passive_2_a": {
-    "definition": "stormcaller_planned_passive_2_a",
+    "definition": "stormcaller_static_trap",
     "x": -32,
     "y": 14
   },
   "passive_2_b": {
-    "definition": "stormcaller_planned_passive_2_b",
+    "definition": "stormcaller_charged_roll",
     "x": 32,
     "y": 14
   },
   "tier_3_a": {
-    "definition": "stormcaller_planned_tier_3_a",
+    "definition": "stormcaller_improved_static_shield",
     "x": -64,
     "y": -34
   },
   "tier_3_a_mod_1": {
-    "definition": "stormcaller_planned_tier_3_a_mod_1",
+    "definition": "stormcaller_lasting_charge",
     "x": -102,
     "y": -13
   },
   "tier_3_a_mod_2": {
-    "definition": "stormcaller_planned_tier_3_a_mod_2",
+    "definition": "stormcaller_arc_retort",
     "x": -102,
     "y": -55
   },
   "tier_3_b": {
-    "definition": "stormcaller_planned_tier_3_b",
+    "definition": "stormcaller_improved_lightning_strike",
     "x": 64,
     "y": -34
   },
   "tier_3_b_mod_1": {
-    "definition": "stormcaller_planned_tier_3_b_mod_1",
+    "definition": "stormcaller_double_strike",
     "x": 102,
     "y": -13
   },
   "tier_3_b_mod_2": {
-    "definition": "stormcaller_planned_tier_3_b_mod_2",
+    "definition": "stormcaller_charged_ground",
     "x": 102,
     "y": -55
   },
@@ -96,42 +96,42 @@
     "y": -34
   },
   "passive_3_a": {
-    "definition": "stormcaller_planned_passive_3_a",
+    "definition": "stormcaller_eye_of_the_storm",
     "x": -32,
     "y": -82
   },
   "passive_3_b": {
-    "definition": "stormcaller_planned_passive_3_b",
+    "definition": "stormcaller_storm_ward",
     "x": 32,
     "y": -82
   },
   "tier_4_a": {
-    "definition": "stormcaller_planned_tier_4_a",
+    "definition": "stormcaller_improved_thunderstorm",
     "x": -64,
     "y": -130
   },
   "tier_4_a_mod_1": {
-    "definition": "stormcaller_planned_tier_4_a_mod_1",
+    "definition": "stormcaller_static_rain",
     "x": -102,
     "y": -109
   },
   "tier_4_a_mod_2": {
-    "definition": "stormcaller_planned_tier_4_a_mod_2",
+    "definition": "stormcaller_rolling_thunder",
     "x": -102,
     "y": -151
   },
   "tier_4_b": {
-    "definition": "stormcaller_planned_tier_4_b",
+    "definition": "stormcaller_improved_storm_elemental",
     "x": 64,
     "y": -130
   },
   "tier_4_b_mod_1": {
-    "definition": "stormcaller_planned_tier_4_b_mod_1",
+    "definition": "stormcaller_twin_storms",
     "x": 102,
     "y": -109
   },
   "tier_4_b_mod_2": {
-    "definition": "stormcaller_planned_tier_4_b_mod_2",
+    "definition": "stormcaller_chain_conductor",
     "x": 102,
     "y": -151
   },

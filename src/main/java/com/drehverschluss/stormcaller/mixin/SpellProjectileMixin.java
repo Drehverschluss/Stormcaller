@@ -44,12 +44,17 @@ public abstract class SpellProjectileMixin {
         FxSpellHooks.onRicochet(self.getSpellEntry(), target, self.getFollowedTarget());
     }
 
-    /** Falling projectiles (METEOR): visuals at the landing point, for the spells in {@code #stormcaller:fx/sky_strike}. */
+    /**
+     * Falling projectiles (METEOR): visuals at the landing point for the spells in {@code #stormcaller:fx/sky_strike}, and
+     * the charged ground of the skill tree ({@code spell.SkillMechanics}).
+     */
     @Inject(method = "finishFalling", at = @At("HEAD"))
     private void stormcaller$beforeFallImpact(CallbackInfo ci) {
         SpellProjectile self = (SpellProjectile) (Object) this;
         if (!self.level().isClientSide()) {
             FxSpellHooks.onFallFinished(self.getSpellEntry(), self, self.position());
+            // skill tree, Charged Ground: field at the landing point (also on empty ground)
+            com.drehverschluss.stormcaller.spell.SkillMechanics.onFallFinished(self.getSpellEntry(), self, self.position());
         }
     }
 }

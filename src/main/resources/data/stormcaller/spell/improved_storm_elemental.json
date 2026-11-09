@@ -1,0 +1,16 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 4,
+  "type": "MODIFIER",
+  "modifiers": [
+    {
+      "spell_pattern": "stormcaller:storm_elemental",
+      "summon_behaviour": {
+        "lifespan": {
+          "active_seconds_add": 5
+        }
+      }
+    }
+  ]
+}

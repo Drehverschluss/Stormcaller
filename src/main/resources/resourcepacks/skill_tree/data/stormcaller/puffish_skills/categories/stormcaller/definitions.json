@@ -349,48 +349,86 @@
       }
     ]
   },
-  "stormcaller_planned_passive_2_a": {
+  "stormcaller_static_trap": {
     "title": {
-      "translate": "skill.stormcaller.planned.passive_2_a.title"
+      "translate": "spell.stormcaller.static_trap.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_static_trap"
     },
     "icon": {
       "type": "texture",
       "data": {
-        "texture": "stormcaller:textures/skill/planned.png"
+        "texture": "stormcaller:textures/skill/static_trap.png"
       }
     },
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:static_trap"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_passive_2_b": {
+  "stormcaller_charged_roll": {
     "title": {
-      "translate": "skill.stormcaller.planned.passive_2_b.title"
+      "translate": "spell.stormcaller.charged_roll.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_charged_roll"
     },
     "icon": {
       "type": "texture",
       "data": {
-        "texture": "stormcaller:textures/skill/planned.png"
+        "texture": "stormcaller:textures/skill/charged_roll.png"
       }
     },
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:charged_roll"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_3_a": {
+  "stormcaller_improved_static_shield": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_3_a.title"
+      "translate": "spell.stormcaller.improved_static_shield.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_improved_static_shield"
     },
     "icon": {
       "type": "texture",
@@ -401,14 +439,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:improved_static_shield"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_3_a_mod_1": {
+  "stormcaller_lasting_charge": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_3_a_mod_1.title"
+      "translate": "spell.stormcaller.lasting_charge.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_lasting_charge"
     },
     "icon": {
       "type": "texture",
@@ -419,14 +476,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:lasting_charge"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_3_a_mod_2": {
+  "stormcaller_arc_retort": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_3_a_mod_2.title"
+      "translate": "spell.stormcaller.arc_retort.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_arc_retort"
     },
     "icon": {
       "type": "texture",
@@ -437,14 +513,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:arc_retort"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_3_b": {
+  "stormcaller_improved_lightning_strike": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_3_b.title"
+      "translate": "spell.stormcaller.improved_lightning_strike.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_improved_lightning_strike"
     },
     "icon": {
       "type": "texture",
@@ -455,14 +550,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:improved_lightning_strike"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_3_b_mod_1": {
+  "stormcaller_double_strike": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_3_b_mod_1.title"
+      "translate": "spell.stormcaller.double_strike.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_double_strike"
     },
     "icon": {
       "type": "texture",
@@ -473,14 +587,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:double_strike"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_3_b_mod_2": {
+  "stormcaller_charged_ground": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_3_b_mod_2.title"
+      "translate": "spell.stormcaller.charged_ground.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_charged_ground"
     },
     "icon": {
       "type": "texture",
@@ -491,50 +624,107 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:charged_ground"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_passive_3_a": {
+  "stormcaller_eye_of_the_storm": {
     "title": {
-      "translate": "skill.stormcaller.planned.passive_3_a.title"
+      "translate": "spell.stormcaller.eye_of_the_storm.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_eye_of_the_storm"
     },
     "icon": {
       "type": "texture",
       "data": {
-        "texture": "stormcaller:textures/skill/planned.png"
+        "texture": "stormcaller:textures/skill/eye_of_the_storm.png"
       }
     },
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:eye_of_the_storm"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_passive_3_b": {
+  "stormcaller_storm_ward": {
     "title": {
-      "translate": "skill.stormcaller.planned.passive_3_b.title"
+      "translate": "spell.stormcaller.storm_ward.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_storm_ward"
     },
     "icon": {
       "type": "texture",
       "data": {
-        "texture": "stormcaller:textures/skill/planned.png"
+        "texture": "stormcaller:textures/skill/storm_ward.png"
       }
     },
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:storm_ward"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_4_a": {
+  "stormcaller_improved_thunderstorm": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_4_a.title"
+      "translate": "spell.stormcaller.improved_thunderstorm.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_improved_thunderstorm"
     },
     "icon": {
       "type": "texture",
@@ -545,14 +735,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:improved_thunderstorm"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_4_a_mod_1": {
+  "stormcaller_static_rain": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_4_a_mod_1.title"
+      "translate": "spell.stormcaller.static_rain.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_static_rain"
     },
     "icon": {
       "type": "texture",
@@ -563,14 +772,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:static_rain"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_4_a_mod_2": {
+  "stormcaller_rolling_thunder": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_4_a_mod_2.title"
+      "translate": "spell.stormcaller.rolling_thunder.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_rolling_thunder"
     },
     "icon": {
       "type": "texture",
@@ -581,14 +809,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:rolling_thunder"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_4_b": {
+  "stormcaller_improved_storm_elemental": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_4_b.title"
+      "translate": "spell.stormcaller.improved_storm_elemental.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_improved_storm_elemental"
     },
     "icon": {
       "type": "texture",
@@ -599,14 +846,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:improved_storm_elemental"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_4_b_mod_1": {
+  "stormcaller_twin_storms": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_4_b_mod_1.title"
+      "translate": "spell.stormcaller.twin_storms.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_twin_storms"
     },
     "icon": {
       "type": "texture",
@@ -617,14 +883,33 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:twin_storms"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
-  "stormcaller_planned_tier_4_b_mod_2": {
+  "stormcaller_chain_conductor": {
     "title": {
-      "translate": "skill.stormcaller.planned.tier_4_b_mod_2.title"
+      "translate": "spell.stormcaller.chain_conductor.name"
     },
     "description": {
-      "translate": "skill.stormcaller.planned.description"
+      "skill_definition_id": "stormcaller_chain_conductor"
     },
     "icon": {
       "type": "texture",
@@ -635,6 +920,25 @@
     "required_mods": [
       "skill_tree_rpgs"
     ],
-    "required_spent_points": 99
+    "rewards": [
+      {
+        "type": "skill_tree_rpgs:spell",
+        "data": {
+          "containers": [
+            {
+              "access": "NONE",
+              "access_param": "",
+              "extra_tier_binding": 0,
+              "max_spell_count": 0,
+              "pool": "",
+              "slot": "",
+              "spell_ids": [
+                "stormcaller:chain_conductor"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }

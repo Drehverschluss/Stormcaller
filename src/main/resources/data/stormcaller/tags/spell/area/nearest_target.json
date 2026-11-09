@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "stormcaller:forked_spark"
+    "stormcaller:forked_spark",
+    "stormcaller:static_shield"
   ]
 }

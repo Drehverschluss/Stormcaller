@@ -1,0 +1,102 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 2,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "ROLL"
+      }
+    ]
+  },
+  "deliver": {
+    "type": "CLOUD",
+    "clouds": [
+      {
+        "entity_type_id": "stormcaller:static_field",
+        "spawn_ticks": 10,
+        "despawn_ticks": 10,
+        "volume": {
+          "radius": 2.5,
+          "area": {
+            "vertical_range_multiplier": 0.6,
+            "distance_dropoff": "NONE"
+          }
+        },
+        "time_to_live_seconds": 4.0,
+        "impact_tick_interval": 20,
+        "spawn": {
+          "sound": {
+            "id": "spell_engine:generic_lightning_release",
+            "volume": 0.4,
+            "pitch": 1.4,
+            "randomness": 0.1
+          }
+        }
+      }
+    ]
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_impact_small"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.25,
+          "knockback": 0.0
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 4294928127,
+              "motion": "BURST",
+              "scale": 0.6
+            },
+            "batch": {
+              "count": 5,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.15,
+              "max_speed": 0.45
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "minecraft:entity.lightning_bolt.impact",
+        "volume": 0.25,
+        "pitch": 1.6,
+        "randomness": 0.15
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:shock/25"
+        }
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.0,
+    "durability": 0,
+    "cooldown": {
+      "duration": 4.0,
+      "haste_affected": false
+    }
+  }
+}

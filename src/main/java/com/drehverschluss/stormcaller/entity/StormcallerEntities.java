@@ -18,6 +18,8 @@ import net.tiny_config.ConfigManager;
  * <ul>
  *     <li>{@code stormcaller:storm_cloud}: the cloud of Thunderstorm ({@link StormCloudEntity}). Spells use it with
  *     {@code "entity_type_id": "stormcaller:storm_cloud"} in a CLOUD delivery.</li>
+ *     <li>{@code stormcaller:static_field}: field on the ground of Static Trap and Charged Ground (skill tree,
+ *     {@link StaticFieldEntity}), also a CLOUD delivery.</li>
  *     <li>{@code stormcaller:storm_elemental}: the summon of Storm Elemental ({@link StormElementalEntity}). Its base
  *     attributes come from {@code config/stormcaller/summoned_entities.json} (same format as the file of Wizards).</li>
  * </ul>
@@ -25,6 +27,7 @@ import net.tiny_config.ConfigManager;
 public final class StormcallerEntities {
     public static final ResourceLocation STORM_CLOUD_ID = Stormcaller.id("storm_cloud");
     public static final ResourceLocation STORM_ELEMENTAL_ID = Stormcaller.id("storm_elemental");
+    public static final ResourceLocation STATIC_FIELD_ID = Stormcaller.id("static_field");
 
     public static final EntityType<StormCloudEntity> STORM_CLOUD = EntityType.Builder
             .<StormCloudEntity>of(StormCloudEntity::new, MobCategory.MISC)
@@ -33,6 +36,14 @@ public final class StormcallerEntities {
             .clientTrackingRange(128)
             .updateInterval(20)
             .build("storm_cloud");
+
+    public static final EntityType<StaticFieldEntity> STATIC_FIELD = EntityType.Builder
+            .<StaticFieldEntity>of(StaticFieldEntity::new, MobCategory.MISC)
+            .sized(5.0F, 0.5F)
+            .fireImmune()
+            .clientTrackingRange(64)
+            .updateInterval(20)
+            .build("static_field");
 
     public static final EntityType<StormElementalEntity> STORM_ELEMENTAL = EntityType.Builder
             .<StormElementalEntity>of(StormElementalEntity::new, MobCategory.MISC)
@@ -69,6 +80,7 @@ public final class StormcallerEntities {
         }
         SUMMON_CONFIG.refresh();
         Registry.register(BuiltInRegistries.ENTITY_TYPE, STORM_CLOUD_ID, STORM_CLOUD);
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, STATIC_FIELD_ID, STATIC_FIELD);
         Registry.register(BuiltInRegistries.ENTITY_TYPE, STORM_ELEMENTAL_ID, STORM_ELEMENTAL);
         // a pack file without our entry falls back to the defaults instead of failing at startup
         SummonedEntities.registerAttributes(STORM_ELEMENTAL_ID, STORM_ELEMENTAL, id -> {

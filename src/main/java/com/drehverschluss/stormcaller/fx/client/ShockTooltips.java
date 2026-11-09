@@ -1,7 +1,13 @@
 package com.drehverschluss.stormcaller.fx.client;
 
 import com.drehverschluss.stormcaller.Stormcaller;
+import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.shock.ShockImpacts;
+import com.drehverschluss.stormcaller.spell.SkillMechanics;
+import net.minecraft.core.Holder;
+import net.minecraft.world.entity.player.Player;
+import net.spell_engine.internals.SpellModifiers;
+import net.spell_power.api.SpellPower;
 import java.util.HashSet;
 import java.util.OptionalDouble;
 import java.util.Set;
@@ -21,13 +27,23 @@ import net.spell_engine.api.spell.tooltip.TooltipTokens;
  * Uses Spell Engine's custom tooltip tokens (one per spell id). Spells that already have a custom token from another
  * mod are left alone.
  * <p>
- * Stormcaller spells also get tokens that Spell Engine does not have: {@code {ricochet_range_add}} (sum of
- * {@code projectile_perks.ricochet_range} of the modifiers of a modifier spell, e.g. Long Arc).
+ * Stormcaller spells also get tokens that Spell Engine does not have:
+ * <ul>
+ *     <li>{@code {ricochet_range_add}}: sum of {@code projectile_perks.ricochet_range} of the modifiers of a modifier
+ *     spell (Long Arc),</li>
+ *     <li>{@code {nova_stun}}: stun of Lightning Nova (server config plus {@code effect_duration_add} of the player's
+ *     modifiers, e.g. Thunderclap),</li>
+ *     <li>{@code {static_rain_duration}}, {@code {conductor_cooldown}} (cooldown of Chain Lightning),</li>
+ *     <li>{@code {field_duration|radius|damage|shock}}: the cloud spell {@code <id>_field} a spell places (Charged Ground).</li>
+ * </ul>
  */
 public final class ShockTooltips {
     private static final String CHANCE_KEY = "spell.tooltip.stormcaller.shock_chance";
     private static final String ALWAYS_KEY = "spell.tooltip.stormcaller.shock_always";
     private static final String RICOCHET_RANGE_ADD = "{ricochet_range_add}";
+    private static final String NOVA_STUN = "{nova_stun}";
+    private static final String STATIC_RAIN_DURATION = "{static_rain_duration}";
+    private static final String CONDUCTOR_COOLDOWN = "{conductor_cooldown}";
     private static final Set<ResourceLocation> OWN = new HashSet<>();
 
     private ShockTooltips() {}
@@ -49,14 +65,15 @@ public final class ShockTooltips {
                 return;
             }
             if (OWN.contains(id) || TooltipTokens.customFor(id) == null) {
-                TooltipTokens.registerCustom(id, args -> append(extraTokens(args.description(), args.spellEntry().value()),
+                TooltipTokens.registerCustom(id, args -> append(extraTokens(args.description(), args.spellEntry(), args.player()),
                         args.spellEntry().value()));
                 OWN.add(id);
             }
         });
     }
 
-    private static String extraTokens(String description, Spell spell) {
+    private static String extraTokens(String description, Holder<Spell> entry, Player player) {
+        Spell spell = entry.value();
         if (description.contains(RICOCHET_RANGE_ADD) && spell.modifiers != null) {
             float range = 0.0F;
             for (Spell.Modifier modifier : spell.modifiers) {
@@ -66,7 +83,63 @@ public final class ShockTooltips {
             }
             description = description.replace(RICOCHET_RANGE_ADD, TooltipTokens.formattedNumber(range));
         }
+        if (description.contains(NOVA_STUN)) {
+            // stun of Lightning Nova from the server config, plus Thunderclap and other effect_duration_add modifiers
+            float seconds = (float) StormcallerConfig.get(StormcallerConfig.NOVA_STUN_SECONDS);
+            if (player != null) {
+                for (Spell.Modifier modifier : SpellModifiers.of(player, entry)) {
+                    seconds += modifier.effect_duration_add;
+                }
+            }
+            description = description.replace(NOVA_STUN, TooltipTokens.formattedNumber(seconds));
+        }
+        if (description.contains(STATIC_RAIN_DURATION)) {
+            description = description.replace(STATIC_RAIN_DURATION, TooltipTokens.formattedNumber(SkillMechanics.STATIC_RAIN_TICKS / 20.0F));
+        }
+        if (description.contains(CONDUCTOR_COOLDOWN)) {
+            Spell chain = spell(Stormcaller.id("chain_lightning"));
+            float cooldown = chain == null || chain.cost.cooldown == null ? 0.0F : chain.cost.cooldown.duration;
+            description = description.replace(CONDUCTOR_COOLDOWN, TooltipTokens.formattedNumber(cooldown));
+        }
+        if (description.contains("{field_")) {
+            description = fieldTokens(description, entry, player);
+        }
         return description;
+    }
+
+    /**
+     * {@code {field_duration}}, {@code {field_radius}}, {@code {field_damage}}, {@code {field_shock}}: values of the cloud
+     * spell {@code <spell id>_field} that the spell places (Charged Ground -> charged_ground_field).
+     */
+    private static String fieldTokens(String description, Holder<Spell> entry, Player player) {
+        ResourceLocation id = entry.unwrapKey().map(k -> k.location()).orElse(null);
+        Spell field = id == null ? null : spell(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_field"));
+        if (field == null || field.deliver == null || field.deliver.clouds == null || field.deliver.clouds.isEmpty()) {
+            return description;
+        }
+        Spell.Delivery.Cloud cloud = field.deliver.clouds.get(0);
+        float coefficient = 0.0F;
+        for (Spell.Impact impact : field.impacts) {
+            if (impact.action != null && impact.action.type == Spell.Impact.Action.Type.DAMAGE && impact.action.damage != null) {
+                coefficient = impact.action.damage.spell_power_coefficient;
+                break;
+            }
+        }
+        double power = player == null ? 0.0 : SpellPower.getSpellPower(field.school, player).baseValue();
+        double shock = ShockImpacts.baseChance(field).orElse(0.0) * 100.0;
+        return description
+                .replace("{field_duration}", TooltipTokens.formattedNumber(cloud.time_to_live_seconds))
+                .replace("{field_radius}", TooltipTokens.formattedNumber(cloud.volume.radius))
+                .replace("{field_damage}", TooltipTokens.formattedNumber((float) (coefficient * power)))
+                .replace("{field_shock}", TooltipTokens.formattedNumber((float) shock));
+    }
+
+    private static Spell spell(ResourceLocation id) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) {
+            return null;
+        }
+        return SpellRegistry.from(level).getOptional(id).orElse(null);
     }
 
     private static String append(String description, Spell spell) {

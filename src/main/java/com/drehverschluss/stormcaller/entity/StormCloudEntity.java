@@ -51,6 +51,9 @@ public class StormCloudEntity extends SpellCloud {
     private boolean ringSent;
     /** Client: tick at which the despawn phase was first seen (fade out), -1 before. */
     public int clientDespawnStart = -1;
+    /** Server: number of hit pulses so far and the game time of the last one (Rolling Thunder). */
+    private int pulses;
+    private long lastPulseTime = Long.MIN_VALUE;
 
     public StormCloudEntity(EntityType<? extends SpellCloud> type, Level level) {
         super(type, level);
@@ -59,6 +62,18 @@ public class StormCloudEntity extends SpellCloud {
     /** Radius of the cloud in blocks (Spell Engine syncs it as the bounding box width). */
     public float radius() {
         return getBbWidth() * 0.5F;
+    }
+
+    /**
+     * Server: number of the current hit pulse of this cloud, counted from 1. All targets of one impact tick share a
+     * pulse (they are hit in the same game tick).
+     */
+    public int pulse(long gameTime) {
+        if (gameTime != lastPulseTime) {
+            lastPulseTime = gameTime;
+            pulses++;
+        }
+        return pulses;
     }
 
     /** Height of the cloud base above {@link #position()} (the ground point), cached and refreshed every 2 s. */

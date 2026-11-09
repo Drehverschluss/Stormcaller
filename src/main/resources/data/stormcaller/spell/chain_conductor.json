@@ -1,0 +1,25 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 4,
+  "type": "MODIFIER",
+  "modifiers": [
+    {
+      "spell_pattern": "stormcaller:storm_elemental",
+      "summon_behaviour": {
+        "actions_add": [
+          {
+            "type": "SPELL_CAST",
+            "spell_cast": {
+              "spell_id": "stormcaller:chain_lightning",
+              "cooldown": 160,
+              "range": {
+                "max": 0.5
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

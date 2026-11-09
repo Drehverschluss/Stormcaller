@@ -1,0 +1,45 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 3,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "SPELL_CAST",
+        "target_override": "CASTER",
+        "chance": 0.15,
+        "spell": {
+          "school": "lightning",
+          "type": "ACTIVE"
+        }
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "deliver": {
+    "type": "STASH_EFFECT",
+    "stash_effect": {
+      "id": "stormcaller:eye_of_the_storm",
+      "duration": 6.0,
+      "triggers": [
+        {
+          "type": "SPELL_CAST",
+          "spell": {
+            "id": "#stormcaller:eye_of_the_storm"
+          }
+        }
+      ]
+    }
+  },
+  "cost": {
+    "exhaust": 0.0,
+    "durability": 0,
+    "cooldown": {
+      "duration": 10.0,
+      "haste_affected": false
+    }
+  }
+}

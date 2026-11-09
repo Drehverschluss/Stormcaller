@@ -1,0 +1,83 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 3,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "SPELL_CAST",
+        "target_override": "CASTER",
+        "chance": 0.1,
+        "spell": {
+          "school": "lightning",
+          "type": "ACTIVE"
+        }
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "deliver": {
+    "type": "STASH_EFFECT",
+    "stash_effect": {
+      "id": "stormcaller:storm_ward",
+      "amplifier_power_multiplier": 0.2,
+      "duration": 6.0,
+      "triggers": [
+        {
+          "type": "DAMAGE_TAKEN",
+          "cap_per_tick": 1,
+          "damage": {
+            "damage_type": "!#stormcaller:static_shield/ignored"
+          },
+          "target_conditions": [
+            {
+              "entity_predicate_id": "stormcaller:melee_range",
+              "entity_predicate_param": "4.0"
+            }
+          ]
+        }
+      ],
+      "consume": 0
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_arc_from_caster"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_impact_small"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:shock/50"
+        }
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.0,
+    "durability": 0,
+    "cooldown": {
+      "duration": 15.0,
+      "haste_affected": false
+    }
+  }
+}
