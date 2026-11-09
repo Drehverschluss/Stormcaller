@@ -98,7 +98,9 @@ public final class StormcallerConfig {
 
         builder.comment("Ricochet fix: Spell Engine moves a projectile a full step right after it ricochets, without a hit",
                         "check, so fast projectiles fly through the next target. The fix keeps the projectile in place for",
-                        "that one tick. It always applies to the spells in #stormcaller:fx/ricochet_fix.")
+                        "that one tick. It also looks for the next target around the target that was hit, not around the",
+                        "projectile (which is still up to one step in front of it), so the full ricochet range counts in",
+                        "every direction. It always applies to the spells in #stormcaller:fx/ricochet_fix.")
                 .push("ricochet");
         RICOCHET_FIX_ALL_SPELLS = builder
                 .comment("Apply the ricochet fix to the projectiles of all spells, also those of other mods.")
