@@ -22,8 +22,10 @@ import net.spell_engine.entity.SummonedEntity;
  *     every summon cast, while {@code SpellEvents.SPELL_CAST} only fires for players),</li>
  *     <li>vanishing (end of the lifespan or death): a flash and an impact with a few arcs.</li>
  * </ul>
- * The arcs on the body come from the client ({@code fx.client.ElementalAura}). It walks on the ground like the Frost
- * Elemental (robust in caves, water and on stairs); the renderer lets the body hover above it. Without an owner
+ * The body is drawn by the client from cloud puffs ({@code client.StormElementalRenderer}, pose in
+ * {@code fx.client.ElementalPose}); core, eyes and the arcs inside the body come from {@code fx.client.ElementalFx}.
+ * It walks on the ground like the Frost Elemental (robust in caves, water and on stairs); the renderer lets the body
+ * hover above it. Without an owner
  * ({@code /summon}) it has no behaviour and just stays, like an ownerless Frost Elemental.
  */
 public class StormElementalEntity extends SummonedEntity {
@@ -33,6 +35,18 @@ public class StormElementalEntity extends SummonedEntity {
 
     private boolean spawnFxDone;
     private boolean vanishFxDone;
+
+    // Client-only visual state, updated every client tick by fx.client.ElementalFx and read by the renderer.
+    /** Arms reaching forward while casting, 0..1 (smoothed), with the value of the previous tick. */
+    public float clientCast;
+    public float clientCastPrev;
+    /** Extra brightness of the core after a release, 0..1 (fades out), with the value of the previous tick. */
+    public float clientCoreBoost;
+    public float clientCoreBoostPrev;
+    /** Tick at which the despawn phase was first seen (puffs drift apart), -1 before. */
+    public int clientDespawnStart = -1;
+    /** The current release animation was already turned into a core flash. */
+    public boolean clientReleaseSeen;
 
     public StormElementalEntity(EntityType<? extends StormElementalEntity> type, Level level) {
         super(type, level);

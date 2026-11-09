@@ -1,7 +1,6 @@
 package com.drehverschluss.stormcaller;
 
 import com.drehverschluss.stormcaller.client.StormCloudRenderer;
-import com.drehverschluss.stormcaller.client.StormElementalModel;
 import com.drehverschluss.stormcaller.client.StormElementalRenderer;
 import com.drehverschluss.stormcaller.client.StormcallerArmorRenderers;
 import com.drehverschluss.stormcaller.entity.StormcallerEntities;
@@ -28,8 +27,6 @@ public class StormcallerClient {
             // Spell Engine keeps these in plain maps: register on the main thread
             event.enqueueWork(ShockAura::register);
         });
-        modEventBus.addListener(EntityRenderersEvent.RegisterLayerDefinitions.class, event ->
-                event.registerLayerDefinition(StormElementalModel.LAYER, StormElementalModel::createBodyLayer));
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
             event.registerEntityRenderer(StormcallerEntities.STORM_CLOUD, StormCloudRenderer::new);
             event.registerEntityRenderer(StormcallerEntities.STORM_ELEMENTAL, StormElementalRenderer::new);

@@ -1,6 +1,7 @@
 package com.drehverschluss.stormcaller.fx.client;
 
 import com.drehverschluss.stormcaller.Stormcaller;
+import com.drehverschluss.stormcaller.entity.StormElementalEntity;
 import com.drehverschluss.stormcaller.fx.ArcStyle;
 import com.drehverschluss.stormcaller.fx.FxPayload;
 import com.drehverschluss.stormcaller.fx.StormcallerFx;
@@ -55,7 +56,7 @@ public final class FxClient {
         NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, FxClient::render);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
             EFFECTS.clear();
-            StormCloudFx.clear();
+            PuffGlows.clear();
         });
     }
 
@@ -162,6 +163,20 @@ public final class FxClient {
                 shock, random.nextInt()));
     }
 
+    /**
+     * Arc inside the body of a Storm Elemental from its core to a body point; both ends follow the drawn body every frame
+     * ({@link ElementalPose}).
+     *
+     * @param width 1 = normal thickness
+     */
+    public static void addElementalArc(StormElementalEntity entity, ElementalPose.Anchor target, float alpha, float width,
+                                       RandomSource random) {
+        if (!StormcallerClientConfig.arcsEnabled()) {
+            return;
+        }
+        addArc(new AttachedArcFx(entity.getId(), target, alpha, width, random.nextInt()));
+    }
+
     /** Body arcs of "Shocked" alive right now. */
     public static int activeShockArcs() {
         int count = 0;
@@ -265,17 +280,21 @@ public final class FxClient {
                 effect.render(ctx);
             }
         }
-        if (!ProjectileTrails.isEmpty()) {
-            for (Entity entity : level.entitiesForRendering()) {
-                if (entity instanceof SpellProjectile projectile) {
-                    ProjectileTrails.Trail trail = trailOf(projectile);
-                    if (trail != null) {
-                        if (vc == null) {
-                            vc = buffers.getBuffer(FxRenderTypes.ARC);
-                        }
-                        renderTrail(vc, matrix, cam, camera, projectile, trail, partialTick);
+        for (Entity entity : level.entitiesForRendering()) {
+            if (entity instanceof SpellProjectile projectile && !ProjectileTrails.isEmpty()) {
+                ProjectileTrails.Trail trail = trailOf(projectile);
+                if (trail != null) {
+                    if (vc == null) {
+                        vc = buffers.getBuffer(FxRenderTypes.ARC);
                     }
+                    renderTrail(vc, matrix, cam, camera, projectile, trail, partialTick);
                 }
+            } else if (entity instanceof StormElementalEntity elemental && ElementalFx.visible(elemental, cam)) {
+                // glowing core and eyes, drawn after the cloud puffs so the eyes hide behind the head when seen from behind
+                if (vc == null) {
+                    vc = buffers.getBuffer(FxRenderTypes.ARC);
+                }
+                ElementalFx.render(vc, matrix, cam, camera.getLeftVector(), camera.getUpVector(), elemental, partialTick);
             }
         }
         if (vc != null) {
@@ -409,6 +428,46 @@ public final class FxClient {
             for (List<Vec3> branch : branches) {
                 ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), branch, core * 0.6F, glow * 0.6F, alpha * 0.85F, true);
             }
+        }
+    }
+
+    /** Arc from the core of a Storm Elemental to one of its body points, see {@link #addElementalArc}. */
+    private static final class AttachedArcFx extends Effect {
+        private final int entityId;
+        private final ElementalPose.Anchor target;
+        private final float alpha;
+        private final float width;
+        private final int seed;
+
+        AttachedArcFx(int entityId, ElementalPose.Anchor target, float alpha, float width, int seed) {
+            super(5);
+            this.entityId = entityId;
+            this.target = target;
+            this.alpha = alpha;
+            this.width = width;
+            this.seed = seed;
+        }
+
+        @Override
+        boolean countsAsArc() {
+            return true;
+        }
+
+        @Override
+        void render(RenderContext ctx) {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level == null || !(level.getEntity(entityId) instanceof StormElementalEntity entity) || entity.isRemoved()) {
+                return;
+            }
+            ElementalPose pose = ElementalPose.of(entity, ctx.partialTick());
+            Vec3 from = pose.anchor(ElementalPose.Anchor.CORE);
+            Vec3 to = pose.anchor(target);
+            // new zigzag every tick, the same within one tick
+            RandomSource random = RandomSource.create(seed * 31L + age);
+            List<Vec3> points = ArcGeometry.jagged(from, to, 0.18F, 0.16F, 0.12F, 12, random);
+            float a = fade(ctx.partialTick()) * alpha * (1.0F - pose.vanish) * (ctx.reduced() ? 0.75F : 1.0F);
+            float w = width * (ctx.reduced() ? 0.7F : 1.0F);
+            ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), points, 0.03F * w, 0.15F * w, a, false);
         }
     }
 
