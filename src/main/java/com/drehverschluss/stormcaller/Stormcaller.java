@@ -2,6 +2,10 @@ package com.drehverschluss.stormcaller;
 
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
+import com.drehverschluss.stormcaller.compat.skilltree.ClassLockPayload;
+import com.drehverschluss.stormcaller.compat.skilltree.SkillTab;
+import com.drehverschluss.stormcaller.compat.skilltree.SkillTreeCompat;
+import com.drehverschluss.stormcaller.compat.skilltree.SkillTreePack;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.entity.StormcallerEntities;
 import com.drehverschluss.stormcaller.fx.FxSpellHooks;
@@ -9,6 +13,7 @@ import com.drehverschluss.stormcaller.fx.StormcallerFx;
 import com.drehverschluss.stormcaller.item.StormcallerItems;
 import com.drehverschluss.stormcaller.shock.ShockHandler;
 import com.drehverschluss.stormcaller.shock.StormcallerEffects;
+import com.drehverschluss.stormcaller.spell.NearestTarget;
 import com.drehverschluss.stormcaller.spell.StaticShield;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +22,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -39,7 +45,14 @@ public class Stormcaller {
         NeoForge.EVENT_BUS.addListener(ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
         ShockHandler.register();
         modEventBus.addListener(RegisterPayloadHandlersEvent.class, StormcallerFx::registerPayloads);
+        modEventBus.addListener(RegisterPayloadHandlersEvent.class, ClassLockPayload::register);
         FxSpellHooks.register();
+        NearestTarget.init();
+        if (SkillTab.enabled()) {
+            // Stormcaller skill tab: built-in data pack, respec, class lock (Skill Tree classes only behind this check)
+            modEventBus.addListener(AddPackFindersEvent.class, SkillTreePack::onAddPackFinders);
+            SkillTreeCompat.init();
+        }
     }
 
     public static ResourceLocation id(String path) {

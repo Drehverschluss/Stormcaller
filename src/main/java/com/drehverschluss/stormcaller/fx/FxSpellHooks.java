@@ -16,6 +16,7 @@ import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.event.SpellEvents;
 import net.spell_engine.api.spell.event.SpellHandlers;
 import net.spell_engine.api.spell.registry.SpellRegistry;
+import net.spell_engine.internals.SpellParameters;
 import net.spell_engine.internals.casting.SpellCast;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,7 +128,8 @@ public final class FxSpellHooks {
         LivingEntity caster = args.caster();
         if (args.spell().is(NOVA_RING)) {
             StormcallerFx.flash(level, caster.position().add(0.0, caster.getBbHeight() * 0.55, 0.0), 1.3F);
-            StormcallerFx.ring(level, caster.position().add(0.0, 0.15, 0.0), args.spell().value().range);
+            // with the range modifiers of the caster (skill tree: Improved Lightning Nova)
+            StormcallerFx.ring(level, caster.position().add(0.0, 0.15, 0.0), SpellParameters.getRange(caster, args.spell()));
         }
         if (args.spell().is(SHIELD_BURST)) {
             StormcallerFx.flash(level, caster.position().add(0.0, caster.getBbHeight() * 0.55, 0.0), 0.9F);

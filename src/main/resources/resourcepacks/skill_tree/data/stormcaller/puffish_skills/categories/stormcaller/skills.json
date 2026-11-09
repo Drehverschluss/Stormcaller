@@ -1,0 +1,143 @@
+{
+  "root": {
+    "definition": "stormcaller_root",
+    "x": 0,
+    "y": 150,
+    "root": true
+  },
+  "passive_1_a": {
+    "definition": "stormcaller_forked_spark",
+    "x": -32,
+    "y": 106
+  },
+  "passive_1_b": {
+    "definition": "stormcaller_galvanic_rush",
+    "x": 32,
+    "y": 106
+  },
+  "tier_2_a": {
+    "definition": "stormcaller_improved_chain_lightning",
+    "x": -64,
+    "y": 62
+  },
+  "tier_2_a_mod_1": {
+    "definition": "stormcaller_long_arc",
+    "x": -102,
+    "y": 83
+  },
+  "tier_2_a_mod_2": {
+    "definition": "stormcaller_conductive_chain",
+    "x": -102,
+    "y": 41
+  },
+  "tier_2_b": {
+    "definition": "stormcaller_improved_lightning_nova",
+    "x": 64,
+    "y": 62
+  },
+  "tier_2_b_mod_1": {
+    "definition": "stormcaller_thunderclap",
+    "x": 102,
+    "y": 83
+  },
+  "tier_2_b_mod_2": {
+    "definition": "stormcaller_quick_discharge",
+    "x": 102,
+    "y": 41
+  },
+  "boost_1": {
+    "definition": "stormcaller_boost",
+    "x": 0,
+    "y": 62
+  },
+  "passive_2_a": {
+    "definition": "stormcaller_planned_passive_2_a",
+    "x": -32,
+    "y": 14
+  },
+  "passive_2_b": {
+    "definition": "stormcaller_planned_passive_2_b",
+    "x": 32,
+    "y": 14
+  },
+  "tier_3_a": {
+    "definition": "stormcaller_planned_tier_3_a",
+    "x": -64,
+    "y": -34
+  },
+  "tier_3_a_mod_1": {
+    "definition": "stormcaller_planned_tier_3_a_mod_1",
+    "x": -102,
+    "y": -13
+  },
+  "tier_3_a_mod_2": {
+    "definition": "stormcaller_planned_tier_3_a_mod_2",
+    "x": -102,
+    "y": -55
+  },
+  "tier_3_b": {
+    "definition": "stormcaller_planned_tier_3_b",
+    "x": 64,
+    "y": -34
+  },
+  "tier_3_b_mod_1": {
+    "definition": "stormcaller_planned_tier_3_b_mod_1",
+    "x": 102,
+    "y": -13
+  },
+  "tier_3_b_mod_2": {
+    "definition": "stormcaller_planned_tier_3_b_mod_2",
+    "x": 102,
+    "y": -55
+  },
+  "boost_2": {
+    "definition": "stormcaller_boost",
+    "x": 0,
+    "y": -34
+  },
+  "passive_3_a": {
+    "definition": "stormcaller_planned_passive_3_a",
+    "x": -32,
+    "y": -82
+  },
+  "passive_3_b": {
+    "definition": "stormcaller_planned_passive_3_b",
+    "x": 32,
+    "y": -82
+  },
+  "tier_4_a": {
+    "definition": "stormcaller_planned_tier_4_a",
+    "x": -64,
+    "y": -130
+  },
+  "tier_4_a_mod_1": {
+    "definition": "stormcaller_planned_tier_4_a_mod_1",
+    "x": -102,
+    "y": -109
+  },
+  "tier_4_a_mod_2": {
+    "definition": "stormcaller_planned_tier_4_a_mod_2",
+    "x": -102,
+    "y": -151
+  },
+  "tier_4_b": {
+    "definition": "stormcaller_planned_tier_4_b",
+    "x": 64,
+    "y": -130
+  },
+  "tier_4_b_mod_1": {
+    "definition": "stormcaller_planned_tier_4_b_mod_1",
+    "x": 102,
+    "y": -109
+  },
+  "tier_4_b_mod_2": {
+    "definition": "stormcaller_planned_tier_4_b_mod_2",
+    "x": 102,
+    "y": -151
+  },
+  "boost_3": {
+    "definition": "stormcaller_boost",
+    "x": 0,
+    "y": -130
+  }
+}

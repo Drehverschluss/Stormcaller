@@ -7,14 +7,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.OptionalDouble;
 import java.util.TreeSet;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.event.SpellHandlers;
 import net.spell_engine.api.spell.registry.SpellRegistry;
+import net.spell_engine.internals.SpellModifiers;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -31,10 +34,18 @@ import org.jetbrains.annotations.Nullable;
  * runs, which gives two rolls instead of one.
  * <p>
  * {@code stormcaller:nova_shock}: always shocks, with the stun duration of Lightning Nova ({@code nova_stun_seconds}).
+ * <p>
+ * {@code stormcaller:shock_reroll}: a second roll with the base chance of the spell (its own shock impact), but only if
+ * this hit has not shocked yet in this tick. Put it behind the shock impact, e.g. through a modifier spell with
+ * {@code mutate_impacts APPEND} (Conductive Chain: two rolls, a hit still shocks at most once).
+ * <p>
+ * Modifier spells of the caster with {@code effect_duration_add} on the spell make its shocks last longer: the stun of
+ * normal targets and the slow of bosses get that many seconds more (Thunderclap on Lightning Nova).
  */
 public final class ShockImpacts {
     public static final String PREFIX = Stormcaller.MODID + ":shock/";
     public static final ResourceLocation NOVA_IMPACT = Stormcaller.id("nova_shock");
+    public static final ResourceLocation REROLL_IMPACT = Stormcaller.id("shock_reroll");
 
     private ShockImpacts() {}
 
@@ -47,8 +58,18 @@ public final class ShockImpacts {
             if (!(target instanceof LivingEntity living) || living.level().isClientSide()) {
                 return new SpellHandlers.ImpactResult(false, false);
             }
-            int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.NOVA_STUN_SECONDS));
-            return result(ShockHandler.onShockImpact(living, caster, 1.0, ticks));
+            int extra = extraTicks(spell, caster);
+            int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.NOVA_STUN_SECONDS)) + extra;
+            return result(ShockHandler.onShockImpact(living, caster, 1.0, ticks, extra));
+        });
+        SpellHandlers.registerCustomImpact(REROLL_IMPACT, (spell, power, caster, target, context) -> {
+            if (!(target instanceof LivingEntity living) || living.level().isClientSide()) {
+                return new SpellHandlers.ImpactResult(false, false);
+            }
+            double base = baseChance(spell.value()).orElse(0.0);
+            int extra = extraTicks(spell, caster);
+            int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)) + extra;
+            return result(ShockHandler.onShockReroll(living, caster, base, ticks, extra));
         });
         NeoForge.EVENT_BUS.addListener(ServerAboutToStartEvent.class, ShockImpacts::onServerAboutToStart);
     }
@@ -65,10 +86,23 @@ public final class ShockImpacts {
             if (!(target instanceof LivingEntity living) || living.level().isClientSide()) {
                 return new SpellHandlers.ImpactResult(false, false);
             }
-            int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS));
-            return result(ShockHandler.onShockImpact(living, caster, base, ticks));
+            int extra = extraTicks(spell, caster);
+            int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)) + extra;
+            return result(ShockHandler.onShockImpact(living, caster, base, ticks, extra));
         });
         return true;
+    }
+
+    /** Extra stun / slow ticks from {@code effect_duration_add} of the caster's modifier spells on this spell. */
+    private static int extraTicks(Holder<Spell> spell, LivingEntity caster) {
+        if (!(caster instanceof Player player)) {
+            return 0;
+        }
+        float seconds = 0.0F;
+        for (Spell.Modifier modifier : SpellModifiers.of(player, spell)) {
+            seconds += modifier.effect_duration_add;
+        }
+        return Math.max(0, ShockHandler.seconds(seconds));
     }
 
     private static SpellHandlers.ImpactResult result(ShockHandler.Result result) {

@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.drehverschluss.stormcaller.mixin.skills",
+  "plugin": "com.drehverschluss.stormcaller.mixin.skills.SkillsMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientCategoryDataMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "title": {
+    "translate": "skill_category.stormcaller.stormcaller"
+  },
+  "description": {
+    "translate": "skill_category.stormcaller.stormcaller.description",
+    "color": "gray"
+  },
+  "icon": {
+    "type": "item",
+    "data": {
+      "item": "spell_engine:spell_book",
+      "components": {
+        "spell_engine:item_model": "stormcaller:item/spell_book/lightning"
+      }
+    }
+  },
+  "unlocked_by_default": true,
+  "spent_points_limit": 13,
+  "exclusive_root": true,
+  "background": {
+    "texture": "stormcaller:textures/gui/skill_background.png",
+    "width": 512,
+    "height": 288,
+    "position": "fill"
+  },
+  "colors": {
+    "connections": {
+      "locked": {
+        "fill": "#1b2030",
+        "stroke": "#23293c"
+      },
+      "available": {
+        "fill": "#4c5674",
+        "stroke": "#59648a"
+      },
+      "unlocked": {
+        "fill": "#e6c13c",
+        "stroke": "#f2d35e"
+      },
+      "excluded": {
+        "fill": "#8e2b2b",
+        "stroke": "#a53636"
+      }
+    }
+  }
+}

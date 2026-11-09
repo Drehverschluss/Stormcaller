@@ -14,6 +14,10 @@ description='''${mod_description}'''
 [[mixins]]
 config="${mod_id}.mixins.json"
 
+# Only applied when Pufferfish's Skills is installed (see SkillsMixinPlugin)
+[[mixins]]
+config="${mod_id}.skills.mixins.json"
+
 [[dependencies.${mod_id}]]
     modId="neoforge"
     type="required"
@@ -41,5 +45,13 @@ config="${mod_id}.mixins.json"
     modId="wizards"
     type="required"
     versionRange="${wizards_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the Stormcaller skill tab (Pufferfish's Skills comes with it)
+    modId="skill_tree_rpgs"
+    type="optional"
+    versionRange="${skill_tree_version_range}"
     ordering="AFTER"
     side="BOTH"

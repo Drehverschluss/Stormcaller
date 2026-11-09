@@ -1,0 +1,12 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 2,
+  "type": "MODIFIER",
+  "modifiers": [
+    {
+      "spell_pattern": "stormcaller:lightning_nova",
+      "cooldown_duration_deduct": 3.0
+    }
+  ]
+}

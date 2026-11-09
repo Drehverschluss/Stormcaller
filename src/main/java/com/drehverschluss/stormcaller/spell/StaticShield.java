@@ -65,7 +65,10 @@ public final class StaticShield {
         SpellEntityPredicates.register(MELEE_RANGE, args -> withinGap(args.entity(), args.other(), parseRange(args.param())));
     }
 
-    /** Mod bus: registers the effect like Wizards does (Spell Engine {@link Effects#register}). */
+    /**
+     * Mod bus: registers the configurable effects like Wizards does (Spell Engine {@link Effects#register}): Static
+     * Shield and Galvanic Rush ({@link GalvanicRush}, skill tree), both in {@link #EFFECTS_CONFIG}.
+     */
     public static void onRegister(RegisterEvent event) {
         if (!event.getRegistryKey().equals(Registries.MOB_EFFECT)) {
             return;
@@ -74,7 +77,7 @@ public final class StaticShield {
         Synchronized.configure(EFFECT.effect, true);
         EFFECTS_CONFIG.refresh();
         // takes the values from the file (or writes the defaults into it)
-        Effects.register(List.of(EFFECT), EFFECTS_CONFIG.value.effects);
+        Effects.register(List.of(EFFECT, GalvanicRush.EFFECT), EFFECTS_CONFIG.value.effects);
         EFFECTS_CONFIG.save();
     }
 

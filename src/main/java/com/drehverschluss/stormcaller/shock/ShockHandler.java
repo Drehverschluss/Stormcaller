@@ -61,6 +61,8 @@ public final class ShockHandler {
     private static final List<Hit> PENDING = new ArrayList<>();
     /** Shock impacts of this tick that ran before the damage of their hit arrived. Server thread only. */
     private static final List<Hit> CLAIMED = new ArrayList<>();
+    /** Hits of this tick that a shock impact has shocked (for {@code shock_reroll}). Server thread only. */
+    private static final List<Hit> SHOCKED_HITS = new ArrayList<>();
 
     private ShockHandler() {}
 
@@ -71,6 +73,7 @@ public final class ShockHandler {
         NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, event -> {
             PENDING.clear();
             CLAIMED.clear();
+            SHOCKED_HITS.clear();
         });
         ShockImpacts.register();
     }
@@ -99,6 +102,7 @@ public final class ShockHandler {
 
     /** End of the server tick: hits without a shock impact roll the plain shock chance. */
     private static void rollPending() {
+        SHOCKED_HITS.clear();
         if (PENDING.isEmpty() && CLAIMED.isEmpty()) {
             return;
         }
@@ -110,7 +114,7 @@ public final class ShockHandler {
             if (target.isRemoved() || target.isDeadOrDying()) {
                 continue;
             }
-            roll(target, hit.source(), 0.0, seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)));
+            roll(target, hit.source(), 0.0, seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)), 0);
         }
     }
 
@@ -118,9 +122,10 @@ public final class ShockHandler {
      * Server: a shock impact hit {@code target}. Takes the hit over from the damage listener and rolls once with
      * {@code baseChance} + shock chance of the caster.
      *
+     * @param extraSlowTicks extra slow duration for resistant targets (modifiers like Thunderclap)
      * @return what the shock did (NONE if the roll failed)
      */
-    static Result onShockImpact(LivingEntity target, LivingEntity caster, double baseChance, int stunTicks) {
+    static Result onShockImpact(LivingEntity target, LivingEntity caster, double baseChance, int stunTicks, int extraSlowTicks) {
         LivingEntity source = shockSource(caster);
         if (source == null || source == target) {
             return Result.NONE;
@@ -132,16 +137,32 @@ public final class ShockHandler {
         if (target.isRemoved() || target.isDeadOrDying()) {
             return Result.NONE;
         }
-        return roll(target, source, baseChance, stunTicks);
+        Result result = roll(target, source, baseChance, stunTicks, extraSlowTicks);
+        if (result != Result.NONE) {
+            SHOCKED_HITS.add(hit);
+        }
+        return result;
+    }
+
+    /**
+     * Server: second roll of a hit ({@code stormcaller:shock_reroll}). Rolls like {@link #onShockImpact}, but only if no
+     * shock impact has shocked this target for this attacker in this tick yet, so a hit shocks at most once.
+     */
+    static Result onShockReroll(LivingEntity target, LivingEntity caster, double baseChance, int stunTicks, int extraSlowTicks) {
+        LivingEntity source = shockSource(caster);
+        if (source == null || source == target || SHOCKED_HITS.contains(new Hit(target, source))) {
+            return Result.NONE;
+        }
+        return onShockImpact(target, caster, baseChance, stunTicks, extraSlowTicks);
     }
 
     /** One roll: base chance + shock chance of {@code source}, at most 100 %. */
-    private static Result roll(LivingEntity target, LivingEntity source, double baseChance, int stunTicks) {
+    private static Result roll(LivingEntity target, LivingEntity source, double baseChance, int stunTicks, int extraSlowTicks) {
         double chance = Math.min(1.0, Math.max(0.0, baseChance) + StormcallerAttributes.shockChance(source));
         if (chance <= 0.0 || (chance < 1.0 && target.getRandom().nextDouble() >= chance)) {
             return Result.NONE;
         }
-        return shock(target, source, stunTicks);
+        return shock(target, source, stunTicks, extraSlowTicks);
     }
 
     // ------------------------------------------------------------------------------------------------ damage bonus
@@ -179,6 +200,16 @@ public final class ShockHandler {
      * @param stunTicks stun duration for normal targets
      */
     public static Result shock(LivingEntity target, @Nullable Entity source, int stunTicks) {
+        return shock(target, source, stunTicks, 0);
+    }
+
+    /**
+     * Applies a shock to a target (no roll).
+     *
+     * @param stunTicks      stun duration for normal targets
+     * @param extraSlowTicks added to the slow duration of resistant targets
+     */
+    public static Result shock(LivingEntity target, @Nullable Entity source, int stunTicks, int extraSlowTicks) {
         if (target.getType().is(SHOCK_IMMUNE)) {
             return Result.NONE;
         }
@@ -186,7 +217,7 @@ public final class ShockHandler {
         boolean resistant = target.getType().is(SHOCK_RESISTANT)
                 || (target instanceof Player && !StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_PLAYERS));
         if (resistant) {
-            return slow(target, source) ? Result.SLOWED : Result.SHOCKED_ONLY;
+            return slow(target, source, extraSlowTicks) ? Result.SLOWED : Result.SHOCKED_ONLY;
         }
         if (stunTicks <= 0) {
             return Result.SHOCKED_ONLY;
@@ -213,7 +244,7 @@ public final class ShockHandler {
     }
 
     /** Short slow for resistant targets, at most once per cooldown. */
-    private static boolean slow(LivingEntity target, @Nullable Entity source) {
+    private static boolean slow(LivingEntity target, @Nullable Entity source, int extraTicks) {
         if (!StormcallerConfig.get(StormcallerConfig.SLOW_ENABLED)) {
             return false;
         }
@@ -222,7 +253,7 @@ public final class ShockHandler {
         if (now < ready) {
             return false;
         }
-        int slowTicks = seconds(StormcallerConfig.get(StormcallerConfig.SLOW_SECONDS));
+        int slowTicks = seconds(StormcallerConfig.get(StormcallerConfig.SLOW_SECONDS)) + Math.max(0, extraTicks);
         int cooldownTicks = seconds(StormcallerConfig.get(StormcallerConfig.SLOW_COOLDOWN_SECONDS));
         if (slowTicks <= 0) {
             return false;

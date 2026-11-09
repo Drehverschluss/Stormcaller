@@ -133,6 +133,9 @@ dependencies {
     compileOnly("maven.modrinth:armor-model-api:${armor_model_api_version}") { transitive = false }
     // tiny_config (ConfigManager for equipment.json), shipped jar-in-jar by Spell Engine and Spell Power
     compileOnly("maven.modrinth:tiny-config:${tiny_config_version}") { transitive = false }
+    // Optional: Skill Tree (RPG Series) and Pufferfish's Skills for the Stormcaller skill tab (compat.skilltree)
+    compileOnly("maven.modrinth:skill-tree:${skill_tree_version}") { transitive = false }
+    compileOnly("maven.modrinth:skills:${puffish_skills_version}") { transitive = false }
 
     // Local test mods, only present in the dev runs
     localRuntime fileTree(dir: 'libs/test', include: '*.jar')
@@ -154,6 +157,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_description        : mod_description,
             spell_engine_version_range: spell_engine_version_range,
             wizards_version_range  : wizards_version_range,
+            skill_tree_version_range: skill_tree_version_range,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

@@ -28,6 +28,8 @@ public final class StormcallerConfig {
 
     public static final ModConfigSpec.BooleanValue RICOCHET_FIX_ALL_SPELLS;
 
+    public static final ModConfigSpec.BooleanValue SKILL_TREE_CLASS_LOCK;
+
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
@@ -101,6 +103,14 @@ public final class StormcallerConfig {
         RICOCHET_FIX_ALL_SPELLS = builder
                 .comment("Apply the ricochet fix to the projectiles of all spells, also those of other mods.")
                 .define("fix_all_spells", false);
+        builder.pop();
+
+        builder.comment("Stormcaller skill tab (only with Skill Tree (RPG Series) installed).")
+                .push("skill_tree");
+        SKILL_TREE_CLASS_LOCK = builder
+                .comment("Stormcaller counts as a class: a player with a class (root) in the Class Skills tab of Skill Tree",
+                         "cannot take the Stormcaller root, and the other way round. Players who already have both keep them.")
+                .define("class_lock", true);
         builder.pop();
 
         SPEC = builder.build();
