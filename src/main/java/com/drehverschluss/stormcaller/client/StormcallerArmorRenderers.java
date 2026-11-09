@@ -8,30 +8,34 @@ import net.rpg_foundation.armor_api.client.GeoArmorRenderer;
 import net.spell_engine.rpg_series.item.Armor;
 
 /**
- * Armor looks of the lightning robes: one own model ({@code stormcaller:geo/lightning_robe.geo.json}) for tier 2 and
- * tier 3, a texture per tier with a glow mask ({@code <texture>_glowmask.png}).
+ * Armor looks of the lightning robes, each a model with a texture and a glow mask ({@code <texture>_glowmask.png}).
  * <p>
- * Tier 4 (Fulgurite, Stormweave) uses the same model with recolored textures for now (placeholder until the own
- * models of phase 6R1/6R2).
+ * Tier 2 uses {@code stormcaller:geo/lightning_robe.geo.json}. Tier 3 has its own shape
+ * ({@code netherite_lightning_robe.geo.json}: the tier 2 robe with netherite shoulder plates, bracers and a long hood
+ * back) on the same UV layout. Fulgurite (tier 4) has its own model ({@code fulgurite_robe.geo.json}, glass plates with
+ * glowing cracks, crystal prisms). Stormweave (tier 4) uses the tier 2 model with a recolored texture for now
+ * (placeholder until its own model in phase 6R2).
  */
 public final class StormcallerArmorRenderers {
     private static final ResourceLocation ROBE_MODEL = Stormcaller.id("geo/lightning_robe.geo.json");
+    private static final ResourceLocation NETHERITE_ROBE_MODEL = Stormcaller.id("geo/netherite_lightning_robe.geo.json");
+    private static final ResourceLocation FULGURITE_ROBE_MODEL = Stormcaller.id("geo/fulgurite_robe.geo.json");
 
     private StormcallerArmorRenderers() {}
 
     public static void register() {
-        register(StormcallerItems.lightningRobe, "lightning_robe");
-        register(StormcallerItems.netheriteLightningRobe, "netherite_lightning_robe");
-        register(StormcallerItems.fulguriteRobe, "fulgurite_robe");
-        register(StormcallerItems.stormweaveRobe, "stormweave_robe");
+        register(StormcallerItems.lightningRobe, ROBE_MODEL, "lightning_robe");
+        register(StormcallerItems.netheriteLightningRobe, NETHERITE_ROBE_MODEL, "netherite_lightning_robe");
+        register(StormcallerItems.fulguriteRobe, FULGURITE_ROBE_MODEL, "fulgurite_robe");
+        register(StormcallerItems.stormweaveRobe, ROBE_MODEL, "stormweave_robe");
     }
 
-    private static void register(Armor.Set<?> set, String texture) {
+    private static void register(Armor.Set<?> set, ResourceLocation model, String texture) {
         if (set == null) {
             Stormcaller.LOGGER.error("Armor set {} is not registered, no armor renderer", texture);
             return;
         }
-        GeoArmorRenderer renderer = GeoArmorRenderer.of(ROBE_MODEL, Stormcaller.id("textures/armor/" + texture + ".png")).glow();
+        GeoArmorRenderer renderer = GeoArmorRenderer.of(model, Stormcaller.id("textures/armor/" + texture + ".png")).glow();
         ArmorRenderers.register(renderer, set.head, set.chest, set.legs, set.feet);
     }
 }
