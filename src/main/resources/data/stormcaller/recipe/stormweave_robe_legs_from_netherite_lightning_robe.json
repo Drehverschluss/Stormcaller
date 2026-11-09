@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "stormcaller:stormbringer_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "stormcaller:netherite_lightning_robe_legs"
+  },
+  "addition": {
+    "item": "stormcaller:stormbringers_forgotten_crystal"
+  },
+  "result": {
+    "id": "stormcaller:stormweave_robe_legs",
+    "count": 1
+  }
+}

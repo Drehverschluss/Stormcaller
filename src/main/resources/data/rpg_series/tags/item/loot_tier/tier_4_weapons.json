@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:staff_amber_lightning",
+      "required": false
+    }
+  ]
+}

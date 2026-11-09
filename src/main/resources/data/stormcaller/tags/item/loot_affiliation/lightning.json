@@ -12,6 +12,13 @@
       "id": "#wizards:armor_type/generic_robes",
       "required": false
     },
-    "#stormcaller:armor_type/lightning_robes"
+    "#stormcaller:armor_type/lightning_robes",
+    "stormcaller:stormbringer_upgrade_smithing_template",
+    "stormcaller:stormbringers_lost_crystal",
+    "stormcaller:stormbringers_forgotten_crystal",
+    {
+      "id": "stormcaller:staff_amber_lightning",
+      "required": false
+    }
   ]
 }

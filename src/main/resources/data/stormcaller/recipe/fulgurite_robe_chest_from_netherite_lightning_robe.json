@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "stormcaller:stormbringer_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "stormcaller:netherite_lightning_robe_chest"
+  },
+  "addition": {
+    "item": "stormcaller:stormbringers_lost_crystal"
+  },
+  "result": {
+    "id": "stormcaller:fulgurite_robe_chest",
+    "count": 1
+  }
+}

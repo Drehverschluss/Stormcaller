@@ -1,0 +1,33 @@
+{
+  "name": "fulgurite",
+  "items": [
+    "stormcaller:fulgurite_robe_head",
+    "stormcaller:fulgurite_robe_chest",
+    "stormcaller:fulgurite_robe_legs",
+    "stormcaller:fulgurite_robe_feet"
+  ],
+  "bonuses": [
+    {
+      "required_piece_count": 2,
+      "attributes": {
+        "modifiers": [
+          {
+            "type": "spell_power:lightning",
+            "amount": 0.1,
+            "id": "stormcaller:fulgurite_set",
+            "operation": "add_multiplied_base",
+            "slot": "armor"
+          }
+        ]
+      }
+    },
+    {
+      "required_piece_count": 4,
+      "spells": {
+        "spell_ids": [
+          "stormcaller:fulgurite_chain_lightning"
+        ]
+      }
+    }
+  ]
+}

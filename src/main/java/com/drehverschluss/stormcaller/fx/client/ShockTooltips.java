@@ -33,6 +33,8 @@ import net.spell_engine.api.spell.tooltip.TooltipTokens;
  *     spell (Long Arc),</li>
  *     <li>{@code {nova_stun}}: stun of Lightning Nova (server config plus {@code effect_duration_add} of the player's
  *     modifiers, e.g. Thunderclap),</li>
+ *     <li>{@code {cloud_radius_add}}: sum of {@code cloud.radius_add} of the modifiers of a modifier spell (Stormweave
+ *     set bonus),</li>
  *     <li>{@code {static_rain_duration}}, {@code {conductor_cooldown}} (cooldown of Chain Lightning),</li>
  *     <li>{@code {field_duration|radius|damage|shock}}: the cloud spell {@code <id>_field} a spell places (Charged Ground).</li>
  * </ul>
@@ -42,6 +44,7 @@ public final class ShockTooltips {
     private static final String ALWAYS_KEY = "spell.tooltip.stormcaller.shock_always";
     private static final String RICOCHET_RANGE_ADD = "{ricochet_range_add}";
     private static final String NOVA_STUN = "{nova_stun}";
+    private static final String CLOUD_RADIUS_ADD = "{cloud_radius_add}";
     private static final String STATIC_RAIN_DURATION = "{static_rain_duration}";
     private static final String CONDUCTOR_COOLDOWN = "{conductor_cooldown}";
     private static final Set<ResourceLocation> OWN = new HashSet<>();
@@ -82,6 +85,15 @@ public final class ShockTooltips {
                 }
             }
             description = description.replace(RICOCHET_RANGE_ADD, TooltipTokens.formattedNumber(range));
+        }
+        if (description.contains(CLOUD_RADIUS_ADD) && spell.modifiers != null) {
+            float radius = 0.0F;
+            for (Spell.Modifier modifier : spell.modifiers) {
+                if (modifier.cloud != null) {
+                    radius += modifier.cloud.radius_add;
+                }
+            }
+            description = description.replace(CLOUD_RADIUS_ADD, TooltipTokens.formattedNumber(radius));
         }
         if (description.contains(NOVA_STUN)) {
             // stun of Lightning Nova from the server config, plus Thunderclap and other effect_duration_add modifiers

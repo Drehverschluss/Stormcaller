@@ -8,6 +8,14 @@
     {
       "id": "stormcaller:staff_netherite_lightning",
       "required": false
+    },
+    {
+      "id": "stormcaller:staff_stormbringer",
+      "required": false
+    },
+    {
+      "id": "stormcaller:staff_amber_lightning",
+      "required": false
     }
   ]
 }

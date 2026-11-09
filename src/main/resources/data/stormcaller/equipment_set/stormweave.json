@@ -1,0 +1,33 @@
+{
+  "name": "stormweave",
+  "items": [
+    "stormcaller:stormweave_robe_head",
+    "stormcaller:stormweave_robe_chest",
+    "stormcaller:stormweave_robe_legs",
+    "stormcaller:stormweave_robe_feet"
+  ],
+  "bonuses": [
+    {
+      "required_piece_count": 2,
+      "attributes": {
+        "modifiers": [
+          {
+            "type": "stormcaller:shock_chance",
+            "amount": 0.05,
+            "id": "stormcaller:stormweave_set",
+            "operation": "add_multiplied_base",
+            "slot": "armor"
+          }
+        ]
+      }
+    },
+    {
+      "required_piece_count": 4,
+      "spells": {
+        "spell_ids": [
+          "stormcaller:stormweave_thunderstorm"
+        ]
+      }
+    }
+  ]
+}

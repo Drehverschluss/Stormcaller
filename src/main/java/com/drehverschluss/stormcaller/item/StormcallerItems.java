@@ -2,7 +2,10 @@ package com.drehverschluss.stormcaller.item;
 
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -15,9 +18,15 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.spell_engine.PlatformEvents;
+import net.spell_engine.api.spell.SpellDataComponents;
 import net.spell_engine.api.spell.container.SpellContainers;
 import net.spell_engine.rpg_series.config.ArmorSetConfig;
 import net.spell_engine.rpg_series.config.AttributeModifier;
@@ -36,12 +45,31 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * Lightning robes, wands and staves (tier 2 and 3), registered through the RPG Series helpers of Spell Engine,
+ * Lightning robes, wands and staves (tier 2 to 4), registered through the RPG Series helpers of Spell Engine,
  * the same way Wizards registers its school equipment.
+ * <p>
+ * Tier 4 robes (like Armory): two sets with set bonuses (Fulgurite, Stormweave; {@code data/stormcaller/equipment_set/*.json},
+ * linked through the data component {@code spell_engine:equipment_set}), an own smithing template and two upgrade crystals.
+ * <p>
+ * Tier 4 weapons (like Wizards and Arsenal, phase 6A.1): the Amber Lightning Staff (only with Better End, like the tier 4
+ * staves of Wizards; no tier 4 wand) and the Stormbringer Staff, a unique staff with a passive that only drops as loot.
  */
 public final class StormcallerItems {
     public static final ResourceLocation TAB_ID = Stormcaller.id("general");
     public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, TAB_ID);
+
+    /** {@code config/stormcaller/tweaks.json}, read once at startup (before the items are registered). */
+    public static final ConfigManager<Tweaks> TWEAKS_CONFIG = new ConfigManager<>("tweaks", new Tweaks())
+            .builder()
+            .setDirectory(Stormcaller.MODID)
+            .sanitize(true)
+            .build();
+
+    /** Startup switches, like {@code config/wizards/tweaks.json}. */
+    public static class Tweaks {
+        /** Registers items that need another mod (Amber Lightning Staff: Better End) even without that mod. */
+        public boolean ignore_items_required_mods = false;
+    }
 
     /** {@code config/stormcaller/equipment.json}, same format as the equipment configs of Wizards. */
     public static final ConfigManager<ConfigFile.Equipment> EQUIPMENT_CONFIG = new ConfigManager<>("equipment", new ConfigFile.Equipment())
@@ -53,12 +81,24 @@ public final class StormcallerItems {
     // Spell IDs of the weapon containers. The spells themselves follow in phase 3.
     public static final ResourceLocation SPARK = Stormcaller.id("spark");
     public static final ResourceLocation LIGHTNING_BOLT = Stormcaller.id("lightning_bolt");
+    // Passive of the Stormbringer Staff
+    public static final ResourceLocation SKYFALL = Stormcaller.id("skyfall");
+
+    // Tier 4 sets (equipment_set ids) and smithing items
+    public static final ResourceLocation FULGURITE_SET = Stormcaller.id("fulgurite");
+    public static final ResourceLocation STORMWEAVE_SET = Stormcaller.id("stormweave");
+    public static final ResourceLocation TEMPLATE_ID = Stormcaller.id("stormbringer_upgrade_smithing_template");
+    public static final ResourceLocation LOST_CRYSTAL_ID = Stormcaller.id("stormbringers_lost_crystal");
+    public static final ResourceLocation FORGOTTEN_CRYSTAL_ID = Stormcaller.id("stormbringers_forgotten_crystal");
 
     // Values per robe piece (defaults of equipment.json)
     private static final float LIGHTNING_T2 = 0.25F;
     private static final float LIGHTNING_T3 = 0.3F;
     private static final float SHOCK_CHANCE_T2 = 0.02F;
     private static final float SHOCK_CHANCE_T3 = 0.03F;
+    private static final float LIGHTNING_T4 = 0.35F;      // like the Armory robes
+    private static final float SHOCK_CHANCE_T4 = 0.04F;
+    private static final String BETTER_END = "betterend";
 
     // Armor values like the Frost Robe (tier 2) and Netherite Frost Robe (tier 3) of Wizards
     private static final int ARMOR_HEAD = 1;
@@ -69,6 +109,8 @@ public final class StormcallerItems {
     private static final int DURABILITY_T3 = 30;
     private static final int ENCHANTABILITY_T2 = 10;
     private static final int ENCHANTABILITY_T3 = 15;
+    private static final int DURABILITY_T4 = 40;          // like the Armory robes
+    private static final int ENCHANTABILITY_T4 = 18;
 
     private static final ResourceLocation ROBE_EQUIP_SOUND = ResourceLocation.fromNamespaceAndPath("wizards", "wizard_robes_equip");
 
@@ -78,11 +120,21 @@ public final class StormcallerItems {
     public static Weapon.Entry staffLightning;
     public static Weapon.Entry wandNetheriteLightning;
     public static Weapon.Entry staffNetheriteLightning;
+    public static Armor.Set<?> fulguriteRobe;
+    public static Armor.Set<?> stormweaveRobe;
+    /** Null without Better End (unless {@link Tweaks#ignore_items_required_mods}). */
+    public static Weapon.Entry staffAmberLightning;
+    public static Weapon.Entry staffStormbringer;
+    public static Item stormbringerTemplate;
+    public static Item lostCrystal;
+    public static Item forgottenCrystal;
 
     private StormcallerItems() {}
 
-    /** Loads equipment.json. Called from the mod constructor, before registration. */
+    /** Loads tweaks.json and equipment.json. Called from the mod constructor, before registration. */
     public static void init() {
+        TWEAKS_CONFIG.refresh();
+        TWEAKS_CONFIG.save();
         EQUIPMENT_CONFIG.refresh();
     }
 
@@ -98,7 +150,8 @@ public final class StormcallerItems {
     private static void registerItems() {
         ConfigFile.Equipment config = EQUIPMENT_CONFIG.value;
 
-        // Weapons first: the creative tab lists them in this order (wands, staves), then the robes.
+        // Weapons first: the creative tab lists them in this order (wands, staves), then the robes, then the tier 4
+        // smithing items.
         Supplier<Ingredient> copper = () -> Ingredient.of(Items.COPPER_INGOT);
         Supplier<Ingredient> netherite = () -> Ingredient.of(Items.NETHERITE_INGOT);
         List<ResourceLocation> lightning = List.of(SpellSchools.LIGHTNING.id);
@@ -110,7 +163,25 @@ public final class StormcallerItems {
                 .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT));
         staffNetheriteLightning = Weapons.damageStaff(Stormcaller.MODID, "staff_netherite_lightning", Equipment.Tier.TIER_3, netherite, lightning)
                 .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT));
-        Weapon.register(config.weapons, List.of(wandLightning, wandNetheriteLightning, staffLightning, staffNetheriteLightning), TAB_KEY);
+        List<Weapon.Entry> weapons = new ArrayList<>(List.of(wandLightning, wandNetheriteLightning, staffLightning, staffNetheriteLightning));
+        // Tier 4 like staff_crystal_arcane of Wizards: only with Better End, +8, same spell as the other staves, no
+        // passive; repaired with amber (netherite without Better End). Crafted from Better End items (recipe condition).
+        boolean betterEnd = ModList.get().isLoaded(BETTER_END);
+        if (betterEnd || TWEAKS_CONFIG.value.ignore_items_required_mods) {
+            Supplier<Ingredient> amber = betterEnd
+                    ? () -> Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(BETTER_END, "amber_gem")))
+                    : netherite;
+            staffAmberLightning = Weapons.damageStaff(Stormcaller.MODID, "staff_amber_lightning", Equipment.Tier.TIER_4, amber, lightning)
+                    .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT));
+            weapons.add(staffAmberLightning);
+        }
+        // Unique staff like the unique staves of Arsenal: tier 5 (+8, loot tier 5 via tag), rare, with a passive, no recipe
+        staffStormbringer = Weapons.damageStaff(Stormcaller.MODID, "staff_stormbringer", Equipment.Tier.TIER_5, netherite, lightning)
+                .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT))
+                .withAdditionalSpell(SKYFALL.toString());
+        staffStormbringer.rarity = Rarity.RARE;
+        weapons.add(staffStormbringer);
+        Weapon.register(config.weapons, weapons, TAB_KEY);
 
         Holder<SoundEvent> equipSound = BuiltInRegistries.SOUND_EVENT.getHolder(ROBE_EQUIP_SOUND)
                 .<Holder<SoundEvent>>map(h -> h)
@@ -122,11 +193,62 @@ public final class StormcallerItems {
                 robeDefaults(LIGHTNING_T2, SHOCK_CHANCE_T2), Equipment.LootProperties.of(2));
         Armor.Entry robeT3 = Armor.Entry.create(materialT3, Stormcaller.id("netherite_lightning_robe"), DURABILITY_T3, Armor.CustomItem::new,
                 robeDefaults(LIGHTNING_T3, SHOCK_CHANCE_T3), Equipment.LootProperties.of(3));
-        Armor.register(config.armor_sets, new ArrayList<>(List.of(robeT2, robeT3)), TAB_KEY);
+        // Tier 4 like the Armory robes: rare, loot tier 5 (only makes them fire resistant; the robes are in no loot
+        // tag, only template and crystals are), set through the equipment_set component
+        Holder<ArmorMaterial> materialFulgurite = material("fulgurite_robe", ENCHANTABILITY_T4, equipSound, netherite);
+        Holder<ArmorMaterial> materialStormweave = material("stormweave_robe", ENCHANTABILITY_T4, equipSound, netherite);
+        Armor.Entry robeFulgurite = Armor.Entry.create(materialFulgurite, Stormcaller.id("fulgurite_robe"), DURABILITY_T4, Armor.CustomItem::new,
+                robeDefaults(LIGHTNING_T4, SHOCK_CHANCE_T4), Equipment.LootProperties.of(5), setSettings(FULGURITE_SET));
+        Armor.Entry robeStormweave = Armor.Entry.create(materialStormweave, Stormcaller.id("stormweave_robe"), DURABILITY_T4, Armor.CustomItem::new,
+                robeDefaults(LIGHTNING_T4, SHOCK_CHANCE_T4), Equipment.LootProperties.of(5), setSettings(STORMWEAVE_SET));
+
+        Armor.register(config.armor_sets, new ArrayList<>(List.of(robeT2, robeT3, robeFulgurite, robeStormweave)), TAB_KEY);
         lightningRobe = robeT2.armorSet();
         netheriteLightningRobe = robeT3.armorSet();
+        fulguriteRobe = robeFulgurite.armorSet();
+        stormweaveRobe = robeStormweave.armorSet();
+
+        registerSmithingItems();
 
         EQUIPMENT_CONFIG.save();
+    }
+
+    private static Armor.ItemSettingsTweaker setSettings(ResourceLocation equipmentSet) {
+        return Armor.ItemSettingsTweaker.standard(settings -> settings
+                .component(SpellDataComponents.EQUIPMENT_SET, equipmentSet)
+                .component(DataComponents.RARITY, Rarity.RARE));
+    }
+
+    /** Smithing template and the two Stormbringer crystals for the tier 4 robes (like Armory: crystals epic and fire resistant). */
+    private static void registerSmithingItems() {
+        stormbringerTemplate = Registry.register(BuiltInRegistries.ITEM, TEMPLATE_ID, new SmithingTemplateItem(
+                templateText("applies_to", ChatFormatting.BLUE),
+                templateText("ingredients", ChatFormatting.BLUE),
+                Component.translatable(Util.makeDescriptionId("upgrade", Stormcaller.id("stormbringer_upgrade"))).withStyle(ChatFormatting.GRAY),
+                templateText("base_slot_description", null),
+                templateText("additions_slot_description", null),
+                List.of(
+                        ResourceLocation.withDefaultNamespace("item/empty_armor_slot_helmet"),
+                        ResourceLocation.withDefaultNamespace("item/empty_armor_slot_chestplate"),
+                        ResourceLocation.withDefaultNamespace("item/empty_armor_slot_leggings"),
+                        ResourceLocation.withDefaultNamespace("item/empty_armor_slot_boots")),
+                List.of(ResourceLocation.withDefaultNamespace("item/empty_slot_amethyst_shard"))));
+        lostCrystal = Registry.register(BuiltInRegistries.ITEM, LOST_CRYSTAL_ID,
+                new UpgradeCrystalItem(new Item.Properties().rarity(Rarity.EPIC).fireResistant(), "lost"));
+        forgottenCrystal = Registry.register(BuiltInRegistries.ITEM, FORGOTTEN_CRYSTAL_ID,
+                new UpgradeCrystalItem(new Item.Properties().rarity(Rarity.EPIC).fireResistant(), "forgotten"));
+        // after the robes in the creative tab
+        PlatformEvents.onItemGroupModify(TAB_KEY, (content, context) -> {
+            content.accept(stormbringerTemplate);
+            content.accept(lostCrystal);
+            content.accept(forgottenCrystal);
+        });
+    }
+
+    /** {@code item.stormcaller.smithing_template.stormbringer_upgrade.<part>}, like the Vanilla netherite template. */
+    private static Component templateText(String part, ChatFormatting style) {
+        Component text = Component.translatable(Util.makeDescriptionId("item", Stormcaller.id("smithing_template.stormbringer_upgrade." + part)));
+        return style == null ? text : text.copy().withStyle(style);
     }
 
     private static ArmorSetConfig robeDefaults(float lightning, float shockChance) {

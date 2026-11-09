@@ -44,5 +44,7 @@ public final class ProjectileTrails {
         register(Stormcaller.id("chain_lightning"), new Trail(1.8F, 0.045F, 0.24F, 0.11F, 0.3F));
         // falling leader of the strike from the sky, the real bolt comes on landing (fx/sky_strike)
         register(Stormcaller.id("lightning_strike"), new Trail(6.0F, 0.08F, 0.4F, 0.07F, 0.45F));
+        // passive of the Stormbringer Staff: Skyfall falls like Lightning Strike
+        register(Stormcaller.id("skyfall"), new Trail(5.0F, 0.07F, 0.35F, 0.07F, 0.4F));
     }
 }

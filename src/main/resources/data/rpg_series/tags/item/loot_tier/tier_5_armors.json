@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:stormbringer_upgrade_smithing_template",
+      "required": false
+    },
+    {
+      "id": "stormcaller:stormbringers_lost_crystal",
+      "required": false
+    },
+    {
+      "id": "stormcaller:stormbringers_forgotten_crystal",
+      "required": false
+    }
+  ]
+}

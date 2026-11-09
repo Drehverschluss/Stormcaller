@@ -8,6 +8,14 @@
     {
       "id": "stormcaller:netherite_lightning_robe_head",
       "required": false
+    },
+    {
+      "id": "stormcaller:fulgurite_robe_head",
+      "required": false
+    },
+    {
+      "id": "stormcaller:stormweave_robe_head",
+      "required": false
     }
   ]
 }

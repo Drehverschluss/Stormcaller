@@ -1,0 +1,25 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 4,
+  "type": "MODIFIER",
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "gray"
+    }
+  },
+  "modifiers": [
+    {
+      "spell_pattern": "stormcaller:thunderstorm",
+      "spawn_duration_add": 2.0,
+      "cloud": {
+        "radius_add": 1.0
+      }
+    }
+  ]
+}

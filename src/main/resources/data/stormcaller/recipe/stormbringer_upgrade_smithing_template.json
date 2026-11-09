@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:diamond"
+    },
+    "C": {
+      "item": "minecraft:lightning_rod"
+    },
+    "S": {
+      "item": "stormcaller:stormbringer_upgrade_smithing_template"
+    }
+  },
+  "pattern": [
+    "#S#",
+    "#C#",
+    "###"
+  ],
+  "result": {
+    "id": "stormcaller:stormbringer_upgrade_smithing_template",
+    "count": 2
+  }
+}

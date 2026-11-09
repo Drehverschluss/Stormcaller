@@ -1,0 +1,30 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 4,
+  "type": "MODIFIER",
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "gray"
+    }
+  },
+  "modifiers": [
+    {
+      "spell_pattern": "stormcaller:chain_lightning",
+      "projectile_perks": {
+        "ricochet": 1,
+        "ricochet_range": 0.0,
+        "chain_reaction_triggers": 0,
+        "chain_reaction_increment": 0
+      },
+      "power_modifier": {
+        "power_multiplier": 0.1
+      }
+    }
+  ]
+}

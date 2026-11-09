@@ -7,6 +7,14 @@
     "stormcaller:netherite_lightning_robe_head",
     "stormcaller:netherite_lightning_robe_chest",
     "stormcaller:netherite_lightning_robe_legs",
-    "stormcaller:netherite_lightning_robe_feet"
+    "stormcaller:netherite_lightning_robe_feet",
+    "stormcaller:fulgurite_robe_head",
+    "stormcaller:fulgurite_robe_chest",
+    "stormcaller:fulgurite_robe_legs",
+    "stormcaller:fulgurite_robe_feet",
+    "stormcaller:stormweave_robe_head",
+    "stormcaller:stormweave_robe_chest",
+    "stormcaller:stormweave_robe_legs",
+    "stormcaller:stormweave_robe_feet"
   ]
 }
