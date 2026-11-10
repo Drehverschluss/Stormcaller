@@ -3,7 +3,6 @@ package com.drehverschluss.stormcaller.client;
 import com.drehverschluss.stormcaller.entity.StormCloudEntity;
 import com.drehverschluss.stormcaller.fx.client.PuffGlows;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 
 /**
  * The dark thunder cloud of Thunderstorm: a few dozen soft cloud puffs (camera-facing quads with a puff texture) in a
@@ -26,9 +24,9 @@ import org.joml.Quaternionf;
  * {@code radius_add} modifiers, and is drawn additive or as a solid block. Here the cloud uses normal alpha blending
  * ({@code entityTranslucent}, sorted back to front by Minecraft), full brightness and a dark storm grey (darker blue
  * grey at night), so it reads as a dark cloud by day and night (puff drawing shared with the Storm Elemental in
- * {@link PuffQuads}). Radius and height are read from the cloud
- * ({@link StormCloudEntity#radius()}, {@link StormCloudEntity#cloudBase()}), so it grows with modifiers and sits lower
- * under a ceiling. Puffs near a flash inside the cloud light up ({@link PuffGlows}).
+ * {@link PuffQuads}, which also switches to a solid, lit style and a sun-facing shadow with a shader pack). Radius and
+ * height are read from the cloud ({@link StormCloudEntity#radius()}, {@link StormCloudEntity#cloudBase()}), so it grows
+ * with modifiers and sits lower under a ceiling. Puffs near a flash inside the cloud light up ({@link PuffGlows}).
  */
 public class StormCloudRenderer extends EntityRenderer<StormCloudEntity> {
     private static final int APPEAR_TICKS = 14;
@@ -72,24 +70,30 @@ public class StormCloudRenderer extends EntityRenderer<StormCloudEntity> {
         if (fade <= 0.0F) {
             return;
         }
-        float[] color = PuffQuads.baseColor(cloud.level(), partialTick);
-
-        VertexConsumer vc = buffers.getBuffer(PuffQuads.TYPE);
-        Quaternionf camera = this.entityRenderDispatcher.cameraOrientation();
-        float spin = age * SPIN;
+        PuffQuads.Style style = PuffQuads.style(buffers, poseStack, this.entityRenderDispatcher.cameraOrientation(), packedLight);
+        if (style == null) {
+            return;
+        }
+        float[] color = PuffQuads.baseColor(cloud.level(), partialTick, style);
+        float motion = PuffQuads.motion(style);
+        float spin = age * SPIN * motion;
         Vec3 origin = cloud.position();
         for (Puff puff : layout.puffs()) {
             double angle = puff.angle() + spin;
             double x = Math.cos(angle) * puff.distance();
             double z = Math.sin(angle) * puff.distance();
-            double y = base + puff.y() + Math.sin(age * 0.05F + puff.phase()) * 0.07;
+            double y = base + puff.y() + Math.sin(age * 0.05F * motion + puff.phase()) * 0.07 * motion;
             float size = puff.size() * (0.35F + 0.65F * appear);
             float glow = PuffGlows.glowAt(cloud.getId(), origin.add(x, y, z), partialTick);
             float alpha = puff.alpha() * appear * fade;
             poseStack.pushPose();
             poseStack.translate(x, y, z);
-            poseStack.mulPose(camera);
-            PuffQuads.quad(vc, poseStack.last(), size, color, puff.shade(), glow, alpha, puff.variant(), null, 0.0F);
+            poseStack.mulPose(style.facing());
+            int seed = Float.floatToIntBits(puff.phase());
+            // height in the cloud: underside -0.3, top layer up to about 1.2 above the base
+            float shade = puff.shade() + PuffQuads.shaderShade(style, (float) ((puff.y() + 0.3) / 1.5), seed);
+            PuffQuads.quad(style, poseStack.last(), size, color, shade, glow, alpha, puff.variant(), null, 0.0F,
+                    PuffQuads.breath(style, age, puff.phase()));
             poseStack.popPose();
         }
         super.render(cloud, entityYaw, partialTick, poseStack, buffers, packedLight);

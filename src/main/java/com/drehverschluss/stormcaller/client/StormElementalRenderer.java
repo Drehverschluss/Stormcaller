@@ -5,7 +5,6 @@ import com.drehverschluss.stormcaller.fx.client.ElementalPose;
 import com.drehverschluss.stormcaller.fx.client.PuffGlows;
 import com.drehverschluss.stormcaller.fx.client.StormcallerClientConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 
 /**
  * Storm Elemental drawn from soft cloud puffs, with the same technique as the Thunderstorm cloud ({@link PuffQuads}):
@@ -73,29 +71,35 @@ public class StormElementalRenderer extends EntityRenderer<StormElementalEntity>
         boolean far = pose.base.distanceToSqr(cam) > DETAIL_DISTANCE * DETAIL_DISTANCE;
         boolean skipDetail = far || StormcallerClientConfig.reduced();
         float sizeScale = skipDetail ? 1.15F : 1.0F;
-        float[] color = PuffQuads.baseColor(e.level(), partialTick);
         float tint = pose.hurt * 0.6F;
         float pulse = 0.5F + 0.5F * Mth.sin(pose.age * 0.12F);
         float coreLight = 0.15F + 0.1F * pulse + 0.6F * pose.coreBoost;
         RandomSource jitter = RandomSource.create(e.getId() * 131L + e.tickCount);
 
-        VertexConsumer vc = buffers.getBuffer(PuffQuads.TYPE);
-        Quaternionf camera = this.entityRenderDispatcher.cameraOrientation();
+        PuffQuads.Style style = PuffQuads.style(buffers, poseStack, this.entityRenderDispatcher.cameraOrientation(), packedLight);
+        if (style == null) {
+            return;
+        }
+        float[] color = PuffQuads.baseColor(e.level(), partialTick, style);
+        float motion = PuffQuads.motion(style);
         List<Puff> puffs = layoutFor(e.getId());
         for (int i = 0; i < puffs.size(); i++) {
             Puff puff = puffs.get(i);
             if (puff.detail() && skipDetail) {
                 continue;
             }
-            double drift = 0.025;
+            double drift = 0.025 * motion;
             Vec3 local = switch (puff.part()) {
                 case TORSO, HEAD -> puff.local();
                 case ARM_LEFT -> pose.armLocal(true, puff.t()).add(puff.local());
                 case ARM_RIGHT -> pose.armLocal(false, puff.t()).add(puff.local());
                 case VORTEX -> pose.vortexLocal(puff.t(), puff.phase()).add(puff.local());
             };
-            local = local.add(drift * Math.sin(pose.age * 0.07 + puff.phase()), drift * Math.sin(pose.age * 0.09 + puff.phase() * 1.3),
-                    drift * Math.sin(pose.age * 0.06 + puff.phase() * 0.7));
+            local = local.add(drift * Math.sin(pose.age * 0.07 * motion + puff.phase()),
+                    drift * Math.sin(pose.age * 0.09 * motion + puff.phase() * 1.3),
+                    drift * Math.sin(pose.age * 0.06 * motion + puff.phase() * 0.7));
+            // height in the body (0 = tip of the vortex, 1 = top of the head)
+            float height01 = (float) (local.y / 1.6);
             float size = puff.size() * sizeScale;
             float alpha = puff.alpha();
             // appearing: gather from a whirl at the ground
@@ -130,8 +134,10 @@ public class StormElementalRenderer extends EntityRenderer<StormElementalEntity>
             }
             poseStack.pushPose();
             poseStack.translate(offset.x, offset.y, offset.z);
-            poseStack.mulPose(camera);
-            PuffQuads.quad(vc, poseStack.last(), size, color, puff.shade(), glow, alpha, puff.variant(), HURT, tint);
+            poseStack.mulPose(style.facing());
+            float shade = puff.shade() + PuffQuads.shaderShade(style, height01, i);
+            PuffQuads.quad(style, poseStack.last(), size, color, shade, glow, alpha, puff.variant(), HURT, tint,
+                    PuffQuads.breath(style, pose.age, puff.phase()));
             poseStack.popPose();
         }
         super.render(e, entityYaw, partialTick, poseStack, buffers, packedLight);
