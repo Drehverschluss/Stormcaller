@@ -1,6 +1,18 @@
 {
-  "parent": "wizards:item/medium_staff",
-  "textures": {
-    "layer0": "stormcaller:item/staff_stormbringer"
-  }
+	"loader": "neoforge:separate_transforms",
+	"gui_light": "front",
+	"base": {
+		"parent": "stormcaller:item/staff_stormbringer_in_hand"
+	},
+	"perspectives": {
+		"gui": {
+			"parent": "wizards:item/medium_staff",
+			"textures": {
+				"layer0": "stormcaller:item/staff_stormbringer"
+			}
+		}
+	},
+	"textures": {
+		"particle": "stormcaller:item/staff_stormbringer"
+	}
 }

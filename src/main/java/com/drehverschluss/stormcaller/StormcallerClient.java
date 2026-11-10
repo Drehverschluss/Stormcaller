@@ -11,6 +11,7 @@ import com.drehverschluss.stormcaller.fx.client.FxClient;
 import com.drehverschluss.stormcaller.fx.client.ShieldAura;
 import com.drehverschluss.stormcaller.fx.client.ShockAura;
 import com.drehverschluss.stormcaller.fx.client.ShockTooltips;
+import com.drehverschluss.stormcaller.fx.client.StormbringerStaffRenderer;
 import com.drehverschluss.stormcaller.fx.client.StormcallerClientConfig;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -19,6 +20,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 // This class will not load on dedicated servers.
 @Mod(value = Stormcaller.MODID, dist = Dist.CLIENT)
@@ -30,6 +33,10 @@ public class StormcallerClient {
             // Spell Engine keeps these in plain maps: register on the main thread
             event.enqueueWork(ShockAura::register);
         });
+        // Stormbringer Staff: 3D model with crystal arcs in the hand
+        modEventBus.addListener(ModelEvent.RegisterAdditional.class, StormbringerStaffRenderer::registerModels);
+        modEventBus.addListener(ModelEvent.ModifyBakingResult.class, StormbringerStaffRenderer::wrapModel);
+        modEventBus.addListener(RegisterClientExtensionsEvent.class, StormbringerStaffRenderer::registerExtensions);
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
             event.registerEntityRenderer(StormcallerEntities.STORM_CLOUD, StormCloudRenderer::new);
             event.registerEntityRenderer(StormcallerEntities.STORM_ELEMENTAL, StormElementalRenderer::new);

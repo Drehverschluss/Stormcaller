@@ -13,6 +13,7 @@ public final class StormcallerClientConfig {
     public static final ModConfigSpec.BooleanValue ARCS_ENABLED;
     public static final ModConfigSpec.EnumValue<Strength> STRENGTH;
     public static final ModConfigSpec.IntValue MAX_ARCS;
+    public static final ModConfigSpec.BooleanValue CRYSTAL_ARCS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -28,6 +29,11 @@ public final class StormcallerClientConfig {
                 .comment("Most lightning arcs at the same time. When more arrive, the oldest ones are removed.")
                 .defineInRange("max_arcs", 64, 0, 1024);
         builder.pop();
+        builder.comment("Looks of Stormcaller items.").push("items");
+        CRYSTAL_ARCS = builder
+                .comment("Small arcs jump at the crystal of the Stormbringer Staff now and then while it is held.")
+                .define("crystal_arcs", true);
+        builder.pop();
         SPEC = builder.build();
     }
 
@@ -39,6 +45,10 @@ public final class StormcallerClientConfig {
 
     public static boolean reduced() {
         return (SPEC.isLoaded() ? STRENGTH.get() : STRENGTH.getDefault()) == Strength.REDUCED;
+    }
+
+    public static boolean crystalArcs() {
+        return SPEC.isLoaded() ? CRYSTAL_ARCS.get() : CRYSTAL_ARCS.getDefault();
     }
 
     public static int maxArcs() {

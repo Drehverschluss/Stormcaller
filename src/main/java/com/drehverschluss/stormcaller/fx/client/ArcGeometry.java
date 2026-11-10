@@ -94,6 +94,12 @@ final class ArcGeometry {
      */
     static void strip(VertexConsumer vc, Matrix4f m, Vec3 cam, List<Vec3> points, float coreWidth, float glowWidth,
                       float alpha, boolean taper) {
+        strip(vc, m, cam, points, coreWidth, glowWidth, alpha, taper, GLOW_R, GLOW_G, GLOW_B);
+    }
+
+    /** As above with another glow colour (the white core stays). */
+    static void strip(VertexConsumer vc, Matrix4f m, Vec3 cam, List<Vec3> points, float coreWidth, float glowWidth,
+                      float alpha, boolean taper, int glowR, int glowG, int glowB) {
         int n = points.size();
         if (n < 2 || alpha <= 0.003F) {
             return;
@@ -132,10 +138,10 @@ final class ArcGeometry {
             float c0 = coreWidth * 0.5F * widthFactor[i];
             float c1 = coreWidth * 0.5F * widthFactor[i + 1];
             for (int s = -1; s <= 1; s += 2) {
-                vertex(vc, m, cam, p0.add(sides[i].scale(s * g0)), GLOW_R, GLOW_G, GLOW_B, 0);
-                vertex(vc, m, cam, p0, GLOW_R, GLOW_G, GLOW_B, glowAlpha);
-                vertex(vc, m, cam, p1, GLOW_R, GLOW_G, GLOW_B, glowAlpha);
-                vertex(vc, m, cam, p1.add(sides[i + 1].scale(s * g1)), GLOW_R, GLOW_G, GLOW_B, 0);
+                vertex(vc, m, cam, p0.add(sides[i].scale(s * g0)), glowR, glowG, glowB, 0);
+                vertex(vc, m, cam, p0, glowR, glowG, glowB, glowAlpha);
+                vertex(vc, m, cam, p1, glowR, glowG, glowB, glowAlpha);
+                vertex(vc, m, cam, p1.add(sides[i + 1].scale(s * g1)), glowR, glowG, glowB, 0);
             }
             vertex(vc, m, cam, p0.subtract(sides[i].scale(c0)), 255, 255, 255, coreAlpha);
             vertex(vc, m, cam, p0.add(sides[i].scale(c0)), 255, 255, 255, coreAlpha);
