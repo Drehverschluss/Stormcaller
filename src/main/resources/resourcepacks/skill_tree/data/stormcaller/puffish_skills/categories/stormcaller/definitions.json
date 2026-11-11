@@ -7,9 +7,12 @@
       "skill_definition_id": "stormcaller_root"
     },
     "icon": {
-      "type": "texture",
+      "type": "item",
       "data": {
-        "texture": "stormcaller:textures/skill/root.png"
+        "item": "spell_engine:spell_book",
+        "components": {
+          "spell_engine:item_model": "stormcaller:item/spell_book/lightning"
+        }
       }
     },
     "required_mods": [
@@ -34,9 +37,9 @@
       "skill_definition_id": "stormcaller_boost"
     },
     "icon": {
-      "type": "texture",
+      "type": "item",
       "data": {
-        "texture": "stormcaller:textures/skill/boost.png"
+        "item": "stormcaller:wand_lightning"
       }
     },
     "required_mods": [
