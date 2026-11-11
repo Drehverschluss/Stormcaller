@@ -46,5 +46,7 @@ public final class ProjectileTrails {
         register(Stormcaller.id("lightning_strike"), new Trail(6.0F, 0.08F, 0.4F, 0.07F, 0.45F));
         // passive of the Stormbringer Staff: Skyfall falls like Lightning Strike
         register(Stormcaller.id("skyfall"), new Trail(5.0F, 0.07F, 0.35F, 0.07F, 0.4F));
+        // passive of the Caged Ball Lightning relic: slow homing ball with a soft glow and a big head
+        register(Stormcaller.id("ball_lightning"), new Trail(0.5F, 0.06F, 0.3F, 0.25F, 0.6F));
     }
 }

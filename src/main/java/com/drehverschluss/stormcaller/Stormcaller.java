@@ -16,6 +16,7 @@ import com.drehverschluss.stormcaller.shock.StormcallerEffects;
 import com.drehverschluss.stormcaller.spell.NearestTarget;
 import com.drehverschluss.stormcaller.spell.SkillMechanics;
 import com.drehverschluss.stormcaller.spell.StaticShield;
+import com.drehverschluss.stormcaller.trinket.StormcallerTrinkets;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -39,8 +40,10 @@ public class Stormcaller {
         StormcallerAttributes.register(modEventBus);
         StormcallerEffects.register(modEventBus);
         StormcallerItems.init();
+        StormcallerTrinkets.init();
         modEventBus.addListener(RegisterEvent.class, StormcallerItems::onRegister);
         modEventBus.addListener(RegisterEvent.class, StaticShield::onRegister);
+        modEventBus.addListener(RegisterEvent.class, StormcallerTrinkets::onRegister);
         modEventBus.addListener(RegisterEvent.class, StormcallerEntities::onRegister);
         StaticShield.init();
         NeoForge.EVENT_BUS.addListener(ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);

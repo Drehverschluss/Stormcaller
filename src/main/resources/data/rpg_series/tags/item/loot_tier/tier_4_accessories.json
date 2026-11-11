@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:stormheart_ring",
+      "required": false
+    },
+    {
+      "id": "stormcaller:stormheart_necklace",
+      "required": false
+    }
+  ]
+}

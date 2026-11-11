@@ -1,0 +1,132 @@
+{
+  "school": "spell_power:lightning",
+  "range": 16.0,
+  "tier": 4,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "SPELL_IMPACT_SPECIFIC",
+        "chance": 0.15,
+        "spell": {
+          "school": "lightning",
+          "type": "ACTIVE"
+        },
+        "impact": {
+          "impact_type": "DAMAGE"
+        }
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "deliver": {
+    "type": "PROJECTILE",
+    "projectile": {
+      "direct_towards_target": true,
+      "launch_properties": {
+        "velocity": 0.6,
+        "sound": {
+          "id": "spell_engine:generic_lightning_release",
+          "volume": 0.6,
+          "pitch": 1.5
+        }
+      },
+      "projectile": {
+        "homing_angle": 6.0,
+        "client_data": {
+          "light_level": 14,
+          "travel_particles": [
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 4294928127,
+                "scale": 0.8
+              },
+              "batch": {
+                "count": 2.0,
+                "shape": "SPHERE",
+                "anchor": "ENTITY",
+                "min_speed": 0.03,
+                "max_speed": 0.12
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:fx_impact"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.35,
+          "knockback": 0.2
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 4294928127,
+              "motion": "BURST",
+              "scale": 0.8
+            },
+            "batch": {
+              "count": 12,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.15,
+              "max_speed": 0.45
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "minecraft:entity.lightning_bolt.impact",
+        "volume": 0.45,
+        "pitch": 1.6,
+        "randomness": 0.15
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:shock/25"
+        }
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.0,
+    "durability": 0,
+    "cooldown": {
+      "duration": 6.0,
+      "haste_affected": false
+    }
+  }
+}

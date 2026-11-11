@@ -55,3 +55,11 @@ config="${mod_id}.skills.mixins.json"
     versionRange="${skill_tree_version_range}"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: rings, amulets and relics (Curios slots ring, necklace, spell_trinket); without Curios they do not exist
+    modId="curios"
+    type="optional"
+    versionRange="${curios_version_range}"
+    ordering="AFTER"
+    side="BOTH"

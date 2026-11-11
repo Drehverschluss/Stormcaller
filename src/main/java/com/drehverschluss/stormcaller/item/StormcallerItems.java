@@ -2,6 +2,7 @@ package com.drehverschluss.stormcaller.item;
 
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
+import com.drehverschluss.stormcaller.trinket.StormcallerTrinkets;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
@@ -209,6 +210,8 @@ public final class StormcallerItems {
         stormweaveRobe = robeStormweave.armorSet();
 
         registerSmithingItems();
+        // rings, amulets and relics, only with Curios (phase 6B)
+        StormcallerTrinkets.registerItems();
 
         EQUIPMENT_CONFIG.save();
     }

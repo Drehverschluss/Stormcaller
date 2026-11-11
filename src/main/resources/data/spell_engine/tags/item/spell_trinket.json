@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "stormcaller:static_lodestone",
+      "required": false
+    },
+    {
+      "id": "stormcaller:storm_orb",
+      "required": false
+    },
+    {
+      "id": "stormcaller:caged_ball_lightning",
+      "required": false
+    }
+  ]
+}

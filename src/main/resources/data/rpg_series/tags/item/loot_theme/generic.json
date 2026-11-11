@@ -4,6 +4,26 @@
     {
       "id": "stormcaller:staff_stormbringer",
       "required": false
+    },
+    {
+      "id": "stormcaller:stormheart_ring",
+      "required": false
+    },
+    {
+      "id": "stormcaller:stormheart_necklace",
+      "required": false
+    },
+    {
+      "id": "stormcaller:static_lodestone",
+      "required": false
+    },
+    {
+      "id": "stormcaller:storm_orb",
+      "required": false
+    },
+    {
+      "id": "stormcaller:caged_ball_lightning",
+      "required": false
     }
   ]
 }
