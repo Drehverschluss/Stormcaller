@@ -8,6 +8,14 @@
     {
       "id": "stormcaller:stormheart_necklace",
       "required": false
+    },
+    {
+      "id": "stormcaller:thunderstrike_ring",
+      "required": false
+    },
+    {
+      "id": "stormcaller:thunderstrike_necklace",
+      "required": false
     }
   ]
 }

@@ -4,6 +4,10 @@
     {
       "id": "stormcaller:stormheart_ring",
       "required": false
+    },
+    {
+      "id": "stormcaller:thunderstrike_ring",
+      "required": false
     }
   ]
 }

@@ -23,7 +23,8 @@ import java.util.List;
  * Rings, amulets and relics (phase 6B). Only registered when Curios is loaded ({@link CuriosCompat}); this class itself
  * has no Curios reference and is always loaded (ids, config, status effects).
  * <ul>
- *   <li>Stormheart Signet / Amulet: unique jewelry (slots {@code ring} / {@code necklace}), attributes from {@link #CONFIG}.</li>
+ *   <li>Stormheart Signet / Amulet (haste) and Thunderstrike Band / Pendant (spell critical damage): unique jewelry
+ *   (slots {@code ring} / {@code necklace}), attributes from {@link #CONFIG}.</li>
  *   <li>Static Lodestone, Storm Orb, Caged Ball Lightning: relics (slot {@code spell_trinket}), each with one spell in its
  *   spell container ({@code data/stormcaller/spell/<spell>.json}). The status effects of two of them are registered here
  *   in any case, their modifiers come from {@link #CONFIG}.</li>
@@ -33,6 +34,8 @@ import java.util.List;
 public final class StormcallerTrinkets {
     public static final ResourceLocation STORMHEART_RING = Stormcaller.id("stormheart_ring");
     public static final ResourceLocation STORMHEART_NECKLACE = Stormcaller.id("stormheart_necklace");
+    public static final ResourceLocation THUNDERSTRIKE_RING = Stormcaller.id("thunderstrike_ring");
+    public static final ResourceLocation THUNDERSTRIKE_NECKLACE = Stormcaller.id("thunderstrike_necklace");
     public static final ResourceLocation STATIC_LODESTONE = Stormcaller.id("static_lodestone");
     public static final ResourceLocation STORM_ORB = Stormcaller.id("storm_orb");
     public static final ResourceLocation CAGED_BALL_LIGHTNING = Stormcaller.id("caged_ball_lightning");
@@ -45,7 +48,8 @@ public final class StormcallerTrinkets {
     // Defaults of trinkets.json
     private static final float UNIQUE_LIGHTNING = 0.08F;      // like the school uniques of Jewelry
     private static final float UNIQUE_SHOCK_CHANCE = 0.03F;
-    private static final float UNIQUE_HASTE = 0.03F;
+    private static final float UNIQUE_HASTE = 0.03F;           // Stormheart: speed
+    private static final float UNIQUE_CRIT_DAMAGE = 0.1F;      // Thunderstrike: force, like the Fire/Frost uniques of Jewelry
     private static final float STATIC_CHARGE_LIGHTNING = 0.15F; // like the lesser procs of Relics
     private static final float STATIC_CHARGE_SHOCK_CHANCE = 0.05F;
     private static final float STORM_POWER_LIGHTNING = 0.2F;    // like the orbs of Relics
@@ -69,6 +73,8 @@ public final class StormcallerTrinkets {
     public static final List<Def> ITEMS = List.of(
             new Def(STORMHEART_RING, Kind.JEWELRY, "ring", Rarity.RARE, true, null, uniqueDefaults()),
             new Def(STORMHEART_NECKLACE, Kind.JEWELRY, "necklace", Rarity.RARE, true, null, uniqueDefaults()),
+            new Def(THUNDERSTRIKE_RING, Kind.JEWELRY, "ring", Rarity.RARE, true, null, thunderstrikeDefaults()),
+            new Def(THUNDERSTRIKE_NECKLACE, Kind.JEWELRY, "necklace", Rarity.RARE, true, null, thunderstrikeDefaults()),
             new Def(STATIC_LODESTONE, Kind.RELIC, "spell_trinket", Rarity.COMMON, false, STATIC_LODESTONE_SPELL, EffectConfig.EMPTY),
             new Def(STORM_ORB, Kind.RELIC, "spell_trinket", Rarity.UNCOMMON, false, STORM_ORB_SPELL, EffectConfig.EMPTY),
             new Def(CAGED_BALL_LIGHTNING, Kind.RELIC, "spell_trinket", Rarity.RARE, false, BALL_LIGHTNING_SPELL, EffectConfig.EMPTY));
@@ -105,6 +111,14 @@ public final class StormcallerTrinkets {
             .build();
 
     private StormcallerTrinkets() {}
+
+    /** Second unique pair: lightning and shock chance like Stormheart, spell critical damage instead of haste. */
+    private static EffectConfig thunderstrikeDefaults() {
+        return new EffectConfig(List.of(
+                AttributeModifier.multiply(SpellSchools.LIGHTNING.id, UNIQUE_LIGHTNING),
+                AttributeModifier.multiply(StormcallerAttributes.SHOCK_CHANCE.getId(), UNIQUE_SHOCK_CHANCE),
+                AttributeModifier.multiply(SpellPowerMechanics.CRITICAL_DAMAGE.id, UNIQUE_CRIT_DAMAGE)));
+    }
 
     private static EffectConfig uniqueDefaults() {
         return new EffectConfig(List.of(

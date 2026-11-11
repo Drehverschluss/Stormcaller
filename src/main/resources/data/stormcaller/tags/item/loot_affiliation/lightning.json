@@ -39,6 +39,14 @@
     {
       "id": "stormcaller:caged_ball_lightning",
       "required": false
+    },
+    {
+      "id": "stormcaller:thunderstrike_ring",
+      "required": false
+    },
+    {
+      "id": "stormcaller:thunderstrike_necklace",
+      "required": false
     }
   ]
 }
