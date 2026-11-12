@@ -52,7 +52,6 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
     private static final int WINDOW = 40;
     private static final double MAX_DISTANCE = 48.0;
     private static StormbringerStaffRenderer instance;
-    private static int drawnBursts;
 
     private StormbringerStaffRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
@@ -105,13 +104,6 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
     private static boolean isHand(ItemDisplayContext context) {
         return context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND
                 || context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND || context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
-    }
-
-    /** Bursts drawn since the last call (probe and performance checks). */
-    public static int takeDrawnBursts() {
-        int n = drawnBursts;
-        drawnBursts = 0;
-        return n;
     }
 
     // ------------------------------------------------------------------ drawing
@@ -172,7 +164,6 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
             ArcGeometry.strip(vc, drawMatrix, camPos, points, 0.16F / 16.0F * widthScale, 0.62F / 16.0F * widthScale, alpha,
                     false, GLOW_R, GLOW_G, GLOW_B);
         }
-        drawnBursts++;
     }
 
     /**

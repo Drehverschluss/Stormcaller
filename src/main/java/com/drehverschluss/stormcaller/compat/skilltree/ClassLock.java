@@ -1,6 +1,5 @@
 package com.drehverschluss.stormcaller.compat.skilltree;
 
-import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,8 +66,6 @@ public final class ClassLock {
                     .ifPresent(skill -> skill.lock(player));
             toast = SkillTab.STORMCALLER_CATEGORY.equals(categoryId)
                     ? ClassLockPayload.TOAST_STORMCALLER : ClassLockPayload.TOAST_CLASS;
-            Stormcaller.LOGGER.debug("Stormcaller: class lock blocked {} {} for {}", categoryId, skillId,
-                    player.getGameProfile().getName());
         }
         sync(player, toast, true);
     }

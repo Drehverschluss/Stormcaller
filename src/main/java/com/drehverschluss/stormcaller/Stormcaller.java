@@ -3,6 +3,7 @@ package com.drehverschluss.stormcaller;
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
 import com.drehverschluss.stormcaller.compat.WizardMerchantTrades;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
+import com.drehverschluss.stormcaller.compat.curios.CuriosCompat;
 import com.drehverschluss.stormcaller.compat.skilltree.ClassLockPayload;
 import com.drehverschluss.stormcaller.compat.skilltree.SkillTab;
 import com.drehverschluss.stormcaller.compat.skilltree.SkillTreeCompat;
@@ -63,6 +64,9 @@ public class Stormcaller {
             modEventBus.addListener(AddPackFindersEvent.class, SkillTreePack::onAddPackFinders);
             SkillTreeCompat.init();
         }
+        LOGGER.info("Stormcaller {} loaded (rings, amulets and relics: {}, skill tab: {})",
+                modContainer.getModInfo().getVersion(), CuriosCompat.isLoaded() ? "on" : "off, needs Curios API",
+                SkillTab.enabled() ? "on" : "off, needs Skill Tree");
     }
 
     public static ResourceLocation id(String path) {

@@ -31,6 +31,8 @@
   "effect.stormcaller.storm_power.description": "Erhöht die Blitzzauberkraft.",
   "effect.stormcaller.storm_ward": "Sturmschutz",
   "effect.stormcaller.storm_ward.description": "Schluckt Schaden. Angreifer im Nahkampf können geschockt werden.",
+  "entity.stormcaller.ball_lightning": "Kugelblitz",
+  "entity.stormcaller.static_field": "Statisches Feld",
   "entity.stormcaller.storm_cloud": "Gewitterwolke",
   "entity.stormcaller.storm_elemental": "Sturmelementar",
   "equipment_set.stormcaller.fulgurite": "Fulguritrobe",

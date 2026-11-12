@@ -13,6 +13,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -25,6 +26,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.event.SpellHandlers;
@@ -56,6 +58,13 @@ public final class BallLightning {
 
     /** {@code trinkets.json} section {@code ball_lightning}. */
     public static class Config {
+        /** Written into the file, explains the options (JSON has no comments). */
+        public String _comment = "Ball Lightning of the Caged Ball Lightning relic. speed: blocks per second (0 to 20)."
+                + " duration_seconds: lifetime (0.5 to 120). pulse_seconds: time between two lightning pulses (0.05 to 60)."
+                + " range: enemies whose hitbox is this close to the ball center can be struck (0 to 16)."
+                + " max_targets: enemies struck per pulse, nearest first (0 to 16)."
+                + " spawn_distance: the ball appears this many blocks in front of the player (0 to 8)."
+                + " Chance, cooldown, damage and shock chance are in the spell files (data pack).";
         /** Blocks per second. */
         public float speed = 2.0F;
         /** Lifetime in seconds (then a short fade). */
@@ -68,6 +77,20 @@ public final class BallLightning {
         public int max_targets = 3;
         /** The ball appears this many blocks in front of the player, at chest height. */
         public float spawn_distance = 1.5F;
+
+        /** Keeps every value in its range (see {@link #_comment}). */
+        void clamp() {
+            speed = clamp(speed, 0.0F, 20.0F, 2.0F);
+            duration_seconds = clamp(duration_seconds, 0.5F, 120.0F, 10.0F);
+            pulse_seconds = clamp(pulse_seconds, 0.05F, 60.0F, 0.5F);
+            range = clamp(range, 0.0F, 16.0F, 4.0F);
+            max_targets = Math.max(0, Math.min(16, max_targets));
+            spawn_distance = clamp(spawn_distance, 0.0F, 8.0F, 1.5F);
+        }
+
+        private static float clamp(float value, float min, float max, float fallback) {
+            return Float.isFinite(value) ? Math.max(min, Math.min(max, value)) : fallback;
+        }
     }
 
     private static final Map<UUID, BallLightningEntity> ACTIVE = new HashMap<>();
@@ -77,6 +100,15 @@ public final class BallLightning {
     public static void init() {
         SpellHandlers.registerCustomDelivery(DELIVERY, BallLightning::deliver);
         NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, event -> ACTIVE.clear());
+        // with doImmediateRespawn the ball never sees its owner dead, so end it on the death itself
+        NeoForge.EVENT_BUS.addListener(LivingDeathEvent.class, event -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                BallLightningEntity ball = activeBall(player.getUUID());
+                if (ball != null) {
+                    ball.ownerDied();
+                }
+            }
+        });
     }
 
     public static Config config() {

@@ -143,15 +143,6 @@ public class BallLightningEntity extends Entity {
         return position().add(0.0, getBbHeight() * 0.5, 0.0);
     }
 
-    /** Server: lifetime and pulse length, for tests and logs. */
-    public int lifeTicks() {
-        return lifeTicks;
-    }
-
-    public int pulseTicks() {
-        return pulseTicks;
-    }
-
     // ------------------------------------------------------------------------------------------------ tick
 
     @Override
@@ -322,6 +313,13 @@ public class BallLightningEntity extends Entity {
     }
 
     /** Server: pop (visual and sound) and remove. */
+    /** Server: ends the ball right away (its owner died), with the small puff of a lost owner. */
+    public void ownerDied() {
+        if (level() instanceof ServerLevel server && !isRemoved()) {
+            end(server, false);
+        }
+    }
+
     private void end(ServerLevel server, boolean pop) {
         Vec3 center = center();
         StormcallerFx.ball(server, center, new BallFxPayload(BallFxPayload.Kind.POP, getId(), -1, center, server.getRandom().nextInt()));

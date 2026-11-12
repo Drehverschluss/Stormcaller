@@ -2,7 +2,6 @@ package com.drehverschluss.stormcaller.spell;
 
 import com.drehverschluss.stormcaller.Stormcaller;
 import java.util.List;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -83,10 +82,6 @@ public final class StaticShield {
 
     public static MobEffect effect() {
         return EFFECT.effect;
-    }
-
-    public static Holder<MobEffect> holder() {
-        return EFFECT.entry;
     }
 
     static boolean withinGap(Entity tested, Entity other, double range) {

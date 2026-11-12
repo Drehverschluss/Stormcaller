@@ -1,6 +1,5 @@
 package com.drehverschluss.stormcaller.fx.client;
 
-import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.entity.BallLightningEntity;
 import com.drehverschluss.stormcaller.entity.StormElementalEntity;
 import com.drehverschluss.stormcaller.fx.ArcStyle;
@@ -37,13 +36,8 @@ import org.joml.Vector3f;
 public final class FxClient {
     private static final List<Effect> EFFECTS = new ArrayList<>();
     private static final RandomSource RANDOM = RandomSource.create();
-    private static final long DROP_LOG_INTERVAL_MS = 5000L;
     /** Projectile bodies stay this far away from the camera (blocks). */
     private static final double MIN_CAMERA_DISTANCE = 1.8;
-
-    private static long droppedTotal;
-    private static long lastDropLog;
-    private static int peakArcs;
 
     private FxClient() {}
 
@@ -63,7 +57,7 @@ public final class FxClient {
         });
     }
 
-    // ------------------------------------------------------------------------------------------------ state for tests and debugging
+    // ------------------------------------------------------------------------------------------------ state
 
     /** Arcs (and rings) alive right now. */
     public static int activeArcs() {
@@ -74,18 +68,6 @@ public final class FxClient {
             }
         }
         return count;
-    }
-
-    /** Arcs removed because of the limit since the game started. */
-    public static long droppedArcs() {
-        return droppedTotal;
-    }
-
-    /** Most arcs alive at the same time since the last call. */
-    public static int takePeakArcs() {
-        int peak = peakArcs;
-        peakArcs = 0;
-        return peak;
     }
 
     // ------------------------------------------------------------------------------------------------ receive
@@ -236,7 +218,6 @@ public final class FxClient {
     private static void addArc(Effect arc) {
         int max = StormcallerClientConfig.maxArcs();
         if (max <= 0) {
-            countDrop(1);
             return;
         }
         int alive = activeArcs();
@@ -247,22 +228,10 @@ public final class FxClient {
                 if (it.next().countsAsArc()) {
                     it.remove();
                     toRemove--;
-                    countDrop(1);
                 }
             }
         }
         EFFECTS.add(arc);
-        peakArcs = Math.max(peakArcs, Math.min(alive + 1, max));
-    }
-
-    private static void countDrop(int n) {
-        droppedTotal += n;
-        long now = System.currentTimeMillis();
-        if (now - lastDropLog >= DROP_LOG_INTERVAL_MS) {
-            lastDropLog = now;
-            Stormcaller.LOGGER.debug("Stormcaller FX: arc limit ({}) reached, {} arcs removed so far",
-                    StormcallerClientConfig.maxArcs(), droppedTotal);
-        }
     }
 
     private static void addFlash(ClientLevel level, Vec3 pos, float size, RandomSource random) {

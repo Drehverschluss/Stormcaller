@@ -31,6 +31,8 @@
   "effect.stormcaller.storm_power.description": "Increases lightning spell power.",
   "effect.stormcaller.storm_ward": "Storm Ward",
   "effect.stormcaller.storm_ward.description": "Absorbs damage. Melee attackers may be shocked.",
+  "entity.stormcaller.ball_lightning": "Ball Lightning",
+  "entity.stormcaller.static_field": "Static Field",
   "entity.stormcaller.storm_cloud": "Thunder Cloud",
   "entity.stormcaller.storm_elemental": "Storm Elemental",
   "equipment_set.stormcaller.fulgurite": "Fulgurite Robe",

@@ -101,6 +101,11 @@ public final class StormcallerTrinkets {
      * the client file).
      */
     public static class Config {
+        /** Written into the file, explains the sections (JSON has no comments). */
+        public String _comment = "items: attributes of the rings and amulets, keyed by item id (operation ADD_MULTIPLIED_BASE,"
+                + " 0.08 means +8%). effects: attributes of the relic effects Static Charge (Static Lodestone) and Storm Power"
+                + " (Storm Orb). ball_lightning: see its own _comment. Read once at startup, changes need a restart."
+                + " Keep the file of server and client equal (tooltips read the client file).";
         public LinkedHashMap<String, EffectConfig> items = new LinkedHashMap<>();
         public LinkedHashMap<String, EffectConfig> effects = new LinkedHashMap<>();
         public BallLightning.Config ball_lightning = new BallLightning.Config();
@@ -135,6 +140,7 @@ public final class StormcallerTrinkets {
         if (CONFIG.value.ball_lightning == null) {
             CONFIG.value.ball_lightning = new BallLightning.Config();
         }
+        CONFIG.value.ball_lightning.clamp();
         for (Def def : ITEMS) {
             if (def.kind() == Kind.JEWELRY) {
                 CONFIG.value.items.putIfAbsent(def.id().toString(), def.defaults());

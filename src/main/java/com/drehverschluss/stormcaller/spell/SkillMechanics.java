@@ -192,7 +192,6 @@ public final class SkillMechanics {
             if (hit.target() == event.getEntity() && hit.attacker() == attacker) {
                 DOUBLED.remove(i);
                 event.setAmount(event.getAmount() * ROLLING_THUNDER_FACTOR);
-                Stormcaller.LOGGER.debug("Stormcaller: rolling thunder doubled the hit on {}", event.getEntity());
                 return;
             }
         }

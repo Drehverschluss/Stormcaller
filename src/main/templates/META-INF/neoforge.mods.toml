@@ -9,6 +9,9 @@ version="${mod_version}"
 displayName="${mod_name}"
 displayURL="https://github.com/Drehverschluss/Stormcaller"
 authors="${mod_authors}"
+# Pixel art icon: keep it sharp in the mod list
+logoFile="stormcaller_logo.png"
+logoBlur=false
 description='''${mod_description}'''
 
 [[mixins]]
@@ -33,7 +36,7 @@ config="${mod_id}.skills.mixins.json"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    # Spell Engine pulls in Spell Power, Cloth Config and playerAnimator as its own required dependencies
+    # Spell Engine pulls in Cloth Config and playerAnimator as its own required dependencies
     modId="spell_engine"
     type="required"
     versionRange="${spell_engine_version_range}"
@@ -41,7 +44,15 @@ config="${mod_id}.skills.mixins.json"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    # Wizards pulls in Runes, Armor Model API and Structure Pool API as its own required dependencies
+    # Lightning school, spell power attributes (comes with Spell Engine)
+    modId="spell_power"
+    type="required"
+    versionRange="${spell_power_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Wizards pulls in Runes and Structure Pool API as its own required dependencies
     modId="wizards"
     type="required"
     versionRange="${wizards_version_range}"
@@ -49,10 +60,26 @@ config="${mod_id}.skills.mixins.json"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    # Optional: the Stormcaller skill tab (Pufferfish's Skills comes with it)
+    # Robe models (comes with Wizards)
+    modId="armor_model_api"
+    type="required"
+    versionRange="${armor_model_api_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the Stormcaller skill tab
     modId="skill_tree_rpgs"
     type="optional"
     versionRange="${skill_tree_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the skill tab runs on Pufferfish's Skills (comes with Skill Tree)
+    modId="puffish_skills"
+    type="optional"
+    versionRange="${puffish_skills_version_range}"
     ordering="AFTER"
     side="BOTH"
 
@@ -62,4 +89,20 @@ config="${mod_id}.skills.mixins.json"
     type="optional"
     versionRange="${curios_version_range}"
     ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the roll passives of the skill tab (Static Trap, Charged Roll) are triggered by a combat roll
+    modId="combat_roll"
+    type="optional"
+    versionRange="${combat_roll_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the Amber Lightning Staff (item and recipe) only exists with Better End
+    modId="betterend"
+    type="optional"
+    versionRange="${betterend_version_range}"
+    ordering="NONE"
     side="BOTH"

@@ -68,6 +68,10 @@ public final class StormcallerItems {
 
     /** Startup switches, like {@code config/wizards/tweaks.json}. */
     public static class Tweaks {
+        /** Written into the file, explains the option (JSON has no comments). */
+        public String _comment = "ignore_items_required_mods: true registers items that need another mod even without that"
+                + " mod (Amber Lightning Staff: Better End). Default false. Server and client must use the same value."
+                + " Needs a restart.";
         /** Registers items that need another mod (Amber Lightning Staff: Better End) even without that mod. */
         public boolean ignore_items_required_mods = false;
     }

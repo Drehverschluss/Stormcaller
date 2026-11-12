@@ -1,6 +1,6 @@
-# Stormcaller (RPG Series Wizard Addon)
+# Stormcaller (RPG Series Plus)
 
-Adds Lightning as a fourth school of magic to Wizards (RPG Series): lightning spells, robes, staves, wands and a spell book, with optional Skill Tree support.
+Stormcaller (RPG Series Plus) adds Lightning as a fourth school of magic to Wizards (RPG Series): lightning spells, robes, staves, wands and a spell book, with optional Skill Tree and Curios support.
 
 **Work in progress.**
 

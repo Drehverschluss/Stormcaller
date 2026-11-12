@@ -55,7 +55,6 @@ public final class ShaderCompat {
             api = lookup.findStatic(type, "getInstance", MethodType.methodType(type)).invoke();
             packInUse = lookup.findVirtual(type, "isShaderPackInUse", MethodType.methodType(boolean.class));
             shadowPass = lookup.findVirtual(type, "isRenderingShadowPass", MethodType.methodType(boolean.class));
-            Stormcaller.LOGGER.info("Stormcaller: Iris shader API found, cloud puffs adapt to shader packs");
         } catch (Throwable t) {
             api = null;
             packInUse = null;
