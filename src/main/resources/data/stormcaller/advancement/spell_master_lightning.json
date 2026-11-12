@@ -1,0 +1,16 @@
+{
+  "parent": "stormcaller:spell_novice_lightning",
+  "criteria": {
+    "bind": {
+      "trigger": "spell_engine:spell_binding",
+      "conditions": { "spell_pool": "stormcaller:spell_book/lightning", "complete": true }
+    }
+  },
+  "display": {
+    "icon": { "id": "stormcaller:staff_netherite_lightning", "count": 1 },
+    "title": { "translate": "advancements.stormcaller.spell_master_lightning.title" },
+    "description": { "translate": "advancements.stormcaller.spell_master_lightning.description" },
+    "frame": "challenge"
+  },
+  "requirements": [ [ "bind" ] ]
+}

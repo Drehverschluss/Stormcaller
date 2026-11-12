@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stormbringers_forgotten_crystal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:stormbringers_forgotten_crystal"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:stormweave_robe_legs_from_lightning_robe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stormbringers_forgotten_crystal"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:stormweave_robe_legs_from_lightning_robe"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "#stormcaller:spell_scroll/lightning", "required": false }
+  ]
+}

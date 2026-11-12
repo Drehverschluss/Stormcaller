@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stormbringers_lost_crystal": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:stormbringers_lost_crystal"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:fulgurite_robe_chest_from_lightning_robe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stormbringers_lost_crystal"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:fulgurite_robe_chest_from_lightning_robe"
+    ]
+  }
+}

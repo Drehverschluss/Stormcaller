@@ -1,0 +1,15 @@
+{
+  "parent": "rpg_series:classes",
+  "criteria": {
+    "book": {
+      "trigger": "spell_engine:spell_book_creation",
+      "conditions": { "spell_pool": "stormcaller:spell_book/lightning" }
+    }
+  },
+  "display": {
+    "icon": { "id": "spell_engine:spell_book", "count": 1, "components": { "spell_engine:item_model": "stormcaller:item/spell_book/lightning" } },
+    "title": { "translate": "advancements.stormcaller.path_choose_lightning.title" },
+    "description": { "translate": "advancements.stormcaller.path_choose_lightning.description" }
+  },
+  "requirements": [ [ "book" ] ]
+}

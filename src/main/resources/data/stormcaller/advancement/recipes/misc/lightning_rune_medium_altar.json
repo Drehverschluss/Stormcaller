@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "runes"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_lightning_rod": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:lightning_rod"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:lightning_rune_medium_altar"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_lightning_rod"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:lightning_rune_medium_altar"
+    ]
+  }
+}

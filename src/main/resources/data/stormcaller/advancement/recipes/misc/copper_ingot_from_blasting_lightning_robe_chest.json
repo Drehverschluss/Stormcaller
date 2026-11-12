@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_lightning_robe_chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:lightning_robe_chest"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:copper_ingot_from_blasting_lightning_robe_chest"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_lightning_robe_chest"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:copper_ingot_from_blasting_lightning_robe_chest"
+    ]
+  }
+}

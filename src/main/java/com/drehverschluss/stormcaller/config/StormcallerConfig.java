@@ -28,6 +28,8 @@ public final class StormcallerConfig {
 
     public static final ModConfigSpec.BooleanValue RICOCHET_FIX_ALL_SPELLS;
 
+    public static final ModConfigSpec.BooleanValue TRADES_WIZARD_MERCHANT;
+
     public static final ModConfigSpec.BooleanValue SKILL_TREE_CLASS_LOCK;
 
     static {
@@ -105,6 +107,16 @@ public final class StormcallerConfig {
         RICOCHET_FIX_ALL_SPELLS = builder
                 .comment("Apply the ricochet fix to the projectiles of all spells, also those of other mods.")
                 .define("fix_all_spells", false);
+        builder.pop();
+
+        builder.comment("Villager trades.")
+                .push("trades");
+        TRADES_WIZARD_MERCHANT = builder
+                .comment("The Wizard Merchant of Wizards also offers Lightning items, like the other schools: Lightning Rune",
+                         "(level 1), Lightning Wand (level 2), enchanted Lightning Staff (level 5). false: no Lightning offers,",
+                         "the merchant picks from the offers of the other schools only. Applies to offers rolled from now on;",
+                         "merchants keep the offers they already have.")
+                .define("wizard_merchant", true);
         builder.pop();
 
         builder.comment("Stormcaller skill tab (only with Skill Tree (RPG Series) installed).")

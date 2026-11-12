@@ -1,0 +1,15 @@
+{
+  "parent": "stormcaller:path_choose_lightning",
+  "criteria": {
+    "bind": {
+      "trigger": "spell_engine:spell_binding",
+      "conditions": { "spell_pool": "stormcaller:spell_book/lightning", "complete": false }
+    }
+  },
+  "display": {
+    "icon": { "id": "stormcaller:staff_lightning", "count": 1 },
+    "title": { "translate": "advancements.stormcaller.spell_novice_lightning.title" },
+    "description": { "translate": "advancements.stormcaller.spell_novice_lightning.description" }
+  },
+  "requirements": [ [ "bind" ] ]
+}

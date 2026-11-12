@@ -1,6 +1,7 @@
 package com.drehverschluss.stormcaller;
 
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
+import com.drehverschluss.stormcaller.compat.WizardMerchantTrades;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
 import com.drehverschluss.stormcaller.compat.skilltree.ClassLockPayload;
 import com.drehverschluss.stormcaller.compat.skilltree.SkillTab;
@@ -27,6 +28,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
@@ -48,6 +50,7 @@ public class Stormcaller {
         modEventBus.addListener(RegisterEvent.class, StormcallerEntities::onRegister);
         StaticShield.init();
         NeoForge.EVENT_BUS.addListener(ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
+        NeoForge.EVENT_BUS.addListener(VillagerTradesEvent.class, WizardMerchantTrades::onVillagerTrades);
         ShockHandler.register();
         modEventBus.addListener(RegisterPayloadHandlersEvent.class, StormcallerFx::registerPayloads);
         modEventBus.addListener(RegisterPayloadHandlersEvent.class, ClassLockPayload::register);

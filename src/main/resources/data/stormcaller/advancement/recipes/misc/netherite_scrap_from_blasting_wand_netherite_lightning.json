@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_wand_netherite_lightning": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:wand_netherite_lightning"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:netherite_scrap_from_blasting_wand_netherite_lightning"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_wand_netherite_lightning"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:netherite_scrap_from_blasting_wand_netherite_lightning"
+    ]
+  }
+}

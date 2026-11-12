@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stormbringer_upgrade_smithing_template": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:stormbringer_upgrade_smithing_template"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:stormbringer_upgrade_smithing_template"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stormbringer_upgrade_smithing_template"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:stormbringer_upgrade_smithing_template"
+    ]
+  }
+}

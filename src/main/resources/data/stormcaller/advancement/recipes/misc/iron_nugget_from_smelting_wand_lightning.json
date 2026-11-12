@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_wand_lightning": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:wand_lightning"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:iron_nugget_from_smelting_wand_lightning"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_wand_lightning"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:iron_nugget_from_smelting_wand_lightning"
+    ]
+  }
+}

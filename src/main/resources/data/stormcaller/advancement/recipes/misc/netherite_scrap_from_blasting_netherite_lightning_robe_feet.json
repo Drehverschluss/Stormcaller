@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_netherite_lightning_robe_feet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:netherite_lightning_robe_feet"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:netherite_scrap_from_blasting_netherite_lightning_robe_feet"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_netherite_lightning_robe_feet"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:netherite_scrap_from_blasting_netherite_lightning_robe_feet"
+    ]
+  }
+}

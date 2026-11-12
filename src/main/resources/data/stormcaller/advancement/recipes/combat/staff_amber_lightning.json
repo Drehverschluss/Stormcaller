@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "betterend"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_amber_gem": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "betterend:amber_gem"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:staff_amber_lightning"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_amber_gem"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:staff_amber_lightning"
+    ]
+  }
+}

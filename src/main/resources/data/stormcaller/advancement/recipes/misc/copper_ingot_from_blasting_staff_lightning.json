@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_staff_lightning": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:staff_lightning"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:copper_ingot_from_blasting_staff_lightning"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_staff_lightning"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:copper_ingot_from_blasting_staff_lightning"
+    ]
+  }
+}

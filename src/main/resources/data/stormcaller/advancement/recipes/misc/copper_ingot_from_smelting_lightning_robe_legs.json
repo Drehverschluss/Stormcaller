@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_lightning_robe_legs": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "stormcaller:lightning_robe_legs"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "stormcaller:copper_ingot_from_smelting_lightning_robe_legs"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_lightning_robe_legs"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "stormcaller:copper_ingot_from_smelting_lightning_robe_legs"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "parent": "stormcaller:path_choose_lightning",
+  "criteria": {
+    "cast": {
+      "trigger": "spell_engine:spell_cast",
+      "conditions": { "spell": "stormcaller:spark" }
+    }
+  },
+  "display": {
+    "icon": { "id": "stormcaller:wand_lightning", "count": 1 },
+    "title": { "translate": "advancements.stormcaller.spell_cast_lightning_wand.title" },
+    "description": { "translate": "advancements.stormcaller.spell_cast_lightning_wand.description" },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "requirements": [ [ "cast" ] ]
+}

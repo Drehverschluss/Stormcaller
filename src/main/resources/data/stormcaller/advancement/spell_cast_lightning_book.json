@@ -1,0 +1,17 @@
+{
+  "parent": "stormcaller:spell_novice_lightning",
+  "criteria": {
+    "cast": {
+      "trigger": "spell_engine:spell_cast",
+      "conditions": { "spell": "#stormcaller:spell_book/lightning" }
+    }
+  },
+  "display": {
+    "icon": { "id": "spell_engine:spell_book", "count": 1, "components": { "spell_engine:item_model": "stormcaller:item/spell_book/lightning" } },
+    "title": { "translate": "advancements.stormcaller.spell_cast_lightning_book.title" },
+    "description": { "translate": "advancements.stormcaller.spell_cast_lightning_book.description" },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "requirements": [ [ "cast" ] ]
+}
