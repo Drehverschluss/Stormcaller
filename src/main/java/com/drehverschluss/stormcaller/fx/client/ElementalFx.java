@@ -2,7 +2,6 @@ package com.drehverschluss.stormcaller.fx.client;
 
 import com.drehverschluss.stormcaller.entity.StormElementalEntity;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -116,10 +115,11 @@ public final class ElementalFx {
         float alpha = Mth.clamp((0.6F + 0.15F * pulse + 0.4F * boost) * presence, 0.0F, 1.0F);
         ArcGeometry.flash(vc, matrix, cam, core, left, up, radius, alpha);
 
-        // eyes: two short bright slits
+        // eyes: two short bright slits, flat in the face (a camera-facing strip turned into an upright bar seen from the side)
         Vec3[] eyes = pose.eyes();
+        Vec3 eyeUp = pose.eyeUp();
         float eyeAlpha = 0.95F * presence;
-        ArcGeometry.strip(vc, matrix, cam, List.of(eyes[0], eyes[1]), 0.03F, 0.08F, eyeAlpha, false);
-        ArcGeometry.strip(vc, matrix, cam, List.of(eyes[2], eyes[3]), 0.03F, 0.08F, eyeAlpha, false);
+        ArcGeometry.slit(vc, matrix, cam, eyes[0], eyes[1], eyeUp, 0.03F, 0.08F, eyeAlpha);
+        ArcGeometry.slit(vc, matrix, cam, eyes[2], eyes[3], eyeUp, 0.03F, 0.08F, eyeAlpha);
     }
 }

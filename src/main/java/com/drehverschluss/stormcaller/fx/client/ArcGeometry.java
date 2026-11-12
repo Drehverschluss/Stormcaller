@@ -150,6 +150,34 @@ final class ArcGeometry {
         }
     }
 
+    /**
+     * A short straight line whose width lies along a fixed direction instead of facing the camera (glow and white core
+     * like {@link #strip}). Used for the eye slits of the Storm Elemental: they lie flat in the face, so seen from the side
+     * they get thin instead of turning into an upright bar.
+     *
+     * @param side unit vector of the width (e.g. the up axis of the head)
+     */
+    static void slit(VertexConsumer vc, Matrix4f m, Vec3 cam, Vec3 p0, Vec3 p1, Vec3 side, float coreWidth, float glowWidth,
+                     float alpha) {
+        if (alpha <= 0.003F) {
+            return;
+        }
+        int glowAlpha = alphaInt(0.55F * alpha);
+        int coreAlpha = alphaInt(alpha);
+        float g = glowWidth * 0.5F;
+        float c = coreWidth * 0.5F;
+        for (int s = -1; s <= 1; s += 2) {
+            vertex(vc, m, cam, p0.add(side.scale(s * g)), GLOW_R, GLOW_G, GLOW_B, 0);
+            vertex(vc, m, cam, p0, GLOW_R, GLOW_G, GLOW_B, glowAlpha);
+            vertex(vc, m, cam, p1, GLOW_R, GLOW_G, GLOW_B, glowAlpha);
+            vertex(vc, m, cam, p1.add(side.scale(s * g)), GLOW_R, GLOW_G, GLOW_B, 0);
+        }
+        vertex(vc, m, cam, p0.subtract(side.scale(c)), 255, 255, 255, coreAlpha);
+        vertex(vc, m, cam, p0.add(side.scale(c)), 255, 255, 255, coreAlpha);
+        vertex(vc, m, cam, p1.add(side.scale(c)), 255, 255, 255, coreAlpha);
+        vertex(vc, m, cam, p1.subtract(side.scale(c)), 255, 255, 255, coreAlpha);
+    }
+
     /** Round flash facing the camera: yellow halo with a white center, both fading to the edge. */
     static void flash(VertexConsumer vc, Matrix4f m, Vec3 cam, Vec3 center, Vector3f left, Vector3f up, float radius, float alpha) {
         if (alpha <= 0.003F || radius <= 0.0F) {

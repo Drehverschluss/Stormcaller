@@ -190,4 +190,10 @@ public final class ElementalPose {
         }
         return eyes;
     }
+
+    /** Up axis of the head in world space (unit vector), turns with pitch and lean: the width of the eye slits. */
+    public Vec3 eyeUp() {
+        Vec3 up = offset(0.0, 1.78, 0.19, true, 0.0).subtract(offset(0.0, 1.58, 0.19, true, 0.0));
+        return up.lengthSqr() < 1.0E-8 ? new Vec3(0.0, 1.0, 0.0) : up.normalize();
+    }
 }
