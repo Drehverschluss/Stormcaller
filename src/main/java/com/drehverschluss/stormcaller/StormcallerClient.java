@@ -42,6 +42,8 @@ public class StormcallerClient {
             event.registerEntityRenderer(StormcallerEntities.STORM_ELEMENTAL, StormElementalRenderer::new);
             // the static field draws itself through server visuals (ring and arcs)
             event.registerEntityRenderer(StormcallerEntities.STATIC_FIELD, net.minecraft.client.renderer.entity.NoopRenderer::new);
+            // the ball lightning is drawn by fx.client.BallLightningFx
+            event.registerEntityRenderer(StormcallerEntities.BALL_LIGHTNING, net.minecraft.client.renderer.entity.NoopRenderer::new);
         });
         ShockTooltips.register();
         FxClient.init();

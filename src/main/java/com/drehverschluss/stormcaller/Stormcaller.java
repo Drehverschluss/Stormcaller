@@ -16,6 +16,7 @@ import com.drehverschluss.stormcaller.shock.StormcallerEffects;
 import com.drehverschluss.stormcaller.spell.NearestTarget;
 import com.drehverschluss.stormcaller.spell.SkillMechanics;
 import com.drehverschluss.stormcaller.spell.StaticShield;
+import com.drehverschluss.stormcaller.trinket.BallLightning;
 import com.drehverschluss.stormcaller.trinket.StormcallerTrinkets;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -52,6 +53,7 @@ public class Stormcaller {
         modEventBus.addListener(RegisterPayloadHandlersEvent.class, ClassLockPayload::register);
         FxSpellHooks.register();
         NearestTarget.init();
+        BallLightning.init();
         SkillMechanics.init();
         if (SkillTab.enabled()) {
             // Stormcaller skill tab: built-in data pack, respec, class lock (Skill Tree classes only behind this check)

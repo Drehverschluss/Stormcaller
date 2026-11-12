@@ -3,6 +3,7 @@ package com.drehverschluss.stormcaller.fx.client;
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.shock.ShockImpacts;
+import com.drehverschluss.stormcaller.trinket.BallLightning;
 import com.drehverschluss.stormcaller.spell.SkillMechanics;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.player.Player;
@@ -37,6 +38,10 @@ import net.spell_engine.api.spell.tooltip.TooltipTokens;
  *     set bonus),</li>
  *     <li>{@code {static_rain_duration}}, {@code {conductor_cooldown}} (cooldown of Chain Lightning),</li>
  *     <li>{@code {field_duration|radius|damage|shock}}: the cloud spell {@code <id>_field} a spell places (Charged Ground).</li>
+ *     <li>{@code {ball_*}}: Ball Lightning (Caged Ball Lightning relic): duration, pulse, range and target count from
+ *     {@code trinkets.json}, damage and shock chance of the spells {@code ball_lightning_zap} and
+ *     {@code ball_lightning_discharge}, cooldown of the passive. The shock chance is written in the text, so no shock
+ *     line is added.</li>
  * </ul>
  */
 public final class ShockTooltips {
@@ -116,7 +121,51 @@ public final class ShockTooltips {
         if (description.contains("{field_")) {
             description = fieldTokens(description, entry, player);
         }
+        if (description.contains("{ball_")) {
+            description = ballTokens(description, spell, player);
+        }
         return description;
+    }
+
+    /** Tokens of the Ball Lightning description, see the class comment. */
+    private static String ballTokens(String description, Spell spell, Player player) {
+        BallLightning.Config config = BallLightning.config();
+        Spell zap = spell(BallLightning.ZAP_SPELL);
+        Spell discharge = spell(BallLightning.DISCHARGE_SPELL);
+        float cooldown = spell.cost == null || spell.cost.cooldown == null ? 0.0F : spell.cost.cooldown.duration;
+        return description
+                .replace("{ball_duration}", TooltipTokens.formattedNumber(config.duration_seconds))
+                .replace("{ball_pulse}", TooltipTokens.formattedNumber(config.pulse_seconds))
+                .replace("{ball_range}", TooltipTokens.formattedNumber(config.range))
+                .replace("{ball_targets}", Integer.toString(config.max_targets))
+                .replace("{ball_cooldown}", TooltipTokens.formattedNumber(cooldown))
+                .replace("{ball_zap_damage}", damageOf(zap, player))
+                .replace("{ball_zap_shock}", shockOf(zap))
+                .replace("{ball_discharge_damage}", damageOf(discharge, player))
+                .replace("{ball_discharge_shock}", shockOf(discharge));
+    }
+
+    /** Damage of the first DAMAGE impact of a spell for the player's spell power (without crits). */
+    private static String damageOf(Spell spell, Player player) {
+        if (spell == null) {
+            return "?";
+        }
+        float coefficient = 0.0F;
+        for (Spell.Impact impact : spell.impacts) {
+            if (impact.action != null && impact.action.type == Spell.Impact.Action.Type.DAMAGE && impact.action.damage != null) {
+                coefficient = impact.action.damage.spell_power_coefficient;
+                break;
+            }
+        }
+        double power = player == null ? 0.0 : SpellPower.getSpellPower(spell.school, player).baseValue();
+        return TooltipTokens.formattedNumber((float) (coefficient * power));
+    }
+
+    /** Base shock chance of a spell as "10%" (without the shock chance of the player). */
+    private static String shockOf(Spell spell) {
+        double percent = spell == null ? 0.0 : Math.round(ShockImpacts.baseChance(spell).orElse(0.0) * 1000.0) / 10.0;
+        String number = percent == Math.rint(percent) ? Integer.toString((int) percent) : Double.toString(percent);
+        return number + "%";
     }
 
     /**

@@ -26,6 +26,7 @@ public final class StormcallerFx {
 
     /** Set by the client mod class. Common code never references client classes. */
     private static Consumer<FxPayload> clientHandler = payload -> {};
+    private static Consumer<BallFxPayload> ballHandler = payload -> {};
 
     private StormcallerFx() {}
 
@@ -72,6 +73,12 @@ public final class StormcallerFx {
         send(level, center, new FxPayload(FxPayload.Kind.RING, center, center, 0, radius, 0, seed(level)));
     }
 
+    /** Visual of a ball lightning (zap, discharge, pop), see {@link BallFxPayload}. */
+    public static void ball(ServerLevel level, Vec3 pos, BallFxPayload payload) {
+        double radius = Math.max(MIN_RADIUS, level.getServer().getPlayerList().getViewDistance() * 16.0);
+        PacketDistributor.sendToPlayersNear(level, null, pos.x, pos.y, pos.z, radius, payload);
+    }
+
     /** Center of an entity's bounding box. */
     public static Vec3 center(Entity entity) {
         return entity.getBoundingBox().getCenter();
@@ -89,12 +96,18 @@ public final class StormcallerFx {
     // ------------------------------------------------------------------------------------------------ network
 
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").playToClient(FxPayload.TYPE, FxPayload.STREAM_CODEC,
-                (payload, context) -> clientHandler.accept(payload));
+        event.registrar("1")
+                .playToClient(FxPayload.TYPE, FxPayload.STREAM_CODEC, (payload, context) -> clientHandler.accept(payload))
+                .playToClient(BallFxPayload.TYPE, BallFxPayload.STREAM_CODEC, (payload, context) -> ballHandler.accept(payload));
     }
 
     /** Called once by the client mod class. */
     public static void setClientHandler(Consumer<FxPayload> handler) {
         clientHandler = handler;
+    }
+
+    /** Called once by the client mod class. */
+    public static void setBallHandler(Consumer<BallFxPayload> handler) {
+        ballHandler = handler;
     }
 }

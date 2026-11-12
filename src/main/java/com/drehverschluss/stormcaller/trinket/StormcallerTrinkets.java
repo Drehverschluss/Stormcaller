@@ -95,13 +95,15 @@ public final class StormcallerTrinkets {
 
     /**
      * {@code config/stormcaller/trinkets.json}: attributes of the jewelry ({@code items}, keyed by item id; relics may get
-     * attributes here too) and the modifiers of the relic effects ({@code effects}). Chances, durations and cooldowns are
-     * in the spell files. Read once at startup, changes need a restart. Keep server and client equal (the tooltip reads
+     * attributes here too), the modifiers of the relic effects ({@code effects}) and the movement, lifetime, pulse, range
+     * and target count of the ball lightning ({@code ball_lightning}, {@link BallLightning.Config}). Chances, durations,
+     * cooldowns, damage and shock chances are in the spell files. Read once at startup, changes need a restart. Keep server and client equal (the tooltip reads
      * the client file).
      */
     public static class Config {
         public LinkedHashMap<String, EffectConfig> items = new LinkedHashMap<>();
         public LinkedHashMap<String, EffectConfig> effects = new LinkedHashMap<>();
+        public BallLightning.Config ball_lightning = new BallLightning.Config();
     }
 
     public static final ConfigManager<Config> CONFIG = new ConfigManager<>("trinkets", new Config())
@@ -130,6 +132,9 @@ public final class StormcallerTrinkets {
     /** Mod constructor: reads trinkets.json and adds missing item entries (jewelry only). */
     public static void init() {
         CONFIG.refresh();
+        if (CONFIG.value.ball_lightning == null) {
+            CONFIG.value.ball_lightning = new BallLightning.Config();
+        }
         for (Def def : ITEMS) {
             if (def.kind() == Kind.JEWELRY) {
                 CONFIG.value.items.putIfAbsent(def.id().toString(), def.defaults());

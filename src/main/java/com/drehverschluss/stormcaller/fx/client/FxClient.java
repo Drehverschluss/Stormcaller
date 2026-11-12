@@ -1,6 +1,7 @@
 package com.drehverschluss.stormcaller.fx.client;
 
 import com.drehverschluss.stormcaller.Stormcaller;
+import com.drehverschluss.stormcaller.entity.BallLightningEntity;
 import com.drehverschluss.stormcaller.entity.StormElementalEntity;
 import com.drehverschluss.stormcaller.fx.ArcStyle;
 import com.drehverschluss.stormcaller.fx.FxPayload;
@@ -49,6 +50,7 @@ public final class FxClient {
     public static void init() {
         ProjectileTrails.registerDefaults();
         StormcallerFx.setClientHandler(FxClient::accept);
+        StormcallerFx.setBallHandler(BallLightningFx::accept);
         NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
             tick();
             SummonFx.tick();
@@ -57,6 +59,7 @@ public final class FxClient {
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
             EFFECTS.clear();
             PuffGlows.clear();
+            BallLightningFx.clear();
         });
     }
 
@@ -177,6 +180,48 @@ public final class FxClient {
         addArc(new AttachedArcFx(entity.getId(), target, alpha, width, random.nextInt()));
     }
 
+    /**
+     * Arc between two entities that follows both every frame (ball lightning to its target). A missing entity uses its
+     * fallback position.
+     *
+     * @param toHeight point on the target as a fraction of its hitbox height
+     * @param life     lifetime in ticks (fades out)
+     * @param branches number of side branches
+     */
+    static void addEntityArc(int fromId, Vec3 fromFallback, int toId, Vec3 toFallback, float toHeight, float coreWidth,
+                             float glowWidth, int life, int branches, int seed) {
+        if (!StormcallerClientConfig.arcsEnabled()) {
+            return;
+        }
+        addArc(new EntityArcFx(fromId, fromFallback, toId, toFallback, toHeight, coreWidth, glowWidth, life, branches, seed));
+    }
+
+    /** Short free arc between two points, e.g. the burst of a ball lightning. */
+    static void addFreeArc(Vec3 from, Vec3 to, ArcStyle style, float scale, int seed) {
+        if (StormcallerClientConfig.arcsEnabled()) {
+            addArc(new ArcFx(from, to, style, scale, seed));
+        }
+    }
+
+    /** Flash with vanilla electric sparks, like the FLASH packet. */
+    static void addFlashAt(Vec3 pos, float size, RandomSource random) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level != null) {
+            addFlash(level, pos, size, random);
+        }
+    }
+
+    /**
+     * Small spark that flies off and fades (storm blue glow with a white core).
+     *
+     * @param velocity blocks per tick
+     */
+    static void addSpark(Vec3 pos, Vec3 velocity, int life, float length) {
+        if (StormcallerClientConfig.arcsEnabled()) {
+            EFFECTS.add(new SparkFx(pos, velocity, life, length));
+        }
+    }
+
     /** Body arcs of "Shocked" alive right now. */
     public static int activeShockArcs() {
         int count = 0;
@@ -289,6 +334,11 @@ public final class FxClient {
                     }
                     renderTrail(vc, matrix, cam, camera, projectile, trail, partialTick);
                 }
+            } else if (entity instanceof BallLightningEntity ball && BallLightningFx.visible(ball, cam)) {
+                if (vc == null) {
+                    vc = buffers.getBuffer(FxRenderTypes.ARC);
+                }
+                BallLightningFx.render(vc, matrix, cam, camera.getLeftVector(), camera.getUpVector(), ball, partialTick);
             } else if (entity instanceof StormElementalEntity elemental && ElementalFx.visible(elemental, cam)) {
                 // glowing core and eyes, drawn after the cloud puffs so the eyes hide behind the head when seen from behind
                 if (vc == null) {
@@ -546,6 +596,98 @@ public final class FxClient {
             float a = fade(pt) * alpha * (ctx.reduced() ? 0.75F : 1.0F);
             float widthScale = width * (ctx.reduced() ? 0.7F : 1.0F);
             ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), points, 0.03F * widthScale, 0.15F * widthScale, a, false);
+        }
+    }
+
+    /** Arc from one entity to another, see {@link #addEntityArc}. */
+    private static final class EntityArcFx extends Effect {
+        private final int fromId;
+        private final Vec3 fromFallback;
+        private final int toId;
+        private final Vec3 toFallback;
+        private final float toHeight;
+        private final float coreWidth;
+        private final float glowWidth;
+        private final int branches;
+        private final int seed;
+
+        EntityArcFx(int fromId, Vec3 fromFallback, int toId, Vec3 toFallback, float toHeight, float coreWidth, float glowWidth,
+                    int life, int branches, int seed) {
+            super(life);
+            this.fromId = fromId;
+            this.fromFallback = fromFallback;
+            this.toId = toId;
+            this.toFallback = toFallback;
+            this.toHeight = toHeight;
+            this.coreWidth = coreWidth;
+            this.glowWidth = glowWidth;
+            this.branches = branches;
+            this.seed = seed;
+        }
+
+        @Override
+        boolean countsAsArc() {
+            return true;
+        }
+
+        private static Vec3 point(int id, Vec3 fallback, float height, float pt) {
+            ClientLevel level = Minecraft.getInstance().level;
+            Entity entity = level == null || id < 0 ? null : level.getEntity(id);
+            if (entity == null || entity.isRemoved()) {
+                return fallback;
+            }
+            return new Vec3(Mth.lerp(pt, entity.xo, entity.getX()), Mth.lerp(pt, entity.yo, entity.getY()) + entity.getBbHeight() * height,
+                    Mth.lerp(pt, entity.zo, entity.getZ()));
+        }
+
+        @Override
+        void render(RenderContext ctx) {
+            float pt = ctx.partialTick();
+            Vec3 from = point(fromId, fromFallback, 0.5F, pt);
+            Vec3 to = point(toId, toFallback, toHeight, pt);
+            // new zigzag every tick, the same within one tick
+            RandomSource random = RandomSource.create(seed * 31L + age);
+            List<Vec3> main = ArcGeometry.jagged(from, to, 0.12F, 0.45F, 0.35F, 30, random);
+            float alpha = fade(pt) * (ctx.reduced() ? 0.75F : 1.0F);
+            float glow = glowWidth * (ctx.reduced() ? 0.6F : 1.0F);
+            ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), main, coreWidth, glow, alpha, false);
+            if (!ctx.reduced() && branches > 0) {
+                for (List<Vec3> branch : ArcGeometry.branches(main, branches, 0.12F, 0.45F, false, random)) {
+                    ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), branch, coreWidth * 0.6F, glow * 0.6F, alpha * 0.85F, true);
+                }
+            }
+        }
+    }
+
+    /** Small flying spark, see {@link #addSpark}. */
+    private static final class SparkFx extends Effect {
+        private Vec3 pos;
+        private Vec3 previous;
+        private final Vec3 velocity;
+        private final float length;
+
+        SparkFx(Vec3 pos, Vec3 velocity, int life, float length) {
+            super(life);
+            this.pos = pos;
+            this.previous = pos;
+            this.velocity = velocity;
+            this.length = length;
+        }
+
+        @Override
+        void tick() {
+            previous = pos;
+            pos = pos.add(velocity.scale(1.0 - (double) age / life));
+        }
+
+        @Override
+        void render(RenderContext ctx) {
+            Vec3 head = previous.lerp(pos, ctx.partialTick());
+            Vec3 dir = velocity.lengthSqr() < 1.0E-8 ? new Vec3(0.0, 1.0, 0.0) : velocity.normalize();
+            List<Vec3> points = List.of(head.subtract(dir.scale(length)), head);
+            float alpha = fade(ctx.partialTick());
+            ArcGeometry.strip(ctx.vc(), ctx.matrix(), ctx.cam(), points, 0.018F, 0.09F, alpha, true,
+                    BallLightningFx.BLUE_R, BallLightningFx.BLUE_G, BallLightningFx.BLUE_B);
         }
     }
 

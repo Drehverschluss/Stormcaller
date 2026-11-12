@@ -1,0 +1,68 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 4,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": []
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.15,
+          "knockback": 0.0
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 4294928127,
+              "motion": "BURST",
+              "scale": 0.6
+            },
+            "batch": {
+              "count": 6,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.12,
+              "max_speed": 0.35
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "minecraft:entity.lightning_bolt.impact",
+        "volume": 0.3,
+        "pitch": 1.9,
+        "randomness": 0.15
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:shock/10"
+        }
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.0,
+    "durability": 0
+  }
+}

@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller.fx.client;
 
+import com.drehverschluss.stormcaller.entity.BallLightningEntity;
 import com.drehverschluss.stormcaller.entity.StormCloudEntity;
 import com.drehverschluss.stormcaller.entity.StormElementalEntity;
 import net.minecraft.client.Minecraft;
@@ -8,7 +9,8 @@ import net.minecraft.world.entity.Entity;
 
 /**
  * Client tick for the lightning visuals of Stormcaller entities: the random arcs of storm clouds ({@link StormCloudFx}),
- * the state, arcs and glows of the Storm Elemental ({@link ElementalFx}) and the end of the puff glows
+ * the state, arcs and glows of the Storm Elemental ({@link ElementalFx}), sparks and sound of the ball lightning
+ * ({@link BallLightningFx}) and the end of the puff glows
  * ({@link PuffGlows}).
  */
 final class SummonFx {
@@ -24,10 +26,13 @@ final class SummonFx {
         for (Entity entity : level.entitiesForRendering()) {
             if (entity instanceof StormCloudEntity cloud) {
                 StormCloudFx.tickCloud(cloud, Math.sqrt(cloud.distanceToSqr(camera)));
+            } else if (entity instanceof BallLightningEntity ball) {
+                BallLightningFx.tick(ball, Math.sqrt(ball.distanceToSqr(camera)));
             } else if (entity instanceof StormElementalEntity elemental) {
                 ElementalFx.tick(elemental, Math.sqrt(elemental.distanceToSqr(camera)));
             }
         }
         PuffGlows.endTick(level);
+        BallLightningFx.endTick(level);
     }
 }
