@@ -37,20 +37,26 @@ import org.joml.Quaternionf;
  *     <li>Neutral grey (the pack adds the blue of the sky light), lighter at the top of the cloud, darker at the bottom, a
  *     fixed random offset per puff ({@link #shaderShade}), and calmer own movement ({@link #motion}).</li>
  *     <li>The seam breathes ({@link #breath}): every puff gets a bit denser and thinner again in its own slow rhythm, so
- *     its fuzzy edge grows and melts pixel by pixel while the raster itself stays still.</li>
+ *     its fuzzy edge grows and melts while the raster itself stays still.</li>
+ *     <li>Vertex alpha always 1: packs like Complementary read the vertex alpha of an entity as ambient occlusion, so
+ *     a lower alpha darkens the puff (nearly black by day at 0.4). Density, breathing, appearing and fading pick one of
+ *     the binary stages of the seam texture instead.</li>
  * </ul>
  * <p>
  * <b>Shadow pass</b> (Iris draws every entity once more from the sun or moon for the shadow map): the puffs face the
  * shadow camera there instead of the player's camera, so the shadow on the ground is a round cloud shadow from every
  * view angle (facing the player's camera gave stripes when looking straight ahead). In the shadow pass every puff is
- * also pushed back along the light ray by its own size: the shadow on the ground stays where it is, but a puff no longer
- * cuts through its own shadow caster (that drew a hard line across every puff). The shadow uses the smooth outline of
+ * also pushed back along the light ray by twice its size ({@link #SHADOW_PUSH}): the shadow on the ground stays where it
+ * is, but no puff cuts through a shadow caster (that drew hard lines across the puffs). The shadow uses the smooth outline of
  * {@code storm_cloud_shader.png}.
  */
 public final class PuffQuads {
     public static final ResourceLocation TEXTURE = Stormcaller.id("textures/entity/storm_cloud.png");
     public static final RenderType TYPE = RenderType.entityTranslucent(TEXTURE);
-    /** Shader pack path: solid core, soft edge as a fixed fine raster (256 px per puff). */
+    /**
+     * Shader pack path: solid core, soft edge as a fixed fine raster (256 px per puff), as a stack of
+     * {@link #SEAM_STAGES} binary stages (every pixel fully there or not) from thin to dense, stage 0 at the top.
+     */
     public static final ResourceLocation SEAM_TEXTURE = Stormcaller.id("textures/entity/storm_cloud_seam.png");
     public static final RenderType SEAM_TYPE = RenderType.entityCutoutNoCull(SEAM_TEXTURE);
     /** Shadow pass: the puff with a smooth outline (4x, 128 px per puff). */
@@ -60,6 +66,13 @@ public final class PuffQuads {
     public static final int VARIANTS = 4;
     /** Cloud shadows with a shader pack (false = puffs are left out of the shadow pass, no cloud shadow at all). */
     public static final boolean CAST_SHADOW = true;
+    /**
+     * Shadow pass: every puff is pushed back along the light ray by this many times its half size. With 1 the shadow caster
+     * of a puff still cut through the camera-facing puffs seen at an angle to the sun (its corners reach up to 1.4 sizes
+     * deep), which drew straight shadow edges across the lit puffs by day; 2 keeps them behind (tested in phase S.1). The
+     * shadow on the ground does not move.
+     */
+    private static final float SHADOW_PUSH = 2.0F;
 
     // storm grey by day, a darker blue grey by night: just a bit lighter than the night sky and the dark ground, so it
     // reads as a dark cloud and not as a bright patch (tested in phase 4B)
@@ -83,15 +96,24 @@ public final class PuffQuads {
     private static final float SHADER_MOTION = 0.5F;
     /** Shader pack: alpha factor, so the core of every puff stays solid (the raster only shows in the outer seam). */
     private static final float SHADER_DENSITY = 1.3F;
-    /**
-     * Headroom of {@code storm_cloud_seam.png}: its alpha is made for a vertex alpha of k / 3, where k = 1 is the plain seam
-     * and k > 1 lets the seam grow outwards pixel by pixel (the core stays solid for k >= 1).
-     */
-    private static final float SEAM_HEADROOM = 3.0F;
-    /** Shader pack: how much denser the seam gets when a puff breathes in (k from 1 to 1 + this; about +10 % area). */
+    /** Shader pack: how much denser the seam gets when a puff breathes in (coverage from 1 to 1 + this; about +10 % area). */
     private static final float BREATH_DEPTH = 0.35F;
+    /** Shader pack: breathing in this many steps (every step is one stage of the seam texture). */
+    private static final int BREATH_STEPS = 4;
     /** Shader pack: breathing speed in radians per tick (about 9 seconds per breath), varied per puff by +-25 %. */
     private static final float BREATH_SPEED = 0.035F;
+    /**
+     * Coverage of every stage of {@code storm_cloud_seam.png} (density times breath; 1 = the plain seam, below 1 thinner
+     * from the outside, above 1 the seam grows outwards). Thin stages for the tip of the vortex, appearing and fading; then
+     * one stage per breathing step. The texture is made from these values ({@code Konzept/Probe-Vorlage/ShaderAlpha/seam_stages.py}).
+     */
+    private static final float[] SEAM_STAGES = seamStages();
+    /**
+     * Phase S drew the seam with a vertex alpha of about 0.33 to 0.45 (alpha headroom in the texture). Shader packs like
+     * Complementary read the vertex alpha of an entity as vanilla ambient occlusion and square it: the cloud got nearly
+     * black by day. So the vertex alpha is always 1 now, and density and breathing pick a stage of the seam texture.
+     */
+    private static final int SHADER_ALPHA = 255;
 
     /**
      * How the puffs of one entity are drawn in the current pass.
@@ -161,7 +183,9 @@ public final class PuffQuads {
 
     /**
      * Breathing of the seam with a shader pack (1 without): every puff gets a bit denser and thinner again over a few
-     * seconds, each in its own rhythm, so its fuzzy edge grows and melts pixel by pixel.
+     * seconds, each in its own rhythm, so its fuzzy edge grows and melts. The breath goes in {@link #BREATH_STEPS} steps
+     * (one stage of the seam texture each); the steps lie inside the swing, never at its turning points, so a puff changes
+     * its stage only every second or so and never back and forth from frame to frame (that would flicker with TAA).
      *
      * @param age   age in ticks (with partial tick)
      * @param phase fixed random phase of the puff (0..2 pi)
@@ -172,7 +196,33 @@ public final class PuffQuads {
         }
         // a slightly different speed per puff, so they do not breathe in step
         float rate = BREATH_SPEED * (0.75F + 0.5F * (phase / Mth.TWO_PI));
-        return 1.0F + BREATH_DEPTH * (0.5F + 0.5F * Mth.sin(age * rate + phase * 3.1F));
+        float swing = 0.5F + 0.5F * Mth.sin(age * rate + phase * 3.1F);
+        int step = Math.min(BREATH_STEPS - 1, (int) (swing * BREATH_STEPS));
+        return breathStep(step);
+    }
+
+    private static float breathStep(int step) {
+        return 1.0F + BREATH_DEPTH * step / (BREATH_STEPS - 1);
+    }
+
+    private static float[] seamStages() {
+        float[] thin = {0.45F, 0.6F, 0.78F, 0.9F};
+        float[] stages = new float[thin.length + BREATH_STEPS];
+        System.arraycopy(thin, 0, stages, 0, thin.length);
+        for (int i = 0; i < BREATH_STEPS; i++) {
+            stages[thin.length + i] = breathStep(i);
+        }
+        return stages;
+    }
+
+    /** Densest stage of the seam texture that is not above this coverage, or -1 if the puff is too thin to show. */
+    private static int seamStage(float coverage) {
+        for (int i = SEAM_STAGES.length - 1; i >= 0; i--) {
+            if (SEAM_STAGES[i] <= coverage + 0.001F) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /** 0 by day, 1 at night (from the sky brightness of the level); 0.5 without a sky. */
@@ -200,23 +250,37 @@ public final class PuffQuads {
                             int variant, @Nullable float[] tint, float tintAmount, float breath) {
         float u0 = variant / (float) VARIANTS;
         float u1 = (variant + 1) / (float) VARIANTS;
+        float v0 = 0.0F;
+        float v1 = 1.0F;
         float topShade = TOP_SHADE;
         float bottomShade = BOTTOM_SHADE;
+        boolean seam = false;
         if (style.shader()) {
             topShade *= SHADER_PUFF_SHADE;
             bottomShade *= SHADER_PUFF_SHADE;
             if (!style.shadow()) {
-                alpha = Math.min(1.0F, alpha * SHADER_DENSITY) * breath / SEAM_HEADROOM;
+                int stage = seamStage(Math.min(1.0F, alpha * SHADER_DENSITY) * breath);
+                if (stage < 0) {
+                    return;
+                }
+                v0 = stage / (float) SEAM_STAGES.length;
+                v1 = (stage + 1) / (float) SEAM_STAGES.length;
+                seam = true;
             }
         }
         int[] top = rgba(color, shade + topShade, glow, alpha, tint, tintAmount);
         int[] bottom = rgba(color, shade + bottomShade, glow, alpha, tint, tintAmount);
+        if (seam) {
+            // the stage holds the coverage; a vertex alpha below 1 would darken the puff (ambient occlusion of the pack)
+            top[3] = SHADER_ALPHA;
+            bottom[3] = SHADER_ALPHA;
+        }
         // shadow pass: push the caster back along the light ray (the shadow on the ground does not move)
-        float z = style.shadow() ? -s : 0.0F;
-        vertex(style, pose, -s, -s, z, bottom, u0, 1.0F);
-        vertex(style, pose, s, -s, z, bottom, u1, 1.0F);
-        vertex(style, pose, s, s, z, top, u1, 0.0F);
-        vertex(style, pose, -s, s, z, top, u0, 0.0F);
+        float z = style.shadow() ? -s * SHADOW_PUSH : 0.0F;
+        vertex(style, pose, -s, -s, z, bottom, u0, v1);
+        vertex(style, pose, s, -s, z, bottom, u1, v1);
+        vertex(style, pose, s, s, z, top, u1, v0);
+        vertex(style, pose, -s, s, z, top, u0, v0);
     }
 
     private static int[] rgba(float[] color, float shade, float glow, float alpha, @Nullable float[] tint, float tintAmount) {
