@@ -18,13 +18,18 @@ Stormcaller is an unofficial addon for [Wizards (RPG Series)](https://www.cursef
 - [Spell Power Attributes](https://www.curseforge.com/minecraft/mc-mods/spell-power)
 - [Armor Model API](https://www.curseforge.com/minecraft/mc-mods/armor-model-api)
 
-**Recommended:** [Better Combat](https://www.curseforge.com/minecraft/mc-mods/better-combat-by-daedelus) for proper weapon
-mechanics, [RunelessRPG](https://www.curseforge.com/minecraft/mc-mods/runelessrpg) to cast with mana instead of runes.
+## Recommended
 
-**Optional:** [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios) (jewelry and relics),
-[Skill Tree (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/skill-tree) (Stormcaller skill tree tab),
-[Combat Roll](https://www.curseforge.com/minecraft/mc-mods/combat-roll) (roll passives of the skill tree),
-[Better End](https://www.curseforge.com/minecraft/mc-mods/betterend-neoforge) (Amber Lightning Staff).
+- [Better Combat](https://www.curseforge.com/minecraft/mc-mods/better-combat-by-daedelus) – for proper weapon mechanics
+- [RunelessRPG](https://www.curseforge.com/minecraft/mc-mods/runelessrpg) – cast with mana instead of runes
+
+## Optional
+
+- [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios) – jewelry and relics (Accessories works too, through
+  a Curios compatibility layer)
+- [Skill Tree (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/skill-tree) – the Stormcaller skill tree tab
+- [Combat Roll](https://www.curseforge.com/minecraft/mc-mods/combat-roll) – the roll passives of the skill tree
+- [Better End](https://www.curseforge.com/minecraft/mc-mods/betterend-neoforge) – the Amber Lightning Staff
 
 ## Links
 
