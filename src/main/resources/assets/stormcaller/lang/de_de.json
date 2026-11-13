@@ -172,7 +172,7 @@
   "spell.stormcaller.stormweave_thunderstorm.name": "Sturmgewebe-Gewitter",
   "spell.stormcaller.thunderclap.description": "Blitznova betäubt {effect_duration_add} Sekunden länger. Bosse werden stattdessen {effect_duration_add} Sekunden länger gebremst.",
   "spell.stormcaller.thunderclap.name": "Donnerschlag",
-  "spell.stormcaller.thunderstorm.description": "Ruft für {cloud_duration} Sekunden eine Gewitterwolke über das Ziel. Jede Sekunde treffen ihre Blitze alle Gegner unter ihr im Umkreis von {cloud_radius} Blöcken und verursachen {damage} Blitzzauber-Schaden.",
+  "spell.stormcaller.thunderstorm.description": "Ruft für {cloud_duration} Sekunden eine Gewitterwolke über das Ziel. Jede Sekunde treffen ihre Blitze bis zu {cloud_max_targets} Gegner unter ihr im Umkreis von {cloud_radius} Blöcken und verursachen {damage} Blitzzauber-Schaden.",
   "spell.stormcaller.thunderstorm.name": "Gewitter",
   "spell.stormcaller.twin_storms.description": "Sturmelementar beschwört {summon_spawn_count_add} weiteren Elementar.",
   "spell.stormcaller.twin_storms.name": "Zwillingsstürme",

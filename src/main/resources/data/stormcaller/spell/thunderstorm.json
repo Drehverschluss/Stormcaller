@@ -86,7 +86,7 @@
       "action": {
         "type": "DAMAGE",
         "damage": {
-          "spell_power_coefficient": 0.33,
+          "spell_power_coefficient": 0.28,
           "knockback": 0.0
         }
       },
@@ -116,6 +116,15 @@
         "custom": {
           "intent": "HARMFUL",
           "handler": "stormcaller:shock/25"
+        }
+      }
+    },
+    {
+      "action": {
+        "type": "CUSTOM",
+        "custom": {
+          "intent": "HARMFUL",
+          "handler": "stormcaller:max_targets/3"
         }
       }
     }

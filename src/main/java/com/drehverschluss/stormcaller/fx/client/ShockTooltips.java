@@ -4,6 +4,7 @@ import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.shock.ShockImpacts;
 import com.drehverschluss.stormcaller.trinket.BallLightning;
+import com.drehverschluss.stormcaller.spell.MaxTargets;
 import com.drehverschluss.stormcaller.spell.SkillMechanics;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +37,8 @@ import net.spell_engine.api.spell.tooltip.TooltipTokens;
  *     modifiers, e.g. Thunderclap),</li>
  *     <li>{@code {cloud_radius_add}}: sum of {@code cloud.radius_add} of the modifiers of a modifier spell (Stormweave
  *     set bonus),</li>
+ *     <li>{@code {cloud_max_targets}}: most enemies one hit pulse of a cloud strikes ({@code stormcaller:max_targets/<n>},
+ *     {@link MaxTargets}),</li>
  *     <li>{@code {static_rain_duration}}, {@code {conductor_cooldown}} (cooldown of Chain Lightning),</li>
  *     <li>{@code {field_duration|radius|damage|shock}}: the cloud spell {@code <id>_field} a spell places (Charged Ground).</li>
  *     <li>{@code {ball_*}}: Ball Lightning (Caged Ball Lightning relic): duration, pulse, range and target count from
@@ -50,6 +53,7 @@ public final class ShockTooltips {
     private static final String RICOCHET_RANGE_ADD = "{ricochet_range_add}";
     private static final String NOVA_STUN = "{nova_stun}";
     private static final String CLOUD_RADIUS_ADD = "{cloud_radius_add}";
+    private static final String CLOUD_MAX_TARGETS = "{cloud_max_targets}";
     private static final String STATIC_RAIN_DURATION = "{static_rain_duration}";
     private static final String CONDUCTOR_COOLDOWN = "{conductor_cooldown}";
     private static final Set<ResourceLocation> OWN = new HashSet<>();
@@ -99,6 +103,9 @@ public final class ShockTooltips {
                 }
             }
             description = description.replace(CLOUD_RADIUS_ADD, TooltipTokens.formattedNumber(radius));
+        }
+        if (description.contains(CLOUD_MAX_TARGETS)) {
+            description = description.replace(CLOUD_MAX_TARGETS, Integer.toString(MaxTargets.of(spell)));
         }
         if (description.contains(NOVA_STUN)) {
             // stun of Lightning Nova from the server config, plus Thunderclap and other effect_duration_add modifiers

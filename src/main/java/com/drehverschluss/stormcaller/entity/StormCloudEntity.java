@@ -1,13 +1,16 @@
 package com.drehverschluss.stormcaller.entity;
 
 import com.drehverschluss.stormcaller.fx.StormcallerFx;
+import com.drehverschluss.stormcaller.spell.MaxTargets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -15,7 +18,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.spell_engine.api.spell.Spell;
 import net.spell_engine.entity.SpellCloud;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Cloud of Thunderstorm: a Spell Engine {@link SpellCloud} (same data, timing and impacts) with three additions.
@@ -25,6 +30,9 @@ import net.spell_engine.entity.SpellCloud;
  *     <li><b>Hit area:</b> a column from the ground up to the cloud base instead of Spell Engine's sphere around the
  *     ground point, so targets hovering above the ground (Blaze, Vex) are hit up to just below the cloud. Done by
  *     {@code mixin/SpellImpactsMixin} through {@link #columnTargets}. Without the mixin the cloud keeps the sphere.</li>
+ *     <li><b>Target limit:</b> one hit pulse strikes at most the number of enemies given by the marker impact
+ *     {@code stormcaller:max_targets/<n>} of the spell, picked at random ({@link MaxTargets}). Also done in
+ *     {@link #columnTargets}.</li>
  *     <li><b>Visuals:</b> a lightning ring of the cloud radius on the ground when it appears. The dark cloud, the
  *     random arcs inside it and the bolts without target are drawn by the client ({@code client.StormCloudRenderer},
  *     {@code fx.client.StormCloudFx}); the bolt to every target per hit comes from the impact
@@ -111,13 +119,16 @@ public class StormCloudEntity extends SpellCloud {
     }
 
     /**
-     * Targets of one impact tick in the column below the cloud.
+     * Targets of one impact tick in the column below the cloud, limited to the target count of the spell.
      *
      * @param origin ground point of the cloud (impact position)
      * @param radius current cloud radius
-     * @param lookup Spell Engine's own area lookup for a given range (line of sight, relations, spectators)
+     * @param lookup Spell Engine's own area lookup for a given range (line of sight, spectators)
+     * @param spell  the cloud's spell (target limit {@code stormcaller:max_targets/<n>}), may be null
+     * @param caster the caster (relations for the limit), may be null
      */
-    public List<Entity> columnTargets(Vec3 origin, float radius, Function<Float, List<Entity>> lookup) {
+    public List<Entity> columnTargets(Vec3 origin, float radius, Function<Float, List<Entity>> lookup,
+                                      @Nullable Holder<Spell> spell, @Nullable LivingEntity caster) {
         double top = cloudBase() - COLUMN_GAP;
         float range = (float) Math.sqrt(radius * radius + (top + 1.0) * (top + 1.0)) + 0.5F;
         List<Entity> result = new ArrayList<>();
@@ -133,7 +144,7 @@ public class StormCloudEntity extends SpellCloud {
                 result.add(entity);
             }
         }
-        return result;
+        return MaxTargets.limit(result, caster, MaxTargets.of(spell, caster), getRandom());
     }
 
     @Override

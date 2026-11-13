@@ -172,7 +172,7 @@
   "spell.stormcaller.stormweave_thunderstorm.name": "Stormweave Thunderstorm",
   "spell.stormcaller.thunderclap.description": "Lightning Nova stuns {effect_duration_add} seconds longer. Bosses are slowed {effect_duration_add} seconds longer instead.",
   "spell.stormcaller.thunderclap.name": "Thunderclap",
-  "spell.stormcaller.thunderstorm.description": "Calls a thunder cloud above the target for {cloud_duration} seconds. Every second its lightning strikes all enemies below it within {cloud_radius} blocks, causing {damage} lightning spell damage.",
+  "spell.stormcaller.thunderstorm.description": "Calls a thunder cloud above the target for {cloud_duration} seconds. Every second its lightning strikes up to {cloud_max_targets} enemies beneath it within {cloud_radius} blocks, causing {damage} lightning spell damage.",
   "spell.stormcaller.thunderstorm.name": "Thunderstorm",
   "spell.stormcaller.twin_storms.description": "Storm Elemental summons {summon_spawn_count_add} more elemental.",
   "spell.stormcaller.twin_storms.name": "Twin Storms",

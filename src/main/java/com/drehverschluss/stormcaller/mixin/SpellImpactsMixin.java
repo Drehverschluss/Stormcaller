@@ -23,7 +23,8 @@ import org.spongepowered.asm.mixin.injection.At;
  *     <li>Thunderstorm cloud: Spell Engine looks up the targets of a cloud in a sphere around its ground point. For a
  *     cloud that floats above the ground that misses targets hovering a bit above the ground (Blaze, Vex). For
  *     {@link StormCloudEntity} the lookup runs with a larger range and is then cut to a column from the ground up to
- *     the cloud base ({@link StormCloudEntity#columnTargets}).</li>
+ *     the cloud base ({@link StormCloudEntity#columnTargets}), and limited to the target count of the spell
+ *     ({@code stormcaller:max_targets/<n>}, {@link com.drehverschluss.stormcaller.spell.MaxTargets}).</li>
  *     <li>Spells in {@code #stormcaller:area/nearest_target} (Forked Spark): only the nearest valid enemy
  *     ({@link NearestTarget}).</li>
  * </ul>
@@ -42,7 +43,8 @@ public abstract class SpellImpactsMixin {
                                                         @Local(argsOnly = true) LivingEntity caster,
                                                         @Local(argsOnly = true, ordinal = 0) Entity exclude) {
         if (center instanceof StormCloudEntity cloud) {
-            return cloud.columnTargets(origin, range, r -> original.call(world, center, origin, look, r, area, predicate));
+            return cloud.columnTargets(origin, range, r -> original.call(world, center, origin, look, r, area, predicate),
+                    spell, caster);
         }
         List<Entity> targets = original.call(world, center, origin, look, range, area, predicate);
         if (spell != null && spell.is(NearestTarget.TAG)) {
