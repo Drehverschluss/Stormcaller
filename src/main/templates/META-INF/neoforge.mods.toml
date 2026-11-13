@@ -9,6 +9,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 displayURL="https://github.com/Drehverschluss/Stormcaller"
 authors="${mod_authors}"
+credits="Unofficial addon for Wizards (RPG Series) by Daedelus, not affiliated with him. Built on Spell Engine, Spell Power Attributes and Armor Model API by Daedelus. See CREDITS.md in the source repository."
 # Pixel art icon: keep it sharp in the mod list
 logoFile="stormcaller_logo.png"
 logoBlur=false
