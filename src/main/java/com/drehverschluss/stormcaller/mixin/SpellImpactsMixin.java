@@ -2,6 +2,8 @@ package com.drehverschluss.stormcaller.mixin;
 
 import com.drehverschluss.stormcaller.entity.StormCloudEntity;
 import com.drehverschluss.stormcaller.spell.NearestTarget;
+import com.drehverschluss.stormcaller.spell.StoredCharge;
+import net.spell_engine.utils.WorldScheduler;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -29,9 +31,19 @@ import org.spongepowered.asm.mixin.injection.At;
  *     ({@link NearestTarget}).</li>
  * </ul>
  * All other area impacts are unchanged.
+ * <p>
+ * Stored Charge (Amber Lightning Staff): tasks that {@code performImpact} schedules (its POST triggers) during the
+ * impacts of a discharging Lightning Bolt are wrapped, so the trigger of the passive can tell that the hit came from the
+ * discharge ({@link StoredCharge#wrapScheduled}). Tasks scheduled at any other time are passed on unchanged.
  */
 @Mixin(SpellImpacts.class)
 public abstract class SpellImpactsMixin {
+    @WrapOperation(method = "performImpact",
+            at = @At(value = "INVOKE", target = "Lnet/spell_engine/utils/WorldScheduler;schedule(ILjava/lang/Runnable;)V"))
+    private static void stormcaller$scheduleImpactTask(WorldScheduler scheduler, int ticks, Runnable task, Operation<Void> original) {
+        original.call(scheduler, ticks, StoredCharge.wrapScheduled(task));
+    }
+
     @WrapOperation(
             method = "lookupAndPerformAreaImpact(Lnet/spell_engine/api/spell/Spell$AreaImpact;Lnet/minecraft/core/Holder;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;Ljava/util/List;Lnet/spell_engine/internals/SpellExecution$ImpactContext;ZLjava/lang/Float;)Z",
             at = @At(value = "INVOKE",

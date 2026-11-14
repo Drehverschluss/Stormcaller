@@ -39,10 +39,14 @@ import net.spell_power.api.SpellPower;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Ball lightning of the Caged Ball Lightning relic (phase 6B.4): a slow ball of lightning that drifts in a straight line,
- * passes through enemies and stops at the first solid block.
+ * Ball lightning (phase 6B.4, staff since phase 10): a slow ball of lightning that drifts in a straight line, passes
+ * through enemies and stops at the first solid block.
  * <ul>
- *     <li>Created by the passive {@code stormcaller:ball_lightning} through {@link BallLightning} (one ball per player).</li>
+ *     <li>Created by the passive {@code stormcaller:ball_lightning} of the Caged Ball Lightning relic (one ball per
+ *     player) or by the active spell {@code stormcaller:ball_lightning_staff} of the Stormbringer Staff (several per
+ *     player), both through {@link BallLightning}. The {@link Source} only decides which helper spells carry the hits:
+ *     passive ones for the relic (they trigger nothing), active ones for the staff (they count as hits of an active
+ *     lightning spell of the player). Everything else is the same.</li>
  *     <li>Moves on both sides with the same synced direction and speed, so the client needs few position updates; the
  *     server decides when it gets stuck at a wall.</li>
  *     <li>Server, every pulse: lightning to the nearest valid enemies in range (impacts of {@code ball_lightning_zap}).
@@ -55,6 +59,14 @@ import org.jetbrains.annotations.Nullable;
  * The client only draws it ({@code fx.client.BallLightningFx}); the entity renderer is a no-op.
  */
 public class BallLightningEntity extends Entity {
+    /** Where a ball comes from. */
+    public enum Source {
+        /** Passive of the Caged Ball Lightning relic: hits through passive helper spells, trigger nothing. */
+        RELIC,
+        /** Active spell of the Stormbringer Staff: hits through active helper spells, trigger like an active lightning spell. */
+        STAFF
+    }
+
     /** Radius of the ball (visual size 0.8 blocks); also the distance it keeps from a wall. */
     public static final double RADIUS = 0.4;
     /** Short fade at the end, no lightning then. */
@@ -76,6 +88,7 @@ public class BallLightningEntity extends Entity {
     private int pulseTicks = 10;
     private double zapRange = 4.0;
     private int maxTargets = 3;
+    private Source source = Source.RELIC;
     private final Set<Integer> discharged = new HashSet<>();
     /** Client: stuck as seen by the local movement, until the server says so too. */
     private boolean localStuck;
@@ -87,9 +100,10 @@ public class BallLightningEntity extends Entity {
     }
 
     /** Server, right after creation. */
-    public void setup(Player owner, Vec3 direction, double blocksPerTick, int lifeTicks, int pulseTicks, double zapRange,
-                      int maxTargets, boolean stuck) {
+    public void setup(Player owner, Source source, Vec3 direction, double blocksPerTick, int lifeTicks, int pulseTicks,
+                      double zapRange, int maxTargets, boolean stuck) {
         this.ownerId = owner.getUUID();
+        this.source = source;
         Vec3 dir = direction.normalize();
         this.entityData.set(DIR_X, (float) dir.x);
         this.entityData.set(DIR_Y, (float) dir.y);
@@ -117,6 +131,11 @@ public class BallLightningEntity extends Entity {
     @Nullable
     public UUID ownerId() {
         return ownerId;
+    }
+
+    /** Server: where the ball comes from (relic or staff). */
+    public Source source() {
+        return source;
     }
 
     public Vec3 direction() {
@@ -225,7 +244,7 @@ public class BallLightningEntity extends Entity {
         if (maxTargets <= 0 || zapRange <= 0.0) {
             return;
         }
-        Holder<Spell> spell = BallLightning.zapSpell(server);
+        Holder<Spell> spell = BallLightning.zapSpell(server, source);
         if (spell == null) {
             return;
         }
@@ -264,7 +283,7 @@ public class BallLightningEntity extends Entity {
         if (touched.isEmpty()) {
             return;
         }
-        Holder<Spell> spell = BallLightning.dischargeSpell(server);
+        Holder<Spell> spell = BallLightning.dischargeSpell(server, source);
         for (LivingEntity target : touched) {
             discharged.add(target.getId());
             StormcallerFx.ball(server, to, new BallFxPayload(BallFxPayload.Kind.DISCHARGE, getId(), target.getId(), to,
@@ -312,7 +331,6 @@ public class BallLightningEntity extends Entity {
         return dx * dx + dy * dy + dz * dz;
     }
 
-    /** Server: pop (visual and sound) and remove. */
     /** Server: ends the ball right away (its owner died), with the small puff of a lost owner. */
     public void ownerDied() {
         if (level() instanceof ServerLevel server && !isRemoved()) {
@@ -320,6 +338,14 @@ public class BallLightningEntity extends Entity {
         }
     }
 
+    /** Server: ends the ball right away with its normal pop (a newer staff ball replaced it at the limit). */
+    public void replaced() {
+        if (level() instanceof ServerLevel server && !isRemoved()) {
+            end(server, true);
+        }
+    }
+
+    /** Server: pop (visual and sound) and remove. */
     private void end(ServerLevel server, boolean pop) {
         Vec3 center = center();
         StormcallerFx.ball(server, center, new BallFxPayload(BallFxPayload.Kind.POP, getId(), -1, center, server.getRandom().nextInt()));

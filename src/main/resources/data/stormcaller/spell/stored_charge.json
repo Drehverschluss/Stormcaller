@@ -1,0 +1,41 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 4,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "SPELL_IMPACT_SPECIFIC",
+        "cap_per_tick": 1,
+        "spell": {
+          "school": "lightning",
+          "type": "ACTIVE"
+        },
+        "impact": {
+          "impact_type": "DAMAGE"
+        },
+        "equipment_condition": "MAINHAND",
+        "caster_conditions": [
+          {
+            "entity_predicate_id": "stormcaller:not_discharge_hit"
+          }
+        ]
+      }
+    ]
+  },
+  "target": {
+    "type": "CASTER"
+  },
+  "deliver": {
+    "type": "CUSTOM",
+    "custom": {
+      "handler": "stormcaller:stored_charge"
+    }
+  },
+  "impacts": [],
+  "cost": {
+    "exhaust": 0.0,
+    "durability": 0
+  }
+}

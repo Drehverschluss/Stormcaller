@@ -86,8 +86,13 @@ public final class StormcallerItems {
     // Spell IDs of the weapon containers. The spells themselves follow in phase 3.
     public static final ResourceLocation SPARK = Stormcaller.id("spark");
     public static final ResourceLocation LIGHTNING_BOLT = Stormcaller.id("lightning_bolt");
-    // Passive of the Stormbringer Staff
+    // Spells of the Stormbringer Staff (besides Lightning Bolt): active Ball Lightning (phase 10), passive Skyfall
+    public static final ResourceLocation BALL_LIGHTNING_STAFF = Stormcaller.id("ball_lightning_staff");
     public static final ResourceLocation SKYFALL = Stormcaller.id("skyfall");
+    // Passive of the Amber Lightning Staff (phase 10)
+    public static final ResourceLocation STORED_CHARGE = Stormcaller.id("stored_charge");
+    /** Lightning Spell Power of the Stormbringer Staff (default of equipment.json; tier 5 gives +8). */
+    private static final float STORMBRINGER_LIGHTNING = 10.0F;
 
     // Tier 4 sets (equipment_set ids) and smithing items
     public static final ResourceLocation FULGURITE_SET = Stormcaller.id("fulgurite");
@@ -169,21 +174,31 @@ public final class StormcallerItems {
         staffNetheriteLightning = Weapons.damageStaff(Stormcaller.MODID, "staff_netherite_lightning", Equipment.Tier.TIER_3, netherite, lightning)
                 .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT));
         List<Weapon.Entry> weapons = new ArrayList<>(List.of(wandLightning, wandNetheriteLightning, staffLightning, staffNetheriteLightning));
-        // Tier 4 like staff_crystal_arcane of Wizards: only with Better End, +8, same spell as the other staves, no
-        // passive; repaired with amber (netherite without Better End). Crafted from Better End items (recipe condition).
+        // Tier 4 like staff_crystal_arcane of Wizards: only with Better End, +8, same spell as the other staves; repaired
+        // with amber (netherite without Better End). Crafted from Better End items (recipe condition). Since phase 10 with
+        // the passive Stored Charge (spell.StoredCharge).
         boolean betterEnd = ModList.get().isLoaded(BETTER_END);
         if (betterEnd || TWEAKS_CONFIG.value.ignore_items_required_mods) {
             Supplier<Ingredient> amber = betterEnd
                     ? () -> Ingredient.of(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(BETTER_END, "amber_gem")))
                     : netherite;
             staffAmberLightning = Weapons.damageStaff(Stormcaller.MODID, "staff_amber_lightning", Equipment.Tier.TIER_4, amber, lightning)
-                    .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT));
+                    .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT))
+                    .withAdditionalSpell(STORED_CHARGE.toString());
             weapons.add(staffAmberLightning);
         }
-        // Unique staff like the unique staves of Arsenal: tier 5 (+8, loot tier 5 via tag), rare, with a passive, no recipe
+        // Unique staff like the unique staves of Arsenal: tier 5 (loot tier 5 via tag), rare, no recipe. Since phase 10 +10
+        // instead of +8 and a second active spell: Lightning Bolt, Ball Lightning (in the spell hotbar), passive Skyfall.
         staffStormbringer = Weapons.damageStaff(Stormcaller.MODID, "staff_stormbringer", Equipment.Tier.TIER_5, netherite, lightning)
                 .spellContainer(SpellContainers.forMagicWeapon().withSpellId(LIGHTNING_BOLT))
+                .withAdditionalSpell(BALL_LIGHTNING_STAFF.toString())
                 .withAdditionalSpell(SKYFALL.toString());
+        // only the default: an equipment.json that already has the staff keeps its value (Spell Engine reads the file first)
+        for (AttributeModifier attribute : staffStormbringer.defaults().attributes) {
+            if (SpellSchools.LIGHTNING.id.toString().equals(attribute.attribute)) {
+                attribute.value = STORMBRINGER_LIGHTNING;
+            }
+        }
         staffStormbringer.rarity = Rarity.RARE;
         weapons.add(staffStormbringer);
         Weapon.register(config.weapons, weapons, TAB_KEY);

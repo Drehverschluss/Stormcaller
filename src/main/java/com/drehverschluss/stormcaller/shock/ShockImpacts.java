@@ -2,6 +2,7 @@ package com.drehverschluss.stormcaller.shock;
 
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
+import com.drehverschluss.stormcaller.spell.StoredCharge;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -66,7 +67,7 @@ public final class ShockImpacts {
             if (!(target instanceof LivingEntity living) || living.level().isClientSide()) {
                 return new SpellHandlers.ImpactResult(false, false);
             }
-            double base = baseChance(spell.value()).orElse(0.0);
+            double base = StoredCharge.shockBase(baseChance(spell.value()).orElse(0.0));
             int extra = extraTicks(spell, caster);
             int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)) + extra;
             return result(ShockHandler.onShockReroll(living, caster, base, ticks, extra));
@@ -88,7 +89,8 @@ public final class ShockImpacts {
             }
             int extra = extraTicks(spell, caster);
             int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)) + extra;
-            return result(ShockHandler.onShockImpact(living, caster, base, ticks, extra));
+            // a discharging Lightning Bolt of the Amber Lightning Staff shocks with the Stored Charge chance
+            return result(ShockHandler.onShockImpact(living, caster, StoredCharge.shockBase(base), ticks, extra));
         });
         return true;
     }

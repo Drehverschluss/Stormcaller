@@ -20,8 +20,8 @@ import net.tiny_config.ConfigManager;
  *     {@code "entity_type_id": "stormcaller:storm_cloud"} in a CLOUD delivery.</li>
  *     <li>{@code stormcaller:static_field}: field on the ground of Static Trap and Charged Ground (skill tree,
  *     {@link StaticFieldEntity}), also a CLOUD delivery.</li>
- *     <li>{@code stormcaller:ball_lightning}: the ball of the Caged Ball Lightning relic ({@link BallLightningEntity}),
- *     created by code, not by a spell delivery.</li>
+ *     <li>{@code stormcaller:ball_lightning}: the ball of the Caged Ball Lightning relic and of the Stormbringer Staff
+ *     ({@link BallLightningEntity}), created by code (custom deliveries in {@code trinket.BallLightning}).</li>
  *     <li>{@code stormcaller:storm_elemental}: the summon of Storm Elemental ({@link StormElementalEntity}). Its base
  *     attributes come from {@code config/stormcaller/summoned_entities.json} (same format as the file of Wizards).</li>
  * </ul>

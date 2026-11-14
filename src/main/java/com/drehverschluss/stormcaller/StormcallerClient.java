@@ -10,6 +10,7 @@ import com.drehverschluss.stormcaller.entity.StormcallerEntities;
 import com.drehverschluss.stormcaller.fx.client.FxClient;
 import com.drehverschluss.stormcaller.fx.client.ShieldAura;
 import com.drehverschluss.stormcaller.fx.client.ShockAura;
+import com.drehverschluss.stormcaller.fx.client.StoredChargeHud;
 import com.drehverschluss.stormcaller.fx.client.ShockTooltips;
 import com.drehverschluss.stormcaller.fx.client.StormbringerStaffRenderer;
 import com.drehverschluss.stormcaller.fx.client.StormcallerClientConfig;
@@ -37,6 +38,7 @@ public class StormcallerClient {
         modEventBus.addListener(ModelEvent.RegisterAdditional.class, StormbringerStaffRenderer::registerModels);
         modEventBus.addListener(ModelEvent.ModifyBakingResult.class, StormbringerStaffRenderer::wrapModel);
         modEventBus.addListener(RegisterClientExtensionsEvent.class, StormbringerStaffRenderer::registerExtensions);
+        modEventBus.addListener(RegisterClientExtensionsEvent.class, StoredChargeHud::register);
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
             event.registerEntityRenderer(StormcallerEntities.STORM_CLOUD, StormCloudRenderer::new);
             event.registerEntityRenderer(StormcallerEntities.STORM_ELEMENTAL, StormElementalRenderer::new);

@@ -96,7 +96,8 @@ public final class StormcallerTrinkets {
     /**
      * {@code config/stormcaller/trinkets.json}: attributes of the jewelry ({@code items}, keyed by item id; relics may get
      * attributes here too), the modifiers of the relic effects ({@code effects}) and the movement, lifetime, pulse, range
-     * and target count of the ball lightning ({@code ball_lightning}, {@link BallLightning.Config}). Chances, durations,
+     * and target count of the ball lightning ({@code ball_lightning}, {@link BallLightning.Config}; relic and Stormbringer
+     * Staff, loaded also without Curios). Chances, durations,
      * cooldowns, damage and shock chances are in the spell files. Read once at startup, changes need a restart. Keep server and client equal (the tooltip reads
      * the client file).
      */

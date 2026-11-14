@@ -1,0 +1,50 @@
+{
+  "school": "spell_power:lightning",
+  "range": 0.0,
+  "tier": 3,
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_area_release"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294928127,
+            "scale": 0.7
+          },
+          "batch": {
+            "count": 12.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.6,
+            "min_speed": 0.08,
+            "max_speed": 0.22
+          }
+        }
+      ]
+    }
+  },
+  "target": {
+    "type": "CASTER"
+  },
+  "deliver": {
+    "type": "CUSTOM",
+    "custom": {
+      "handler": "stormcaller:ball_lightning_staff"
+    }
+  },
+  "impacts": [],
+  "cost": {
+    "exhaust": 0.3,
+    "cooldown": {
+      "duration": 30.0,
+      "hosting_item": false
+    },
+    "item": {
+      "id": "runes:lightning_stone"
+    }
+  }
+}

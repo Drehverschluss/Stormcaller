@@ -4,11 +4,16 @@ import com.drehverschluss.stormcaller.fx.FxSpellHooks;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.drehverschluss.stormcaller.spell.StoredCharge;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.spell_engine.api.spell.Spell;
 import net.spell_engine.entity.SpellProjectile;
+import net.spell_engine.internals.SpellExecution;
+import net.spell_engine.internals.impact.SpellImpacts;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,6 +38,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * <p>
  * Another hook: right before a falling projectile (METEOR) performs its impacts, for the strike from the sky of
  * Lightning Strike.
+ * <p>
+ * Stored Charge (Amber Lightning Staff): while a discharging Lightning Bolt performs the impacts of a hit, its shock
+ * impacts use the Stored Charge chance ({@link StoredCharge}).
  */
 @Mixin(SpellProjectile.class)
 public abstract class SpellProjectileMixin {
@@ -52,6 +60,20 @@ public abstract class SpellProjectileMixin {
         // same point Spell Engine moves the projectile to right after this lookup
         Vec3 center = target.position().add(0.0, target.getBbHeight() * 0.5, 0.0);
         return box.move(center.subtract(self.position()));
+    }
+
+    @WrapOperation(method = "onHitEntity",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/spell_engine/internals/impact/SpellImpacts;projectileImpact(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/Holder;Lnet/spell_engine/internals/SpellExecution$ImpactContext;)Z"))
+    private boolean stormcaller$projectileImpact(LivingEntity caster, Entity projectile, Entity target, Holder<Spell> spell,
+                                                 SpellExecution.ImpactContext context, Operation<Boolean> original) {
+        boolean discharge = StoredCharge.isDischarge(projectile);
+        StoredCharge.beginImpacts(discharge);
+        try {
+            return original.call(caster, projectile, target, spell, context);
+        } finally {
+            StoredCharge.endImpacts(discharge);
+        }
     }
 
     @Inject(method = "ricochetFrom", at = @At("RETURN"))

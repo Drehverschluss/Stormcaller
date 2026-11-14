@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0
+
+- **Stormbringer Staff: Ball Lightning.** The staff gets Ball Lightning as a second active spell (in the spell hotbar,
+  tier 3, instant, 30 s cooldown that Spell Haste shortens). The ball drifts where you look, and its hits count as your
+  lightning spell hits, so they can trigger Skyfall, the Static Lodestone and the Caged Ball Lightning. Up to 3 staff
+  balls at once (`[ball_lightning] max_staff_balls` in `stormcaller-server.toml`); the relic still makes one at most.
+- **Stormbringer Staff: +10 Lightning Spell Power** instead of +8. This is the default of
+  `config/stormcaller/equipment.json`, so an existing file keeps +8. To get +10, set the value of `staff_stormbringer` to
+  10, or delete its entry and it is written again with 10 on the next start.
+- **Amber Lightning Staff: Stored Charge.** Lightning spell hits charge the staff, up to 5 charges (new effect with its own
+  icon). At full charge your next Lightning Bolt jumps to 2 more targets and shocks every target it hits. The hits of that
+  bolt do not charge the staff again. The charge fades 15 s after the last hit. Values in `[stored_charge]` of
+  `stormcaller-server.toml`.
+- **Wizard Robe and Wizard Staff:** the lightning line now always sits right under Frost Spell Power, also when a pack
+  adds more lines (for example mana) in the Wizards config. An entry for `spell_power:lightning` in
+  `config/wizards/equipment_v2.json` is no longer needed for that. An existing one still wins and does no harm.
+
 ## 0.1.0 – First release
 
 - Lightning as a fourth school of magic for Wizards (RPG Series), on NeoForge 1.21.1.

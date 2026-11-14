@@ -18,10 +18,12 @@ import com.drehverschluss.stormcaller.shock.StormcallerEffects;
 import com.drehverschluss.stormcaller.spell.NearestTarget;
 import com.drehverschluss.stormcaller.spell.SkillMechanics;
 import com.drehverschluss.stormcaller.spell.StaticShield;
+import com.drehverschluss.stormcaller.spell.StoredCharge;
 import com.drehverschluss.stormcaller.trinket.BallLightning;
 import com.drehverschluss.stormcaller.trinket.StormcallerTrinkets;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -50,7 +52,8 @@ public class Stormcaller {
         modEventBus.addListener(RegisterEvent.class, StormcallerTrinkets::onRegister);
         modEventBus.addListener(RegisterEvent.class, StormcallerEntities::onRegister);
         StaticShield.init();
-        NeoForge.EVENT_BUS.addListener(ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
+        // HIGHEST: sorts the lightning line in before other mods append theirs (WizardsTierOne)
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
         NeoForge.EVENT_BUS.addListener(VillagerTradesEvent.class, WizardMerchantTrades::onVillagerTrades);
         ShockHandler.register();
         modEventBus.addListener(RegisterPayloadHandlersEvent.class, StormcallerFx::registerPayloads);
@@ -58,6 +61,7 @@ public class Stormcaller {
         FxSpellHooks.register();
         NearestTarget.init();
         BallLightning.init();
+        StoredCharge.init();
         SkillMechanics.init();
         if (SkillTab.enabled()) {
             // Stormcaller skill tab: built-in data pack, respec, class lock (Skill Tree classes only behind this check)

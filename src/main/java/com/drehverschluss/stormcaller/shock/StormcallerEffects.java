@@ -47,6 +47,13 @@ public final class StormcallerEffects {
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, Stormcaller.id("static_rain"), -STATIC_RAIN_PER_STAGE,
                             AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 
+    /**
+     * Amber Lightning Staff, Stored Charge: stage = charges (1 to {@code [stored_charge] max_charges}). At full charge the
+     * next Lightning Bolt cast with the staff discharges ({@link com.drehverschluss.stormcaller.spell.StoredCharge}).
+     */
+    public static final DeferredHolder<MobEffect, MobEffect> STORED_CHARGE = EFFECTS.register("stored_charge",
+            () -> new CustomStatusEffect(MobEffectCategory.BENEFICIAL, 0xF2A93B));
+
     private StormcallerEffects() {}
 
     public static void register(IEventBus modBus) {

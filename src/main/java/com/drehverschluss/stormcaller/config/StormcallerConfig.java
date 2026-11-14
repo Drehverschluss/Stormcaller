@@ -32,6 +32,14 @@ public final class StormcallerConfig {
 
     public static final ModConfigSpec.BooleanValue SKILL_TREE_CLASS_LOCK;
 
+    public static final ModConfigSpec.IntValue BALL_MAX_STAFF_BALLS;
+
+    public static final ModConfigSpec.IntValue STORED_CHARGE_MAX;
+    public static final ModConfigSpec.IntValue STORED_CHARGE_EXTRA_RICOCHETS;
+    public static final ModConfigSpec.DoubleValue STORED_CHARGE_DECAY_SECONDS;
+    public static final ModConfigSpec.DoubleValue STORED_CHARGE_SHOCK_CHANCE;
+    public static final ModConfigSpec.BooleanValue STORED_CHARGE_DISCHARGE_HITS_CHARGE;
+
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
@@ -125,6 +133,40 @@ public final class StormcallerConfig {
                 .comment("Stormcaller counts as a class: a player with a class (root) in the Class Skills tab of Skill Tree",
                          "cannot take the Stormcaller root, and the other way round. Players who already have both keep them.")
                 .define("class_lock", true);
+        builder.pop();
+
+        builder.comment("Ball Lightning. Chance, cooldown, damage and shock chance are in the spell files (data pack),",
+                        "movement, lifetime, pulse, range and target count in config/stormcaller/trinkets.json.")
+                .push("ball_lightning");
+        BALL_MAX_STAFF_BALLS = builder
+                .comment("Most balls of the Stormbringer Staff (spell stormcaller:ball_lightning_staff) one player can have at",
+                         "once. Each staff ball lives its full time; when the limit is reached, casting again ends the oldest",
+                         "staff ball. The ball of the Caged Ball Lightning relic counts on its own (always one at most).")
+                .defineInRange("max_staff_balls", 3, 1, 10);
+        builder.pop();
+
+        builder.comment("Stored Charge, the passive of the Amber Lightning Staff (main hand). Every hit of an active",
+                        "lightning spell with damage gives one charge (at most one per tick; the trigger is in the spell",
+                        "file stormcaller:stored_charge). At full charge the next Lightning Bolt cast with the staff",
+                        "discharges: it ricochets to more targets and its hits shock. Then the charge is empty.")
+                .push("stored_charge");
+        STORED_CHARGE_MAX = builder
+                .comment("Charges for a full staff (stages of the effect 'Stored Charge').")
+                .defineInRange("max_charges", 5, 1, 50);
+        STORED_CHARGE_EXTRA_RICOCHETS = builder
+                .comment("Extra ricochets of the discharging Lightning Bolt (added to the ricochets of the spell and its modifiers).")
+                .defineInRange("extra_ricochets", 2, 0, 20);
+        STORED_CHARGE_DECAY_SECONDS = builder
+                .comment("The whole charge is lost this many seconds after the last hit that charged it (also a full one).")
+                .defineInRange("decay_seconds", 15.0, 1.0, 600.0);
+        STORED_CHARGE_SHOCK_CHANCE = builder
+                .comment("Base shock chance of every hit of the discharging Lightning Bolt (1.0 = always shocks; bosses are",
+                         "slowed instead of stunned, as with every shock). Replaces the base chance of the spell for those hits.")
+                .defineInRange("discharge_shock_chance", 1.0, 0.0, 1.0);
+        STORED_CHARGE_DISCHARGE_HITS_CHARGE = builder
+                .comment("true: the hits of the discharging Lightning Bolt charge the staff again (in groups of 5 or more enemies it",
+                         "is full again right away). false: they give no charge, the staff fills only through later hits.")
+                .define("discharge_hits_charge", false);
         builder.pop();
 
         SPEC = builder.build();

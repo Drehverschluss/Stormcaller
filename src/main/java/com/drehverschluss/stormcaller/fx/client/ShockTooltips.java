@@ -6,9 +6,12 @@ import com.drehverschluss.stormcaller.shock.ShockImpacts;
 import com.drehverschluss.stormcaller.trinket.BallLightning;
 import com.drehverschluss.stormcaller.spell.MaxTargets;
 import com.drehverschluss.stormcaller.spell.SkillMechanics;
+import com.drehverschluss.stormcaller.spell.StoredCharge;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.player.Player;
 import net.spell_engine.internals.SpellModifiers;
+import net.spell_engine.internals.impact.SpellEstimation;
+import net.minecraft.world.item.ItemStack;
 import net.spell_power.api.SpellPower;
 import java.util.HashSet;
 import java.util.OptionalDouble;
@@ -44,12 +47,17 @@ import net.spell_engine.api.spell.tooltip.TooltipTokens;
  *     <li>{@code {ball_*}}: Ball Lightning (Caged Ball Lightning relic): duration, pulse, range and target count from
  *     {@code trinkets.json}, damage and shock chance of the spells {@code ball_lightning_zap} and
  *     {@code ball_lightning_discharge}, cooldown of the passive. The shock chance is written in the text, so no shock
- *     line is added.</li>
+ *     line is added. The staff spell {@code ball_lightning_staff} reads its own helper spells
+ *     ({@code ball_lightning_staff_zap|discharge}) and has {@code {ball_staff_max}} (server config).</li>
+ *     <li>{@code {charge_*}}: Stored Charge of the Amber Lightning Staff ({@code [stored_charge]} of the server config):
+ *     max, ricochet, decay, shock, {@code {charge_discharge_note}} (half sentence "its hits do not charge", empty with
+ *     {@code discharge_hits_charge = true}).</li>
  * </ul>
  */
 public final class ShockTooltips {
     private static final String CHANCE_KEY = "spell.tooltip.stormcaller.shock_chance";
     private static final String ALWAYS_KEY = "spell.tooltip.stormcaller.shock_always";
+    private static final String DISCHARGE_NOTE_KEY = "spell.tooltip.stormcaller.stored_charge.discharge_no_charge";
     private static final String RICOCHET_RANGE_ADD = "{ricochet_range_add}";
     private static final String NOVA_STUN = "{nova_stun}";
     private static final String CLOUD_RADIUS_ADD = "{cloud_radius_add}";
@@ -129,16 +137,30 @@ public final class ShockTooltips {
             description = fieldTokens(description, entry, player);
         }
         if (description.contains("{ball_")) {
-            description = ballTokens(description, spell, player);
+            description = ballTokens(description, entry, player);
+        }
+        if (description.contains("{charge_")) {
+            description = description
+                    .replace("{charge_max}", Integer.toString(StoredCharge.maxCharges()))
+                    .replace("{charge_ricochet}", Integer.toString(StoredCharge.extraRicochets()))
+                    .replace("{charge_decay}", TooltipTokens.formattedNumber((float) StoredCharge.decaySeconds()))
+                    .replace("{charge_shock}", percent(StoredCharge.dischargeShockChance()))
+                    .replace("{charge_discharge_note}", StoredCharge.dischargeHitsCharge() ? ""
+                            : Language.getInstance().getOrDefault(DISCHARGE_NOTE_KEY, "; its hits do not charge"));
         }
         return description;
     }
 
     /** Tokens of the Ball Lightning description, see the class comment. */
-    private static String ballTokens(String description, Spell spell, Player player) {
+    private static String ballTokens(String description, Holder<Spell> entry, Player player) {
+        Spell spell = entry.value();
         BallLightning.Config config = BallLightning.config();
-        Spell zap = spell(BallLightning.ZAP_SPELL);
-        Spell discharge = spell(BallLightning.DISCHARGE_SPELL);
+        boolean staff = entry.is(BallLightning.STAFF_SPELL);
+        Spell zap = spell(staff ? BallLightning.STAFF_ZAP_SPELL : BallLightning.ZAP_SPELL);
+        Spell discharge = spell(staff ? BallLightning.STAFF_DISCHARGE_SPELL : BallLightning.DISCHARGE_SPELL);
+        // staff: like Spell Engine's {damage}, the real power while the staff is in the main hand, otherwise only the
+        // staff's own bonus (the tooltip of a staff in the inventory)
+        ItemStack weapon = staff ? stormbringerStack(player) : ItemStack.EMPTY;
         float cooldown = spell.cost == null || spell.cost.cooldown == null ? 0.0F : spell.cost.cooldown.duration;
         return description
                 .replace("{ball_duration}", TooltipTokens.formattedNumber(config.duration_seconds))
@@ -146,16 +168,45 @@ public final class ShockTooltips {
                 .replace("{ball_range}", TooltipTokens.formattedNumber(config.range))
                 .replace("{ball_targets}", Integer.toString(config.max_targets))
                 .replace("{ball_cooldown}", TooltipTokens.formattedNumber(cooldown))
-                .replace("{ball_zap_damage}", damageOf(zap, player))
+                .replace("{ball_zap_damage}", damageOf(zap, player, weapon))
                 .replace("{ball_zap_shock}", shockOf(zap))
-                .replace("{ball_discharge_damage}", damageOf(discharge, player))
-                .replace("{ball_discharge_shock}", shockOf(discharge));
+                .replace("{ball_discharge_damage}", damageOf(discharge, player, weapon))
+                .replace("{ball_discharge_shock}", shockOf(discharge))
+                .replace("{ball_staff_max}", Integer.toString(BallLightning.maxStaffBalls()));
     }
 
-    /** Damage of the first DAMAGE impact of a spell for the player's spell power (without crits). */
-    private static String damageOf(Spell spell, Player player) {
+    /** 0..1 as "10%" / "12.5%". */
+    private static String percent(double value) {
+        double percent = Math.round(value * 1000.0) / 10.0;
+        String number = percent == Math.rint(percent) ? Integer.toString((int) percent) : Double.toString(percent);
+        return number + "%";
+    }
+
+    /** The Stormbringer Staff the player holds, else a fresh one (its own bonus only), else empty. */
+    private static ItemStack stormbringerStack(Player player) {
+        var entry = com.drehverschluss.stormcaller.item.StormcallerItems.staffStormbringer;
+        if (entry == null || entry.item() == null) {
+            return ItemStack.EMPTY;
+        }
+        if (player != null && player.getMainHandItem().is(entry.item())) {
+            return player.getMainHandItem();
+        }
+        return new ItemStack(entry.item());
+    }
+
+    /**
+     * Damage of the first DAMAGE impact of a spell without crits. With a weapon: Spell Engine's estimation for that stack
+     * (real power when it is equipped, else only its flat bonus), otherwise the player's spell power.
+     */
+    private static String damageOf(Spell spell, Player player, ItemStack weapon) {
         if (spell == null) {
             return "?";
+        }
+        if (player != null && !weapon.isEmpty()) {
+            var damage = SpellEstimation.estimate(spell, player, weapon).damage();
+            if (!damage.isEmpty()) {
+                return TooltipTokens.formattedNumber((float) damage.get(0).min());
+            }
         }
         float coefficient = 0.0F;
         for (Spell.Impact impact : spell.impacts) {
