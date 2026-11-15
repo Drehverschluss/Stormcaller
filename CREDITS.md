@@ -10,9 +10,10 @@ original author.
 
 ## Assets
 
-All textures, models and icons in the jar are my own work: the robe models and textures of all four robes, the item
-icons, the Stormbringer Staff model, the spell, effect and skill icons, the skill tab background and the mod logo. The storm cloud, the Storm Elemental and the lightning effects are drawn by code and have no textures from other
-mods.
+All textures, models and icons in the jar are my own work: the robe models and textures of all four robes (the default
+look and the original look in the built-in resource pack), the item icons, the Stormbringer Staff model, the spell,
+effect and skill icons, the skill tab background and the mod logo. The storm cloud, the Storm Elemental and the
+lightning effects are drawn by code and have no textures from other mods.
 
 Models, textures and sounds of other mods are **only referenced by their id and not bundled**:
 

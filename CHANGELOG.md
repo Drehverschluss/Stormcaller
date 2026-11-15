@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.0
+
+- **New default look for all four lightning robes**, in the style of the Wizards robes. I made the models and textures
+  myself from scratch, no files from other mods are used.
+  - Lightning Robe (tier 2) and Netherite Lightning Robe (tier 3): storm violet with a pointed wizard hat and
+    yellow-white lightning bolts, tier 3 with netherite grey.
+  - Fulgurite Robe: lightning yellow and storm anthracite with a crystal-crowned hat.
+  - Stormweave Robe: storm grey with silver trims, a cloud wreath around the hat, a small blue rune and calmer shoulders.
+  - New item icons for the robe pieces (Stormweave: hat and top; its bottom and boots stay as they were).
+  - Only the glowing bolts, runes and crystals light up at night, tier 4 a little more.
+  - Values, recipes, spells, items and item ids are the same, so robes you already wear just change their look.
+- **The old look is still there:** the built-in resource pack **Stormcaller_Original_Armor** brings back the robes of
+  0.1/0.2 (models, textures, glow and icons). Turn it on in *Options → Resource Packs* (move it to the right, *Done*).
+  It works right away without a restart and only on your own client: every player sees all robes in the look they
+  picked, and servers need nothing. Pack id for modpacks (`resourcePacks` in `options.txt`):
+  `mod/stormcaller:resourcepacks/stormcaller_original_armor`.
+- **Shock: stun pause.** After a stun, the same target can't be stunned by shocks again for 2 seconds
+  (`[shock] stun_pause_seconds` in `stormcaller-server.toml`, 0 turns it off). Shocks still add stages of Shocked in
+  that time. The pause is per target, for all players together. Lightning Nova always stuns and restarts the pause.
+  Stuns from other mods are left alone. Before, a single big enemy could be stunned about 40 % of the time on tier 4,
+  now at most 20 %.
+- **Config:** `[ricochet] fix_all_spells` is now called `fix_ricochet_all_spells`. An existing value is carried over
+  automatically on the first start (one line in the log), afterwards only the new name is in the file.
+
 ## 0.2.0
 
 - **Stormbringer Staff: Ball Lightning.** The staff gets Ball Lightning as a second active spell (in the spell hotbar,

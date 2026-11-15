@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/00-banner.png" alt="Stormcaller (RPG Series Plus)">
+  <img src="docs/images/0.3.0/00-banner.png" alt="Stormcaller (RPG Series Plus)">
 </p>
 
 # Stormcaller (RPG Series Plus)
@@ -10,6 +10,22 @@ Stormcaller is an unofficial addon for [Wizards (RPG Series)](https://www.cursef
 
 - Minecraft 1.21.1 / NeoForge
 - Install it on both client and server.
+
+<p align="center">
+  <img src="docs/images/0.3.0/07-ausruestung.png" alt="The lightning robes">
+</p>
+
+## New robe look in 0.3.0
+
+Since 0.3.0 the robes have a new default look in the style of the Wizards robes. I made the models and textures myself
+from scratch, no files from other mods are used. The old look of 0.1/0.2 is still built in as the resource pack
+**Stormcaller_Original_Armor**: turn it on in *Options → Resource Packs* (move it to the right, *Done*). It works without
+a restart, only changes what you see on your own client, and servers need nothing. Pack id for modpacks:
+`mod/stormcaller:resourcepacks/stormcaller_original_armor`.
+
+<p align="center">
+  <img src="docs/images/0.3.0/11-vorher-nachher.png" alt="New default look and original look">
+</p>
 
 ## Required
 

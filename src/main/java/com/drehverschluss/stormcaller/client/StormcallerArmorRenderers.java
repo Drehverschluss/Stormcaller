@@ -10,11 +10,16 @@ import net.spell_engine.rpg_series.item.Armor;
 /**
  * Armor looks of the lightning robes, each a model with a texture and a glow mask ({@code <texture>_glowmask.png}).
  * <p>
- * Tier 2 uses {@code stormcaller:geo/lightning_robe.geo.json}. Tier 3 has its own shape
- * ({@code netherite_lightning_robe.geo.json}: the tier 2 robe with netherite shoulder plates, bracers and a long hood
- * back) on the same UV layout. Fulgurite (tier 4) has its own model ({@code fulgurite_robe.geo.json}, glass plates with
- * glowing cracks, crystal prisms). Stormweave (tier 4) has its own model ({@code stormweave_robe.geo.json}, grey cloth
- * with a cloud mantle, silver edges and blue glowing bolts and threads).
+ * Default look since 0.3.0, in the style of the Wizards robes: a robe with a pointed wizard hat. Tier 2 and tier 3 share
+ * one shape ({@code stormcaller:geo/lightning_robe.geo.json} and the identical {@code netherite_lightning_robe.geo.json})
+ * and differ only by their texture (storm violet, tier 3 with netherite grey). Fulgurite (tier 4,
+ * {@code fulgurite_robe.geo.json}) and Stormweave (tier 4, {@code stormweave_robe.geo.json}) have their own models with
+ * a richer hat that bends backwards: Fulgurite in lightning yellow with a crystal crown, Stormweave in storm grey with a
+ * silver brim, a cloud wreath and calmer shoulders. Only the lightning bolts, runes and crystals glow.
+ * <p>
+ * Every set has its own model id, so a resource pack can change each one on its own. The look of 0.1/0.2 comes as the
+ * built-in client pack {@code stormcaller_original_armor} ({@link OriginalArmorPack}), which replaces the same model,
+ * texture, glow mask and icon files.
  */
 public final class StormcallerArmorRenderers {
     private static final ResourceLocation ROBE_MODEL = Stormcaller.id("geo/lightning_robe.geo.json");
