@@ -50,8 +50,9 @@ public final class ClassLock {
         NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, event -> SENT.clear());
     }
 
+    /** Switched on in the config and the own Stormcaller tab is loaded (in the Class Skills tab exclusive_root does it). */
     public static boolean enabled() {
-        return StormcallerConfig.get(StormcallerConfig.SKILL_TREE_CLASS_LOCK);
+        return StormcallerConfig.get(StormcallerConfig.SKILL_TREE_CLASS_LOCK) && BranchTransition.ownTabActive();
     }
 
     private static void onUnlock(ServerPlayer player, ResourceLocation categoryId, String skillId) {
@@ -75,13 +76,14 @@ public final class ClassLock {
         boolean enabled = enabled();
         boolean stormcallerBlocked = unlockedCount(player, SkillTab.CLASS_CATEGORY) > 0;
         boolean classBlocked = unlockedCount(player, SkillTab.STORMCALLER_CATEGORY) > 0;
-        int bits = bits(enabled, stormcallerBlocked, classBlocked);
+        boolean classTree = BranchTransition.classBranchActive();
+        int bits = bits(enabled, stormcallerBlocked, classBlocked) | (classTree ? 8 : 0);
         Integer last = SENT.get(player.getUUID());
         if (!force && toast == ClassLockPayload.TOAST_NONE && last != null && last == bits) {
             return;
         }
         SENT.put(player.getUUID(), bits);
-        PacketDistributor.sendToPlayer(player, new ClassLockPayload(enabled, stormcallerBlocked, classBlocked, toast));
+        PacketDistributor.sendToPlayer(player, new ClassLockPayload(enabled, stormcallerBlocked, classBlocked, classTree, toast));
     }
 
     private static int bits(boolean enabled, boolean stormcallerBlocked, boolean classBlocked) {

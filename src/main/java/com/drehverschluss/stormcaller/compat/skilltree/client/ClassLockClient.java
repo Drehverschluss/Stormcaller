@@ -15,14 +15,14 @@ import net.neoforged.neoforge.common.NeoForge;
  * mixin and the root tooltip, and the toast after a blocked unlock. Free of Skill Tree and Pufferfish's Skills classes.
  */
 public final class ClassLockClient {
-    private static volatile ClassLockPayload state = new ClassLockPayload(false, false, false, ClassLockPayload.TOAST_NONE);
+    private static volatile ClassLockPayload state = new ClassLockPayload(false, false, false, false, ClassLockPayload.TOAST_NONE);
 
     private ClassLockClient() {}
 
     public static void init() {
         ClassLockPayload.setClientHandler(ClassLockClient::accept);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class,
-                event -> state = new ClassLockPayload(false, false, false, ClassLockPayload.TOAST_NONE));
+                event -> state = new ClassLockPayload(false, false, false, false, ClassLockPayload.TOAST_NONE));
     }
 
     private static void accept(ClassLockPayload payload) {
@@ -38,6 +38,11 @@ public final class ClassLockClient {
 
     public static boolean enabled() {
         return state.enabled();
+    }
+
+    /** The Stormcaller branch is in the Class Skills tab of Skill Tree. */
+    public static boolean classTree() {
+        return state.classTree();
     }
 
     public static boolean stormcallerBlocked() {

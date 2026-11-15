@@ -1,6 +1,7 @@
 package com.drehverschluss.stormcaller.config;
 
 import net.neoforged.fml.config.IConfigSpec;
+import java.util.Arrays;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
@@ -36,6 +37,8 @@ public final class StormcallerConfig {
 
     public static final ModConfigSpec.BooleanValue TRADES_WIZARD_MERCHANT;
 
+    public static final ModConfigSpec.ConfigValue<String> SKILL_TREE_MODE;
+    public static final ModConfigSpec.ConfigValue<String> SKILL_TREE_CLASS_TREE_LAYOUT;
     public static final ModConfigSpec.BooleanValue SKILL_TREE_CLASS_LOCK;
 
     public static final ModConfigSpec.IntValue BALL_MAX_STAFF_BALLS;
@@ -141,11 +144,31 @@ public final class StormcallerConfig {
                 .define("wizard_merchant", true);
         builder.pop();
 
-        builder.comment("Stormcaller skill tab (only with Skill Tree (RPG Series) installed).")
+        builder.comment("Stormcaller skills (only with Skill Tree (RPG Series) installed).")
                 .push("skill_tree");
+        SKILL_TREE_MODE = builder
+                .comment("Where the Stormcaller branch goes.",
+                         "auto: into the Class Skills tab of Skill Tree, next to the other classes. With More RPG Classes - Skill Tree",
+                         "  installed, into an own Stormcaller tab instead.",
+                         "own_tab: always into the own Stormcaller tab.",
+                         "class_tree: into the Class Skills tab, also with More RPG Classes - Skill Tree (then into its circle).",
+                         "If the branch cannot be added to the Class Skills tab (unknown layout, data errors), the own tab is used",
+                         "and the log says why. Changing it moves the branch: nodes taken in the old place are reset and their",
+                         "points can be spent again. Takes effect on /reload or restart.")
+                // Arrays.asList: the check must accept null (List.of throws when a new config file is made)
+                .defineInList("mode", "auto", Arrays.asList("auto", "own_tab", "class_tree"));
+        SKILL_TREE_CLASS_TREE_LAYOUT = builder
+                .comment("How the branch gets its place in the Class Skills tab.",
+                         "respace: all branches of the circle are spread out evenly again, the Stormcaller root sits on the same",
+                         "  circle as the others (all branches move a little further out if needed). Only positions change.",
+                         "gap: the other branches stay where they are, the Stormcaller branch starts further out between two of them.",
+                         "respace falls back to gap if the circle is not regular. The place and the spacing are data:",
+                         "data/stormcaller/stormcaller_skill_tree/class_branch.json")
+                .defineInList("class_tree_layout", "respace", Arrays.asList("respace", "gap"));
         SKILL_TREE_CLASS_LOCK = builder
-                .comment("Stormcaller counts as a class: a player with a class (root) in the Class Skills tab of Skill Tree",
-                         "cannot take the Stormcaller root, and the other way round. Players who already have both keep them.")
+                .comment("Own Stormcaller tab only: a player with a class (root) in the Class Skills tab of Skill Tree cannot take",
+                         "the Stormcaller root, and the other way round. Players who already have both keep them.",
+                         "In the Class Skills tab itself only one class can be taken anyway.")
                 .define("class_lock", true);
         builder.pop();
 
@@ -205,6 +228,11 @@ public final class StormcallerConfig {
 
     /** Value of a config entry, or its default while the server config is not loaded (e.g. in the main menu). */
     public static double get(ModConfigSpec.DoubleValue value) {
+        return SPEC.isLoaded() ? value.get() : value.getDefault();
+    }
+
+    /** Value of a config entry, or its default while the server config is not loaded (e.g. in the main menu). */
+    public static String get(ModConfigSpec.ConfigValue<String> value) {
         return SPEC.isLoaded() ? value.get() : value.getDefault();
     }
 }

@@ -1,0 +1,600 @@
+{
+  "_comment": [
+    "Place of the Stormcaller branch in the Class Skills tab of Skill Tree (RPG Series). Read on every load (/reload).",
+    "Data packs may replace this file. Titles, texts, icons and rewards come from the own tab:",
+    "stormcaller:puffish_skills/categories/stormcaller/definitions.json (nodes map to definitions like its skills.json).",
+    "forms: the form whose root_radius is closest to the circle in the loaded data is used.",
+    "  nodes: [along the branch axis from the root, to the side]; links: the connections of the branch.",
+    "  place: the branch goes after the root with the definition 'after' (going clockwise), ideally right before 'before'.",
+    "min_node_distance / min_line_distance: room between two branches (node centre to node centre / to a line).",
+    "respace: all branches spread out evenly; if they get too close, all move outwards in shift_step steps up to max_shift.",
+    "  The circle must be regular (radius and angle steps within the tolerances), otherwise gap is used.",
+    "gap: the other branches stay, the Stormcaller root moves outwards in a gap up to max_root_radius."
+  ],
+  "min_node_distance": 34,
+  "min_line_distance": 17,
+  "respace": {
+    "max_shift": 160,
+    "shift_step": 4,
+    "radius_tolerance": 2.0,
+    "angle_tolerance": 1.0
+  },
+  "gap": {
+    "max_root_radius": 1200,
+    "step": 4
+  },
+  "forms": [
+    {
+      "name": "skill_tree",
+      "root_radius": 96,
+      "place": {
+        "after": "archer_root",
+        "before": "arcane_root"
+      },
+      "nodes": {
+        "root": [
+          0,
+          0
+        ],
+        "passive_1_a": [
+          62,
+          -25
+        ],
+        "passive_1_b": [
+          62,
+          25
+        ],
+        "boost_1": [
+          96,
+          0
+        ],
+        "tier_2_a": [
+          122,
+          -50
+        ],
+        "tier_2_b": [
+          122,
+          50
+        ],
+        "tier_2_a_mod_1": [
+          149,
+          -74
+        ],
+        "tier_2_a_mod_2": [
+          159,
+          -25
+        ],
+        "tier_2_b_mod_1": [
+          159,
+          25
+        ],
+        "tier_2_b_mod_2": [
+          149,
+          74
+        ],
+        "passive_2_a": [
+          223,
+          -25
+        ],
+        "passive_2_b": [
+          223,
+          25
+        ],
+        "tier_3_a": [
+          252,
+          -50
+        ],
+        "tier_3_b": [
+          252,
+          50
+        ],
+        "boost_2": [
+          256,
+          0
+        ],
+        "tier_3_a_mod_1": [
+          313,
+          -75
+        ],
+        "tier_3_a_mod_2": [
+          319,
+          -25
+        ],
+        "tier_3_b_mod_1": [
+          319,
+          25
+        ],
+        "tier_3_b_mod_2": [
+          313,
+          75
+        ],
+        "passive_3_a": [
+          383,
+          -25
+        ],
+        "passive_3_b": [
+          383,
+          25
+        ],
+        "tier_4_a": [
+          414,
+          -50
+        ],
+        "tier_4_b": [
+          414,
+          50
+        ],
+        "boost_3": [
+          416,
+          0
+        ],
+        "tier_4_a_mod_1": [
+          475,
+          -75
+        ],
+        "tier_4_a_mod_2": [
+          479,
+          -25
+        ],
+        "tier_4_b_mod_1": [
+          479,
+          25
+        ],
+        "tier_4_b_mod_2": [
+          475,
+          75
+        ]
+      },
+      "links": {
+        "normal": [
+          [
+            "root",
+            "boost_1"
+          ],
+          [
+            "boost_1",
+            "passive_1_a"
+          ],
+          [
+            "boost_1",
+            "passive_1_b"
+          ],
+          [
+            "boost_2",
+            "passive_2_a"
+          ],
+          [
+            "boost_2",
+            "passive_2_b"
+          ],
+          [
+            "boost_3",
+            "passive_3_a"
+          ],
+          [
+            "boost_3",
+            "passive_3_b"
+          ],
+          [
+            "boost_1",
+            "boost_2"
+          ],
+          [
+            "boost_2",
+            "boost_3"
+          ],
+          [
+            "boost_1",
+            "tier_2_a"
+          ],
+          [
+            "tier_2_a",
+            "tier_2_a_mod_1"
+          ],
+          [
+            "tier_2_a",
+            "tier_2_a_mod_2"
+          ],
+          [
+            "boost_1",
+            "tier_2_b"
+          ],
+          [
+            "tier_2_b",
+            "tier_2_b_mod_1"
+          ],
+          [
+            "tier_2_b",
+            "tier_2_b_mod_2"
+          ],
+          [
+            "boost_2",
+            "tier_3_a"
+          ],
+          [
+            "tier_3_a",
+            "tier_3_a_mod_1"
+          ],
+          [
+            "tier_3_a",
+            "tier_3_a_mod_2"
+          ],
+          [
+            "boost_2",
+            "tier_3_b"
+          ],
+          [
+            "tier_3_b",
+            "tier_3_b_mod_1"
+          ],
+          [
+            "tier_3_b",
+            "tier_3_b_mod_2"
+          ],
+          [
+            "boost_3",
+            "tier_4_a"
+          ],
+          [
+            "tier_4_a",
+            "tier_4_a_mod_1"
+          ],
+          [
+            "tier_4_a",
+            "tier_4_a_mod_2"
+          ],
+          [
+            "boost_3",
+            "tier_4_b"
+          ],
+          [
+            "tier_4_b",
+            "tier_4_b_mod_1"
+          ],
+          [
+            "tier_4_b",
+            "tier_4_b_mod_2"
+          ]
+        ],
+        "exclusive": [
+          [
+            "passive_1_a",
+            "passive_1_b"
+          ],
+          [
+            "passive_2_a",
+            "passive_2_b"
+          ],
+          [
+            "passive_3_a",
+            "passive_3_b"
+          ],
+          [
+            "tier_2_a",
+            "tier_2_b"
+          ],
+          [
+            "tier_2_a_mod_1",
+            "tier_2_a_mod_2"
+          ],
+          [
+            "tier_2_b_mod_1",
+            "tier_2_b_mod_2"
+          ],
+          [
+            "tier_3_a",
+            "tier_3_b"
+          ],
+          [
+            "tier_3_a_mod_1",
+            "tier_3_a_mod_2"
+          ],
+          [
+            "tier_3_b_mod_1",
+            "tier_3_b_mod_2"
+          ],
+          [
+            "tier_4_a",
+            "tier_4_b"
+          ],
+          [
+            "tier_4_a_mod_1",
+            "tier_4_a_mod_2"
+          ],
+          [
+            "tier_4_b_mod_1",
+            "tier_4_b_mod_2"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "more_rpg_classes",
+      "root_radius": 124,
+      "place": {
+        "after": "frost_root",
+        "before": "air_root"
+      },
+      "nodes": {
+        "root": [
+          0,
+          0
+        ],
+        "passive_1_a": [
+          123,
+          -20
+        ],
+        "passive_1_b": [
+          123,
+          20
+        ],
+        "boost_1": [
+          186,
+          0
+        ],
+        "tier_2_a": [
+          185,
+          -31
+        ],
+        "tier_2_b": [
+          185,
+          31
+        ],
+        "tier_2_a_mod_1": [
+          215,
+          -41
+        ],
+        "tier_2_a_mod_2": [
+          247,
+          -20
+        ],
+        "tier_2_b_mod_1": [
+          215,
+          41
+        ],
+        "tier_2_b_mod_2": [
+          247,
+          20
+        ],
+        "passive_2_a": [
+          277,
+          -41
+        ],
+        "passive_2_b": [
+          277,
+          41
+        ],
+        "boost_2": [
+          310,
+          0
+        ],
+        "tier_3_a": [
+          339,
+          -41
+        ],
+        "tier_3_b": [
+          339,
+          41
+        ],
+        "tier_3_a_mod_1": [
+          368,
+          -61
+        ],
+        "tier_3_a_mod_2": [
+          372,
+          -20
+        ],
+        "tier_3_b_mod_1": [
+          372,
+          20
+        ],
+        "tier_3_b_mod_2": [
+          368,
+          61
+        ],
+        "passive_3_a": [
+          433,
+          -31
+        ],
+        "passive_3_b": [
+          433,
+          31
+        ],
+        "boost_3": [
+          465,
+          0
+        ],
+        "tier_4_a": [
+          495,
+          -41
+        ],
+        "tier_4_b": [
+          495,
+          41
+        ],
+        "tier_4_a_mod_1": [
+          523,
+          -72
+        ],
+        "tier_4_a_mod_2": [
+          527,
+          -20
+        ],
+        "tier_4_b_mod_1": [
+          527,
+          20
+        ],
+        "tier_4_b_mod_2": [
+          523,
+          72
+        ]
+      },
+      "links": {
+        "normal": [
+          [
+            "root",
+            "passive_1_a"
+          ],
+          [
+            "root",
+            "passive_1_b"
+          ],
+          [
+            "passive_1_a",
+            "boost_1"
+          ],
+          [
+            "passive_1_b",
+            "boost_1"
+          ],
+          [
+            "boost_2",
+            "passive_2_a"
+          ],
+          [
+            "boost_2",
+            "passive_2_b"
+          ],
+          [
+            "boost_3",
+            "passive_3_a"
+          ],
+          [
+            "boost_3",
+            "passive_3_b"
+          ],
+          [
+            "boost_1",
+            "boost_2"
+          ],
+          [
+            "boost_2",
+            "boost_3"
+          ],
+          [
+            "boost_1",
+            "tier_2_a"
+          ],
+          [
+            "tier_2_a",
+            "tier_2_a_mod_1"
+          ],
+          [
+            "tier_2_a",
+            "tier_2_a_mod_2"
+          ],
+          [
+            "boost_1",
+            "tier_2_b"
+          ],
+          [
+            "tier_2_b",
+            "tier_2_b_mod_1"
+          ],
+          [
+            "tier_2_b",
+            "tier_2_b_mod_2"
+          ],
+          [
+            "boost_2",
+            "tier_3_a"
+          ],
+          [
+            "tier_3_a",
+            "tier_3_a_mod_1"
+          ],
+          [
+            "tier_3_a",
+            "tier_3_a_mod_2"
+          ],
+          [
+            "boost_2",
+            "tier_3_b"
+          ],
+          [
+            "tier_3_b",
+            "tier_3_b_mod_1"
+          ],
+          [
+            "tier_3_b",
+            "tier_3_b_mod_2"
+          ],
+          [
+            "boost_3",
+            "tier_4_a"
+          ],
+          [
+            "tier_4_a",
+            "tier_4_a_mod_1"
+          ],
+          [
+            "tier_4_a",
+            "tier_4_a_mod_2"
+          ],
+          [
+            "boost_3",
+            "tier_4_b"
+          ],
+          [
+            "tier_4_b",
+            "tier_4_b_mod_1"
+          ],
+          [
+            "tier_4_b",
+            "tier_4_b_mod_2"
+          ]
+        ],
+        "exclusive": [
+          [
+            "passive_1_a",
+            "passive_1_b"
+          ],
+          [
+            "passive_2_a",
+            "passive_2_b"
+          ],
+          [
+            "passive_3_a",
+            "passive_3_b"
+          ],
+          [
+            "tier_2_a",
+            "tier_2_b"
+          ],
+          [
+            "tier_2_a_mod_1",
+            "tier_2_a_mod_2"
+          ],
+          [
+            "tier_2_b_mod_1",
+            "tier_2_b_mod_2"
+          ],
+          [
+            "tier_3_a",
+            "tier_3_b"
+          ],
+          [
+            "tier_3_a_mod_1",
+            "tier_3_a_mod_2"
+          ],
+          [
+            "tier_3_b_mod_1",
+            "tier_3_b_mod_2"
+          ],
+          [
+            "tier_4_a",
+            "tier_4_b"
+          ],
+          [
+            "tier_4_a_mod_1",
+            "tier_4_a_mod_2"
+          ],
+          [
+            "tier_4_b_mod_1",
+            "tier_4_b_mod_2"
+          ]
+        ]
+      }
+    }
+  ]
+}

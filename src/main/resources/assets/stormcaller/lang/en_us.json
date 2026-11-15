@@ -93,6 +93,8 @@
   "skill.stormcaller.class_lock.toast.class": "You already follow the Stormcaller path. It cannot be combined with another class.",
   "skill.stormcaller.class_lock.toast.stormcaller": "You already follow a class in Class Skills. Stormcaller cannot be combined with it.",
   "skill.stormcaller.class_lock.toast.title": "Not possible",
+  "skill.stormcaller.moved.class": "Stormcaller is now part of the Class Skills tab. Nodes reset in the Stormcaller tab: %s. Their points can be spent again.",
+  "skill.stormcaller.moved.own": "Stormcaller has its own tab again. Stormcaller nodes reset in Class Skills: %s. Their points can be spent again.",
   "skill.stormcaller.requires_combat_roll": "Requires the mod Combat Roll (not installed).",
   "skill.stormcaller.root.title": "Path of the Storm",
   "skill_category.stormcaller.stormcaller": "Stormcaller",

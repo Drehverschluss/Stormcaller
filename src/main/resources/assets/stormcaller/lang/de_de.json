@@ -93,6 +93,8 @@
   "skill.stormcaller.class_lock.toast.class": "Du folgst schon dem Pfad des Stormcallers. Er lässt sich nicht mit einer anderen Klasse kombinieren.",
   "skill.stormcaller.class_lock.toast.stormcaller": "Du hast schon eine Klasse unter „Class Skills“. Stormcaller lässt sich nicht damit kombinieren.",
   "skill.stormcaller.class_lock.toast.title": "Nicht möglich",
+  "skill.stormcaller.moved.class": "Stormcaller steht jetzt im Reiter „Class Skills“. Zurückgesetzte Knoten im Stormcaller-Reiter: %s. Ihre Punkte sind wieder frei.",
+  "skill.stormcaller.moved.own": "Stormcaller hat wieder einen eigenen Reiter. Zurückgesetzte Stormcaller-Knoten unter „Class Skills“: %s. Ihre Punkte sind wieder frei.",
   "skill.stormcaller.requires_combat_roll": "Benötigt die Mod Combat Roll (nicht installiert).",
   "skill.stormcaller.root.title": "Pfad des Sturms",
   "skill_category.stormcaller.stormcaller": "Stormcaller",

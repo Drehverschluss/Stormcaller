@@ -9,5 +9,10 @@
   ],
   "injectors": {
     "defaultRequire": 0
-  }
+  },
+  "mixins": [
+    "ConfigReaderMixin",
+    "PackConfigReaderAccessor",
+    "SkillsModMixin"
+  ]
 }

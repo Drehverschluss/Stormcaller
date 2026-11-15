@@ -14,9 +14,10 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
  * @param enabled            class lock switched on in the server config
  * @param stormcallerBlocked the player has a class in Class Skills, so the Stormcaller root is locked
  * @param classBlocked       the player follows the Stormcaller path, so the Class Skills roots are locked
+ * @param classTree          the Stormcaller branch is in the Class Skills tab (no own tab, no class lock)
  * @param toast              0 = none, 1 = Stormcaller root was blocked, 2 = a class root was blocked
  */
-public record ClassLockPayload(boolean enabled, boolean stormcallerBlocked, boolean classBlocked, int toast)
+public record ClassLockPayload(boolean enabled, boolean stormcallerBlocked, boolean classBlocked, boolean classTree, int toast)
         implements CustomPacketPayload {
     public static final Type<ClassLockPayload> TYPE = new Type<>(Stormcaller.id("class_lock"));
     public static final StreamCodec<FriendlyByteBuf, ClassLockPayload> STREAM_CODEC = StreamCodec.of(
@@ -24,9 +25,10 @@ public record ClassLockPayload(boolean enabled, boolean stormcallerBlocked, bool
                 buf.writeBoolean(p.enabled);
                 buf.writeBoolean(p.stormcallerBlocked);
                 buf.writeBoolean(p.classBlocked);
+                buf.writeBoolean(p.classTree);
                 buf.writeByte(p.toast);
             },
-            buf -> new ClassLockPayload(buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readByte()));
+            buf -> new ClassLockPayload(buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readByte()));
 
     public static final int TOAST_NONE = 0;
     public static final int TOAST_STORMCALLER = 1;

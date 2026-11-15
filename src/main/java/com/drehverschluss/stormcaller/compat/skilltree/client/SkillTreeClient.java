@@ -74,11 +74,12 @@ public final class SkillTreeClient {
 
     private static List<Component> root() {
         List<Component> lines = new ArrayList<>(attributeLines());
-        if (ClassLockClient.enabled()) {
+        // grey line: own tab with class lock, or the Class Skills tab (one class there anyway); red line: own tab only
+        if (ClassLockClient.enabled() || ClassLockClient.classTree()) {
             lines.add(Component.translatable("skill." + Stormcaller.MODID + ".class_lock.info").withStyle(ChatFormatting.GRAY));
-            if (ClassLockClient.stormcallerBlocked()) {
-                lines.add(Component.translatable("skill." + Stormcaller.MODID + ".class_lock.blocked").withStyle(ChatFormatting.RED));
-            }
+        }
+        if (ClassLockClient.stormcallerBlocked()) {
+            lines.add(Component.translatable("skill." + Stormcaller.MODID + ".class_lock.blocked").withStyle(ChatFormatting.RED));
         }
         return lines;
     }

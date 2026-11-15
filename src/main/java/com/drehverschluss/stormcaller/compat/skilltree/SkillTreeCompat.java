@@ -20,5 +20,6 @@ public final class SkillTreeCompat {
             SkillHelper.RESET_CATEGORIES.add(SkillTab.STORMCALLER_CATEGORY);
         }
         ClassLock.init();
+        BranchTransition.init();
     }
 }
