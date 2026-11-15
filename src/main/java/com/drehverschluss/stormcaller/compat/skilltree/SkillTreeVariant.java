@@ -25,6 +25,23 @@ public final class SkillTreeVariant {
         return ModList.get().isLoaded(MORE_RPG_CLASSES);
     }
 
+    /**
+     * @param on     put the Lightning Bolt nodes into the Weapon Skills tab
+     * @param reason for the log
+     */
+    public record WeaponChoice(boolean on, String reason) {}
+
+    /** Lightning Bolt nodes: {@code weapon_skills} and (no More RPG Classes or mode class_tree). */
+    public static WeaponChoice weapon() {
+        if (!StormcallerConfig.get(StormcallerConfig.SKILL_TREE_WEAPON_SKILLS)) {
+            return new WeaponChoice(false, "weapon_skills = false");
+        }
+        if (moreRpgClasses() && !"class_tree".equals(StormcallerConfig.get(StormcallerConfig.SKILL_TREE_MODE))) {
+            return new WeaponChoice(false, "More RPG Classes - Skill Tree is installed and mode is not class_tree");
+        }
+        return new WeaponChoice(true, moreRpgClasses() ? "Weapon Skills of More RPG Classes - Skill Tree" : "Weapon Skills");
+    }
+
     public static Choice choose() {
         String mode = StormcallerConfig.get(StormcallerConfig.SKILL_TREE_MODE);
         boolean respace = !"gap".equals(StormcallerConfig.get(StormcallerConfig.SKILL_TREE_CLASS_TREE_LAYOUT));

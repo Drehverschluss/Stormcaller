@@ -39,6 +39,7 @@ public final class StormcallerConfig {
 
     public static final ModConfigSpec.ConfigValue<String> SKILL_TREE_MODE;
     public static final ModConfigSpec.ConfigValue<String> SKILL_TREE_CLASS_TREE_LAYOUT;
+    public static final ModConfigSpec.BooleanValue SKILL_TREE_WEAPON_SKILLS;
     public static final ModConfigSpec.BooleanValue SKILL_TREE_CLASS_LOCK;
 
     public static final ModConfigSpec.IntValue BALL_MAX_STAFF_BALLS;
@@ -148,15 +149,21 @@ public final class StormcallerConfig {
                 .push("skill_tree");
         SKILL_TREE_MODE = builder
                 .comment("Where the Stormcaller branch goes.",
-                         "auto: into the Class Skills tab of Skill Tree, next to the other classes. With More RPG Classes - Skill Tree",
-                         "  installed, into an own Stormcaller tab instead.",
+                         "class_tree: into the Class Skills tab of Skill Tree, next to the other classes, also with More RPG Classes -",
+                         "  Skill Tree (then into its circle).",
+                         "auto: like class_tree, but with More RPG Classes - Skill Tree installed into an own Stormcaller tab instead.",
                          "own_tab: always into the own Stormcaller tab.",
-                         "class_tree: into the Class Skills tab, also with More RPG Classes - Skill Tree (then into its circle).",
                          "If the branch cannot be added to the Class Skills tab (unknown layout, data errors), the own tab is used",
-                         "and the log says why. Changing it moves the branch: nodes taken in the old place are reset and their",
-                         "points can be spent again. Takes effect on /reload or restart.")
+                         "and the log says why; nodes taken in the Class Skills tab stay saved and come back after the fix.",
+                         "Changing this setting moves the branch: nodes taken in the old place are reset and their points can be",
+                         "spent again. Takes effect on /reload or restart.")
                 // Arrays.asList: the check must accept null (List.of throws when a new config file is made)
-                .defineInList("mode", "auto", Arrays.asList("auto", "own_tab", "class_tree"));
+                .defineInList("mode", "class_tree", Arrays.asList("auto", "own_tab", "class_tree"));
+        SKILL_TREE_WEAPON_SKILLS = builder
+                .comment("Lightning Bolt nodes in the Weapon Skills tab of Skill Tree (one fixed node and a choice of two, like the",
+                         "staves of the other schools). Only without More RPG Classes - Skill Tree or with mode = class_tree (then in",
+                         "its Weapon Skills tab). Place and nodes are data: data/stormcaller/stormcaller_skill_tree/weapon_branch.json")
+                .define("weapon_skills", true);
         SKILL_TREE_CLASS_TREE_LAYOUT = builder
                 .comment("How the branch gets its place in the Class Skills tab.",
                          "respace: all branches of the circle are spread out evenly again, the Stormcaller root sits on the same",

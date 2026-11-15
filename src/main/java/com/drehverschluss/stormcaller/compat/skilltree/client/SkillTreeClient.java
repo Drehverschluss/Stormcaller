@@ -45,7 +45,9 @@ public final class SkillTreeClient {
             "improved_lightning_strike", "double_strike", "charged_ground",
             "eye_of_the_storm", "storm_ward",
             "improved_thunderstorm", "static_rain", "rolling_thunder",
-            "improved_storm_elemental", "twin_storms", "chain_conductor");
+            "improved_storm_elemental", "twin_storms", "chain_conductor",
+            // Lightning Bolt nodes of the Weapon Skills tab (phase ST3)
+            "weapon_lightning_root", "weapon_lightning_jump", "weapon_lightning_burst");
     /** Passives with the ROLL trigger: they only work with Combat Roll. */
     private static final Set<String> ROLL_NODES = Set.of("static_trap", "charged_roll");
     private static final String COMBAT_ROLL = "combat_roll";

@@ -25,7 +25,8 @@ import net.puffish.skillsmod.config.reader.PackConfigReader;
 import net.puffish.skillsmod.util.DisposeContext;
 
 /**
- * Puts the Stormcaller branch into the Class Skills tab of Skill Tree while Pufferfish's Skills loads its data (server
+ * Puts the Stormcaller branch into the Class Skills tab and the Lightning Bolt nodes into the Weapon Skills tab of Skill Tree
+ * ({@link WeaponBranchLayout}) while Pufferfish's Skills loads its data (server
  * start and {@code /reload}). Called from {@code mixin.skills.ConfigReaderMixin} and {@code SkillsModMixin}.
  * <ul>
  *     <li>Works on the final data: the files come through the same reader Pufferfish's Skills uses, after all data packs.</li>
@@ -39,9 +40,13 @@ import net.puffish.skillsmod.util.DisposeContext;
 public final class ClassBranchHook {
     public static final String SKILL_TREE_NAMESPACE = "skill_tree_rpgs";
     public static final String CLASS_TAB = "class_skills";
+    public static final String WEAPON_TAB = "weapon_skills";
     /** Prefix of all our node ids in foreign tabs. */
     public static final String PREFIX = "stormcaller_";
+    /** Prefix of our node ids in the Weapon Skills tab; the fixed node is {@code <prefix>root}. */
+    public static final String WEAPON_PREFIX = "stormcaller_weapon_lightning_";
     private static final ResourceLocation LAYOUT = Stormcaller.id("stormcaller_skill_tree/class_branch.json");
+    private static final ResourceLocation WEAPON_LAYOUT = Stormcaller.id("stormcaller_skill_tree/weapon_branch.json");
 
     private static boolean loading;
     private static boolean injected;
@@ -74,7 +79,13 @@ public final class ClassBranchHook {
     public static Result<CategoryConfig, Problem> afterReadCategory(ConfigReader reader, ResourceManager resources, String namespace,
                                                                     String id, int position, ConfigContext context,
                                                                     Result<CategoryConfig, Problem> original) {
-        if (!SKILL_TREE_NAMESPACE.equals(namespace) || !CLASS_TAB.equals(id)) {
+        if (!SKILL_TREE_NAMESPACE.equals(namespace)) {
+            return original;
+        }
+        if (WEAPON_TAB.equals(id)) {
+            return afterWeaponTab(reader, resources, namespace, id, position, context, original);
+        }
+        if (!CLASS_TAB.equals(id)) {
             return original;
         }
         SkillTreeVariant.Choice choice = SkillTreeVariant.choose();
@@ -114,6 +125,86 @@ public final class ClassBranchHook {
         return original;
     }
 
+    /** The Weapon Skills tab: with the three Lightning Bolt nodes, or the original (only our nodes are missing then). */
+    private static Result<CategoryConfig, Problem> afterWeaponTab(ConfigReader reader, ResourceManager resources, String namespace,
+                                                                  String id, int position, ConfigContext context,
+                                                                  Result<CategoryConfig, Problem> original) {
+        SkillTreeVariant.WeaponChoice choice = SkillTreeVariant.weapon();
+        if (!choice.on()) {
+            Stormcaller.LOGGER.info("Stormcaller skills: no Lightning Bolt nodes in Weapon Skills ({}).", choice.reason());
+            return original;
+        }
+        if (!loading || original.getSuccess().isEmpty()) {
+            Stormcaller.LOGGER.warn("Stormcaller skills: {}:{} not extended ({}).", namespace, id,
+                    loading ? "it failed to load on its own" : "start of the load not seen");
+            return original;
+        }
+        try {
+            long start = System.nanoTime();
+            Extended extended = extendWeapon(reader, resources, namespace, id, position, context);
+            if (extended.result().getSuccess().isPresent()) {
+                original.getSuccess().get().dispose(new DisposeContext(ServerLifecycleHooks.getCurrentServer()));
+                Stormcaller.LOGGER.info("Stormcaller skills: Lightning Bolt nodes in {} ({} ms): {}.", choice.reason(),
+                        (System.nanoTime() - start) / 1_000_000, extended.description());
+                return extended.result();
+            }
+            Stormcaller.LOGGER.warn("Stormcaller skills: Lightning Bolt nodes could not be added to {}:{}, it loads without them: {}",
+                    namespace, id, extended.result().getFailure().map(Object::toString).orElse("?"));
+        } catch (Exception e) {
+            Stormcaller.LOGGER.warn("Stormcaller skills: Lightning Bolt nodes could not be added to {}:{}, it loads without them: {}",
+                    namespace, id, e.toString());
+        }
+        return original;
+    }
+
+    private static Extended extendWeapon(ConfigReader reader, ResourceManager resources, String namespace, String id, int position,
+                                         ConfigContext context) throws Exception {
+        JsonObject general = read(reader, id, "category.json");
+        JsonObject definitions = read(reader, id, "definitions.json").deepCopy();
+        JsonObject skills = read(reader, id, "skills.json").deepCopy();
+        JsonElement connectionsElement = reader.read(Path.of("categories", id, "connections.json")).getSuccess().orElseThrow().getJson();
+        if (!connectionsElement.isJsonObject()) {
+            throw new IllegalStateException("connections.json has the old list form");
+        }
+        JsonObject connections = connectionsElement.getAsJsonObject().deepCopy();
+        WeaponBranchLayout.Settings settings = WeaponBranchLayout.parse(readJson(resources, WEAPON_LAYOUT));
+        WeaponBranchLayout.Placement placement = WeaponBranchLayout.place(skills, connections, settings);
+
+        for (Map.Entry<String, JsonElement> e : settings.definitions().entrySet()) {
+            if (definitions.has(e.getKey())) {
+                throw new IllegalStateException("definition id " + e.getKey() + " is already used in " + namespace + ":" + id);
+            }
+            definitions.add(e.getKey(), e.getValue().deepCopy());
+        }
+        for (Map.Entry<String, int[]> e : placement.positions().entrySet()) {
+            String skillId = WEAPON_PREFIX + e.getKey();
+            if (skills.has(skillId)) {
+                throw new IllegalStateException("node id " + skillId + " is already used in " + namespace + ":" + id);
+            }
+            String definition = settings.nodes().get(e.getKey());
+            if (!definitions.has(definition)) {
+                throw new IllegalStateException("node " + e.getKey() + " uses the unknown definition " + definition);
+            }
+            JsonObject out = new JsonObject();
+            out.addProperty("definition", definition);
+            out.addProperty("x", e.getValue()[0]);
+            out.addProperty("y", e.getValue()[1]);
+            if ("root".equals(e.getKey())) {
+                out.addProperty("root", true);
+            }
+            skills.add(skillId, out);
+        }
+        addLinks(connections, "normal", settings.normal(), WEAPON_PREFIX);
+        addLinks(connections, "exclusive", settings.exclusive(), WEAPON_PREFIX);
+
+        String base = namespace + ":puffish_skills/categories/" + id + "/";
+        Result<CategoryConfig, Problem> result = CategoryConfig.parse(ResourceLocation.fromNamespaceAndPath(namespace, id), position,
+                wrap(general, base + "category.json"), wrap(definitions, base + "definitions.json (+stormcaller)"),
+                wrap(skills, base + "skills.json (+stormcaller)"), wrap(connections, base + "connections.json (+stormcaller)"),
+                optional(reader, id, "experience.json"), optional(reader, id, "exchange.json"), context);
+        return new Extended(result, placement.description());
+    }
+
     private record Extended(Result<CategoryConfig, Problem> result, String description) {}
 
     private static Extended extend(ConfigReader reader, ResourceManager resources, String namespace, String id, int position,
@@ -132,7 +223,7 @@ public final class ClassBranchHook {
                 .orElseThrow(() -> new IllegalStateException("definitions of the own tab missing")).getJson().getAsJsonObject();
         JsonObject ownSkills = own.read(Path.of("categories", "stormcaller", "skills.json")).getSuccess()
                 .orElseThrow(() -> new IllegalStateException("nodes of the own tab missing")).getJson().getAsJsonObject();
-        ClassBranchLayout.Settings settings = ClassBranchLayout.parse(readLayout(resources));
+        ClassBranchLayout.Settings settings = ClassBranchLayout.parse(readJson(resources, LAYOUT));
         ClassBranchLayout.Form form = ClassBranchLayout.chooseForm(settings, skills);
 
         // place: respace, else gap (with the reason)
@@ -181,8 +272,8 @@ public final class ClassBranchHook {
             }
             skills.add(skillId, out);
         }
-        addLinks(connections, "normal", form.normal());
-        addLinks(connections, "exclusive", form.exclusive());
+        addLinks(connections, "normal", form.normal(), PREFIX);
+        addLinks(connections, "exclusive", form.exclusive(), PREFIX);
 
         String base = namespace + ":puffish_skills/categories/" + id + "/";
         Optional<net.puffish.skillsmod.api.json.JsonElement> experience = optional(reader, id, "experience.json");
@@ -204,20 +295,20 @@ public final class ClassBranchHook {
         return reader.exists(path) ? Optional.of(reader.read(path).getSuccess().orElseThrow()) : Optional.empty();
     }
 
-    private static JsonObject readLayout(ResourceManager resources) throws Exception {
-        Resource resource = resources.getResource(LAYOUT).orElseThrow(() -> new IllegalStateException(LAYOUT + " missing"));
+    private static JsonObject readJson(ResourceManager resources, ResourceLocation file) throws Exception {
+        Resource resource = resources.getResource(file).orElseThrow(() -> new IllegalStateException(file + " missing"));
         try (Reader in = resource.openAsReader()) {
             return JsonParser.parseReader(in).getAsJsonObject();
         }
     }
 
-    private static void addLinks(JsonObject connections, String group, List<String[]> pairs) {
+    private static void addLinks(JsonObject connections, String group, List<String[]> pairs, String prefix) {
         JsonObject g = connections.has(group) ? connections.getAsJsonObject(group) : new JsonObject();
         JsonArray list = g.has("bidirectional") ? g.getAsJsonArray("bidirectional") : new JsonArray();
         for (String[] pair : pairs) {
             JsonArray a = new JsonArray();
-            a.add(PREFIX + pair[0]);
-            a.add(PREFIX + pair[1]);
+            a.add(prefix + pair[0]);
+            a.add(prefix + pair[1]);
             list.add(a);
         }
         g.add("bidirectional", list);

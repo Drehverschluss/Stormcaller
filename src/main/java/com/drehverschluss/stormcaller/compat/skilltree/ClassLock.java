@@ -106,7 +106,8 @@ public final class ClassLock {
         return SkillsAPI.getCategory(categoryId).map(category -> countUnlocked(category, player)).orElse(0L);
     }
 
+    /** Unlocked nodes; our own nodes saved in the Class Skills tab (during a fallback) are no other class. */
     private static long countUnlocked(Category category, ServerPlayer player) {
-        return category.streamUnlockedSkills(player).count();
+        return category.streamUnlockedSkills(player).filter(skill -> !skill.getId().startsWith(ClassBranchHook.PREFIX)).count();
     }
 }

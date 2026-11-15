@@ -1,0 +1,155 @@
+{
+  "_comment": [
+    "Lightning Bolt nodes in the Weapon Skills tab of Skill Tree (RPG Series): one fixed node and a choice of two, like the staves",
+    "of the other schools. Read on every load (/reload); data packs may replace this file.",
+    "definitions: the three skill definitions (ids must not exist in the tab). nodes: node key -> definition; the node ids in the",
+    "tab are stormcaller_weapon_lightning_<key>. links: connections between the node keys.",
+    "place: a free group of three cells of the honeycomb, pointing the same way as the groups of the roots in 'near' (within",
+    "max_angle degrees), as close to them as possible; free = at least free_factor x the cell distance from every node.",
+    "mod_1 is placed left of the pointing direction, mod_2 right."
+  ],
+  "definitions": {
+    "stormcaller_weapon_lightning_root": {
+      "title": {
+        "translate": "spell.stormcaller.weapon_lightning_root.name"
+      },
+      "description": {
+        "skill_definition_id": "stormcaller_weapon_lightning_root"
+      },
+      "icon": {
+        "type": "item",
+        "data": {
+          "item": "stormcaller:staff_lightning"
+        }
+      },
+      "required_mods": [
+        "skill_tree_rpgs"
+      ],
+      "rewards": [
+        {
+          "type": "skill_tree_rpgs:spell",
+          "data": {
+            "containers": [
+              {
+                "access": "NONE",
+                "access_param": "",
+                "extra_tier_binding": 0,
+                "max_spell_count": 0,
+                "pool": "",
+                "slot": "",
+                "spell_ids": [
+                  "stormcaller:weapon_lightning_root"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "stormcaller_weapon_lightning_jump": {
+      "title": {
+        "translate": "spell.stormcaller.weapon_lightning_jump.name"
+      },
+      "description": {
+        "skill_definition_id": "stormcaller_weapon_lightning_jump"
+      },
+      "icon": {
+        "type": "texture",
+        "data": {
+          "texture": "stormcaller:textures/spell/lightning_bolt.png"
+        }
+      },
+      "required_mods": [
+        "skill_tree_rpgs"
+      ],
+      "rewards": [
+        {
+          "type": "skill_tree_rpgs:spell",
+          "data": {
+            "containers": [
+              {
+                "access": "NONE",
+                "access_param": "",
+                "extra_tier_binding": 0,
+                "max_spell_count": 0,
+                "pool": "",
+                "slot": "",
+                "spell_ids": [
+                  "stormcaller:weapon_lightning_jump"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "stormcaller_weapon_lightning_burst": {
+      "title": {
+        "translate": "spell.stormcaller.weapon_lightning_burst.name"
+      },
+      "description": {
+        "skill_definition_id": "stormcaller_weapon_lightning_burst"
+      },
+      "icon": {
+        "type": "texture",
+        "data": {
+          "texture": "stormcaller:textures/spell/lightning_bolt.png"
+        }
+      },
+      "required_mods": [
+        "skill_tree_rpgs"
+      ],
+      "rewards": [
+        {
+          "type": "skill_tree_rpgs:spell",
+          "data": {
+            "containers": [
+              {
+                "access": "NONE",
+                "access_param": "",
+                "extra_tier_binding": 0,
+                "max_spell_count": 0,
+                "pool": "",
+                "slot": "",
+                "spell_ids": [
+                  "stormcaller:weapon_lightning_burst"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "nodes": {
+    "root": "stormcaller_weapon_lightning_root",
+    "mod_1": "stormcaller_weapon_lightning_jump",
+    "mod_2": "stormcaller_weapon_lightning_burst"
+  },
+  "links": {
+    "normal": [
+      [
+        "root",
+        "mod_1"
+      ],
+      [
+        "root",
+        "mod_2"
+      ]
+    ],
+    "exclusive": [
+      [
+        "mod_1",
+        "mod_2"
+      ]
+    ]
+  },
+  "place": {
+    "near": [
+      "weapon_fire_root",
+      "weapon_frost_root"
+    ],
+    "max_angle": 31,
+    "free_factor": 0.9
+  }
+}
