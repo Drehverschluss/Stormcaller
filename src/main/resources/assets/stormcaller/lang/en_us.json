@@ -86,6 +86,7 @@
   "item.stormcaller.wand_lightning": "Lightning Wand",
   "item.stormcaller.wand_netherite_lightning": "Netherite Lightning Wand",
   "itemGroup.stormcaller.general": "Stormcaller",
+  "pack.stormcaller.original_armor.description": "The original Stormcaller robes from 0.1/0.2",
   "skill.stormcaller.boost.title": "Storm Attunement",
   "skill.stormcaller.class_lock.blocked": "Locked: you already follow a class in Class Skills.",
   "skill.stormcaller.class_lock.info": "Cannot be combined with another class.",

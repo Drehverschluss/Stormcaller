@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller;
 
+import com.drehverschluss.stormcaller.client.OriginalArmorPack;
 import com.drehverschluss.stormcaller.client.StormCloudRenderer;
 import com.drehverschluss.stormcaller.client.StormElementalRenderer;
 import com.drehverschluss.stormcaller.client.StormcallerArmorRenderers;
@@ -23,6 +24,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 // This class will not load on dedicated servers.
 @Mod(value = Stormcaller.MODID, dist = Dist.CLIENT)
@@ -39,6 +41,8 @@ public class StormcallerClient {
         modEventBus.addListener(ModelEvent.ModifyBakingResult.class, StormbringerStaffRenderer::wrapModel);
         modEventBus.addListener(RegisterClientExtensionsEvent.class, StormbringerStaffRenderer::registerExtensions);
         modEventBus.addListener(RegisterClientExtensionsEvent.class, StoredChargeHud::register);
+        // the robe look of 0.1/0.2 as a built-in resource pack, off by default
+        modEventBus.addListener(AddPackFindersEvent.class, OriginalArmorPack::onAddPackFinders);
         modEventBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
             event.registerEntityRenderer(StormcallerEntities.STORM_CLOUD, StormCloudRenderer::new);
             event.registerEntityRenderer(StormcallerEntities.STORM_ELEMENTAL, StormElementalRenderer::new);

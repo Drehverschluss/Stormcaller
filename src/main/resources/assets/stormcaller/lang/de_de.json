@@ -86,6 +86,7 @@
   "item.stormcaller.wand_lightning": "Blitz-Zauberstab",
   "item.stormcaller.wand_netherite_lightning": "Blitz-Netheritezauberstab",
   "itemGroup.stormcaller.general": "Stormcaller",
+  "pack.stormcaller.original_armor.description": "Die ursprünglichen Stormcaller-Roben aus 0.1/0.2",
   "skill.stormcaller.boost.title": "Sturmverbundenheit",
   "skill.stormcaller.class_lock.blocked": "Gesperrt: Du hast schon eine Klasse unter „Class Skills“.",
   "skill.stormcaller.class_lock.info": "Nicht mit einer anderen Klasse kombinierbar.",
