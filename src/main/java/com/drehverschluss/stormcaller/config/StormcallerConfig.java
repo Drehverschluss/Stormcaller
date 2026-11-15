@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller.config;
 
+import net.neoforged.fml.config.IConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
@@ -17,6 +18,7 @@ public final class StormcallerConfig {
 
     public static final ModConfigSpec.DoubleValue SHOCK_STUN_SECONDS;
     public static final ModConfigSpec.DoubleValue NOVA_STUN_SECONDS;
+    public static final ModConfigSpec.DoubleValue SHOCK_STUN_PAUSE_SECONDS;
     public static final ModConfigSpec.BooleanValue SHOCK_STUN_PLAYERS;
     public static final ModConfigSpec.DoubleValue SHOCKED_DAMAGE_PER_STAGE;
     public static final ModConfigSpec.IntValue SHOCKED_MAX_STAGES;
@@ -27,6 +29,10 @@ public final class StormcallerConfig {
     public static final ModConfigSpec.DoubleValue SLOW_COOLDOWN_SECONDS;
 
     public static final ModConfigSpec.BooleanValue RICOCHET_FIX_ALL_SPELLS;
+    static final String RICOCHET_SECTION = "ricochet";
+    static final String RICOCHET_FIX_ALL_SPELLS_KEY = "fix_ricochet_all_spells";
+    /** Name of {@link #RICOCHET_FIX_ALL_SPELLS} up to 0.3.0, see {@link MigratingConfigSpec}. */
+    static final String RICOCHET_FIX_ALL_SPELLS_OLD_KEY = "fix_all_spells";
 
     public static final ModConfigSpec.BooleanValue TRADES_WIZARD_MERCHANT;
 
@@ -76,6 +82,13 @@ public final class StormcallerConfig {
         NOVA_STUN_SECONDS = builder
                 .comment("Stun duration of Lightning Nova on normal targets, in seconds (it always shocks).")
                 .defineInRange("nova_stun_seconds", 1.5, 0.0, 60.0);
+        SHOCK_STUN_PAUSE_SECONDS = builder
+                .comment("Pause after a stun from a shock, in seconds: when the stun of a target ends, shocks cannot stun",
+                         "that target again for this long. The pause belongs to the target, so several attackers share it.",
+                         "Shocks in that time still give a stage of 'Shocked', but no stun, and they do not lengthen a running stun.",
+                         "Lightning Nova always stuns, also during the pause, and the pause starts again after its stun.",
+                         "Stuns of other mods or commands are not changed and do not start the pause. 0 = no pause.")
+                .defineInRange("stun_pause_seconds", 2.0, 0.0, 30.0);
         SHOCK_STUN_PLAYERS = builder
                 .comment("true: players are stunned like normal targets. false: players are slowed like bosses.",
                          "Players get the 'Shocked' stages either way.")
@@ -111,10 +124,11 @@ public final class StormcallerConfig {
                         "that one tick. It also looks for the next target around the target that was hit, not around the",
                         "projectile (which is still up to one step in front of it), so the full ricochet range counts in",
                         "every direction. It always applies to the spells in #stormcaller:fx/ricochet_fix.")
-                .push("ricochet");
+                .push(RICOCHET_SECTION);
         RICOCHET_FIX_ALL_SPELLS = builder
-                .comment("Apply the ricochet fix to the projectiles of all spells, also those of other mods.")
-                .define("fix_all_spells", false);
+                .comment("Apply the ricochet fix to the projectiles of all spells, also those of other mods.",
+                         "Up to 0.3.0 this key was called fix_all_spells; an old value is taken over once.")
+                .define(RICOCHET_FIX_ALL_SPELLS_KEY, false);
         builder.pop();
 
         builder.comment("Villager trades.")
@@ -173,6 +187,11 @@ public final class StormcallerConfig {
     }
 
     private StormcallerConfig() {}
+
+    /** The spec to register: {@link #SPEC} plus taking over the values of renamed keys from older files. */
+    public static IConfigSpec registeredSpec() {
+        return new MigratingConfigSpec(SPEC);
+    }
 
     /** Value of a config entry, or its default while the server config is not loaded (e.g. in the main menu). */
     public static boolean get(ModConfigSpec.BooleanValue value) {

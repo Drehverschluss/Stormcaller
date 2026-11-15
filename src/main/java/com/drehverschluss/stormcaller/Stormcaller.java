@@ -42,7 +42,7 @@ public class Stormcaller {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Stormcaller(IEventBus modEventBus, ModContainer modContainer) {
-        modContainer.registerConfig(ModConfig.Type.SERVER, StormcallerConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, StormcallerConfig.registeredSpec());
         StormcallerAttributes.register(modEventBus);
         StormcallerEffects.register(modEventBus);
         StormcallerItems.init();

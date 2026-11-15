@@ -34,7 +34,8 @@ import org.jetbrains.annotations.Nullable;
  * piece of an impact that reaches us. Spell Engine's own {@code chance} field would roll separately before the handler
  * runs, which gives two rolls instead of one.
  * <p>
- * {@code stormcaller:nova_shock}: always shocks, with the stun duration of Lightning Nova ({@code nova_stun_seconds}).
+ * {@code stormcaller:nova_shock}: always shocks, with the stun duration of Lightning Nova ({@code nova_stun_seconds}). It
+ * stuns also during the stun pause of shocks ({@code stun_pause_seconds}), and the pause starts again after its stun.
  * <p>
  * {@code stormcaller:shock_reroll}: a second roll with the base chance of the spell (its own shock impact), but only if
  * this hit has not shocked yet in this tick. Put it behind the shock impact, e.g. through a modifier spell with
@@ -61,7 +62,8 @@ public final class ShockImpacts {
             }
             int extra = extraTicks(spell, caster);
             int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.NOVA_STUN_SECONDS)) + extra;
-            return result(ShockHandler.onShockImpact(living, caster, 1.0, ticks, extra));
+            // the Nova always stuns, also during the stun pause of shocks (and starts the pause again)
+            return result(ShockHandler.onShockImpact(living, caster, 1.0, ticks, extra, true));
         });
         SpellHandlers.registerCustomImpact(REROLL_IMPACT, (spell, power, caster, target, context) -> {
             if (!(target instanceof LivingEntity living) || living.level().isClientSide()) {
@@ -90,7 +92,7 @@ public final class ShockImpacts {
             int extra = extraTicks(spell, caster);
             int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)) + extra;
             // a discharging Lightning Bolt of the Amber Lightning Staff shocks with the Stored Charge chance
-            return result(ShockHandler.onShockImpact(living, caster, StoredCharge.shockBase(base), ticks, extra));
+            return result(ShockHandler.onShockImpact(living, caster, StoredCharge.shockBase(base), ticks, extra, false));
         });
         return true;
     }

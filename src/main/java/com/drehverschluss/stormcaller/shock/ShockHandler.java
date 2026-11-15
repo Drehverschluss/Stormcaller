@@ -6,6 +6,7 @@ import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -39,8 +40,9 @@ import org.jetbrains.annotations.Nullable;
  *     <li>For summons the shock chance of the owner counts ({@link #shockSource}).</li>
  * </ul>
  * <b>Effect of a shock</b> ({@link #shock}): immune targets get nothing. Every other target gets one stage of
- * "Shocked" (more lightning damage taken). On top, normal targets are stunned briefly, resistant targets (bosses, and
- * players unless {@code stun_players}) are slowed briefly instead, with a cooldown.
+ * "Shocked" (more lightning damage taken). On top, normal targets are stunned briefly, with a pause per target before
+ * shocks can stun it again ({@code stun_pause_seconds}). Resistant targets (bosses, and players unless
+ * {@code stun_players}) are slowed briefly instead, with a cooldown.
  */
 public final class ShockHandler {
     public static final ResourceKey<DamageType> LIGHTNING_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
@@ -50,6 +52,11 @@ public final class ShockHandler {
 
     /** Persistent data key: game time from which the target can be slowed again. */
     private static final String SLOW_READY_KEY = "stormcaller.shock_slow_ready";
+    /**
+     * Persistent data key: game time from which shocks can stun the target again (end of its last stun from Stormcaller
+     * plus {@code stun_pause_seconds}). Removed again once it has passed; only written while the pause is on.
+     */
+    private static final String STUN_READY_KEY = "stormcaller.shock_stun_ready";
 
     /** What a shock did to its target. */
     public enum Result { NONE, STUNNED, SLOWED, SHOCKED_ONLY }
@@ -114,7 +121,7 @@ public final class ShockHandler {
             if (target.isRemoved() || target.isDeadOrDying()) {
                 continue;
             }
-            roll(target, hit.source(), 0.0, seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)), 0);
+            roll(target, hit.source(), 0.0, seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)), 0, false);
         }
     }
 
@@ -123,9 +130,11 @@ public final class ShockHandler {
      * {@code baseChance} + shock chance of the caster.
      *
      * @param extraSlowTicks extra slow duration for resistant targets (modifiers like Thunderclap)
+     * @param alwaysStun     true for Lightning Nova: stuns also during the stun pause (see {@link #shock})
      * @return what the shock did (NONE if the roll failed)
      */
-    static Result onShockImpact(LivingEntity target, LivingEntity caster, double baseChance, int stunTicks, int extraSlowTicks) {
+    static Result onShockImpact(LivingEntity target, LivingEntity caster, double baseChance, int stunTicks, int extraSlowTicks,
+                                boolean alwaysStun) {
         LivingEntity source = shockSource(caster);
         if (source == null || source == target) {
             return Result.NONE;
@@ -137,7 +146,7 @@ public final class ShockHandler {
         if (target.isRemoved() || target.isDeadOrDying()) {
             return Result.NONE;
         }
-        Result result = roll(target, source, baseChance, stunTicks, extraSlowTicks);
+        Result result = roll(target, source, baseChance, stunTicks, extraSlowTicks, alwaysStun);
         if (result != Result.NONE) {
             SHOCKED_HITS.add(hit);
         }
@@ -153,20 +162,21 @@ public final class ShockHandler {
         if (source == null || source == target || SHOCKED_HITS.contains(new Hit(target, source))) {
             return Result.NONE;
         }
-        return onShockImpact(target, caster, baseChance, stunTicks, extraSlowTicks);
+        return onShockImpact(target, caster, baseChance, stunTicks, extraSlowTicks, false);
     }
 
     /**
      * One roll: base chance + shock chance of {@code source}, at most 100 %. With "Charged Roll" (skill tree) on the
      * source the roll always succeeds; the effect is used up by the first shock.
      */
-    private static Result roll(LivingEntity target, LivingEntity source, double baseChance, int stunTicks, int extraSlowTicks) {
+    private static Result roll(LivingEntity target, LivingEntity source, double baseChance, int stunTicks, int extraSlowTicks,
+                               boolean alwaysStun) {
         boolean charged = source.hasEffect(StormcallerEffects.CHARGED_ROLL);
         double chance = charged ? 1.0 : Math.min(1.0, Math.max(0.0, baseChance) + StormcallerAttributes.shockChance(source));
         if (chance <= 0.0 || (chance < 1.0 && target.getRandom().nextDouble() >= chance)) {
             return Result.NONE;
         }
-        Result result = shock(target, source, stunTicks, extraSlowTicks);
+        Result result = shock(target, source, stunTicks, extraSlowTicks, alwaysStun);
         if (charged && result != Result.NONE) {
             source.removeEffect(StormcallerEffects.CHARGED_ROLL);
         }
@@ -218,12 +228,30 @@ public final class ShockHandler {
     }
 
     /**
-     * Applies a shock to a target (no roll).
+     * Applies a shock to a target (no roll). The stun pause applies.
      *
      * @param stunTicks      stun duration for normal targets
      * @param extraSlowTicks added to the slow duration of resistant targets
      */
     public static Result shock(LivingEntity target, @Nullable Entity source, int stunTicks, int extraSlowTicks) {
+        return shock(target, source, stunTicks, extraSlowTicks, false);
+    }
+
+    /**
+     * Applies a shock to a target (no roll).
+     * <p>
+     * <b>Stun pause</b> ({@code stun_pause_seconds} &gt; 0): after a stun from Stormcaller ends, shocks cannot stun the same
+     * target again for the pause. The pause is stored on the target, so all attackers share it. A shock in the pause (or
+     * while that stun still runs) only gives the stage of "Shocked", it neither stuns nor lengthens the running stun.
+     * {@code alwaysStun} (Lightning Nova) stuns anyway and starts the pause again after its own stun. A running stun of
+     * another mod or a command is left alone by shocks and does not start the pause; the Nova still lengthens it if its own
+     * stun is longer (then the pause starts after the Nova stun, as usual).
+     *
+     * @param stunTicks      stun duration for normal targets
+     * @param extraSlowTicks added to the slow duration of resistant targets
+     * @param alwaysStun     stun also during the pause (Lightning Nova)
+     */
+    public static Result shock(LivingEntity target, @Nullable Entity source, int stunTicks, int extraSlowTicks, boolean alwaysStun) {
         if (target.getType().is(SHOCK_IMMUNE)) {
             return Result.NONE;
         }
@@ -234,8 +262,42 @@ public final class ShockHandler {
         if (stunTicks <= 0) {
             return Result.SHOCKED_ONLY;
         }
+        return stun(target, source, stunTicks, alwaysStun) ? Result.STUNNED : Result.SHOCKED_ONLY;
+    }
+
+    /** Stun of a normal target, with the stun pause (see {@link #shock}). True if the target was stunned. */
+    private static boolean stun(LivingEntity target, @Nullable Entity source, int stunTicks, boolean alwaysStun) {
+        int pauseTicks = seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_PAUSE_SECONDS));
+        if (pauseTicks <= 0) {
+            // no pause: as before 0.3.0, every shock stuns (a running stun is only lengthened by a longer one)
+            target.addEffect(new MobEffectInstance(SpellEngineEffects.STUN.entry, stunTicks), source);
+            return true;
+        }
+        long now = target.level().getGameTime();
+        CompoundTag data = target.getPersistentData();
+        if (data.contains(STUN_READY_KEY)) {
+            if (now < data.getLong(STUN_READY_KEY)) {
+                if (!alwaysStun) {
+                    return false;
+                }
+            } else {
+                data.remove(STUN_READY_KEY);
+            }
+        }
+        MobEffectInstance running = target.getEffect(SpellEngineEffects.STUN.entry);
+        if (running != null && !alwaysStun) {
+            // a stun outside our pause window is one of another mod or a command: leave it alone
+            return false;
+        }
+        int before = running == null ? 0 : running.getDuration();
         target.addEffect(new MobEffectInstance(SpellEngineEffects.STUN.entry, stunTicks), source);
-        return Result.STUNNED;
+        MobEffectInstance stun = target.getEffect(SpellEngineEffects.STUN.entry);
+        if (stun == null || before >= stunTicks || stun.getDuration() != stunTicks) {
+            // no stun (blocked by another mod), or the Nova did not lengthen a running stun: not ours, no new pause
+            return false;
+        }
+        data.putLong(STUN_READY_KEY, now + stunTicks + pauseTicks);
+        return true;
     }
 
     /** One more stage of "Shocked" (up to the highest stage), the duration starts again. */
