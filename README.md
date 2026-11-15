@@ -15,17 +15,22 @@ Stormcaller is an unofficial addon for [Wizards (RPG Series)](https://www.cursef
   <img src="docs/images/0.3.0/07-ausruestung.png" alt="The lightning robes">
 </p>
 
-## New robe look in 0.3.0
+## Skill tree
 
-Since 0.3.0 the robes have a new default look in the style of the Wizards robes. I made the models and textures myself
-from scratch, no files from other mods are used. The old look of 0.1/0.2 is still built in as the resource pack
-**Stormcaller_Original_Armor**: turn it on in *Options → Resource Packs* (move it to the right, *Done*). It works without
-a restart, only changes what you see on your own client, and servers need nothing. Pack id for modpacks:
-`mod/stormcaller:resourcepacks/stormcaller_original_armor`.
+With [Skill Tree (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/skill-tree), Stormcaller is a class in the
+Class Skills tab, right next to the eight classes of the RPG Series, and Lightning Bolt has three nodes in the Weapon
+Skills tab. With More RPG Classes – Skill Tree it joins that circle too. Details are in the
+[wiki](https://github.com/Drehverschluss/Stormcaller/wiki/Skill-Tree).
 
 <p align="center">
-  <img src="docs/images/0.3.0/11-vorher-nachher.png" alt="New default look and original look">
+  <img src="docs/images/0.4.0/09-skilltree-class.png" alt="Stormcaller in the Class Skills tab of Skill Tree">
 </p>
+
+## Robe look
+
+Since 0.3.0 the robes follow the style of the Wizards robes (my own models and textures). The old look of 0.1/0.2 is
+built in as the resource pack **Stormcaller_Original_Armor** (*Options → Resource Packs*, client only). Pack id for
+modpacks: `mod/stormcaller:resourcepacks/stormcaller_original_armor`.
 
 ## Required
 
@@ -43,7 +48,8 @@ a restart, only changes what you see on your own client, and servers need nothin
 
 - [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios) – jewelry and relics (Accessories works too, through
   a Curios compatibility layer)
-- [Skill Tree (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/skill-tree) – the Stormcaller skill tree tab
+- [Skill Tree (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/skill-tree) – Stormcaller as a class in the
+  Class Skills tab and Lightning Bolt nodes in the Weapon Skills tab
 - [Combat Roll](https://www.curseforge.com/minecraft/mc-mods/combat-roll) – the roll passives of the skill tree
 - [Better End](https://www.curseforge.com/minecraft/mc-mods/betterend-neoforge) – the Amber Lightning Staff
 
@@ -51,7 +57,7 @@ a restart, only changes what you see on your own client, and servers need nothin
 
 - Wiki: https://github.com/Drehverschluss/Stormcaller/wiki
 - Issues: https://github.com/Drehverschluss/Stormcaller/issues
-- CurseForge: coming soon
+- CurseForge: https://www.curseforge.com/minecraft/mc-mods/stormcaller-rpg-series-plus
 
 ## License
 

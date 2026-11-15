@@ -12,7 +12,7 @@ original author.
 
 All textures, models and icons in the jar are my own work: the robe models and textures of all four robes (the default
 look and the original look in the built-in resource pack), the item icons, the Stormbringer Staff model, the spell,
-effect and skill icons, the skill tab background and the mod logo. The storm cloud, the Storm Elemental and the
+effect and skill icons, the background of the separate skill tab and the mod logo. The storm cloud, the Storm Elemental and the
 lightning effects are drawn by code and have no textures from other mods.
 
 Models, textures and sounds of other mods are **only referenced by their id and not bundled**:
@@ -31,8 +31,8 @@ the RPG Series mods are copied.
 
 ## Ideas
 
-- The layout of the skill tab (28 nodes, 13 points, one path, two modifiers per spell) follows the class branches of
-  More RPG Classes – Skill Tree by Fichte. Only structure and scale were used, no files.
+- The layout of the Stormcaller branch (28 nodes, 13 points, one path, two modifiers per spell) follows the class
+  branches of More RPG Classes – Skill Tree by Fichte. Only structure and scale were used, no files.
 - The Wizard Merchant offers are added to the merchant's pools the way Elemental Wizards (RPG Series Plus) by Fichte
   does it. No code of it is used.
 
@@ -55,15 +55,26 @@ conditions).
 - Runes by Daedelus (All Rights Reserved): comes with Wizards. The Lightning Rune and the rune crafting recipe type are
   used by id. Not bundled.
 - [Skill Tree (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/skill-tree) by Daedelus (All Rights Reserved):
-  optional. Compiled against it for the respec. Not bundled.
+  optional. Compiled against it for the respec. When its Class Skills and Weapon Skills tabs load, Stormcaller adds its
+  own nodes to them (the Stormcaller class branch and three Lightning Bolt nodes) and reads the tabs only to find a free
+  place. Not bundled.
 - Pufferfish's Skills by Pufferfish (All Rights Reserved according to its mod file): optional, comes with Skill Tree.
-  The skill tab is a datapack for it; compiled against its API for the class lock. Not bundled.
+  The separate skill tab is a datapack for it; compiled against its API for the class lock and for moving nodes between
+  tabs. Stormcaller has mixins in Pufferfish's Skills that add its nodes to the Class Skills and Weapon Skills tabs while
+  they load (only at runtime, in memory). Not bundled.
+- More RPG Classes – Skill Tree by Fichte (All Rights Reserved): optional, tested with 1.3.1. It brings its own versions
+  of the Class Skills and Weapon Skills tabs; Stormcaller adds its nodes to them the same way. Not bundled.
+- Samurai RPG Class (All Rights Reserved): optional, tested with 1.0.4. It brings its own versions of the Class Skills and
+  Weapon Skills tabs; Stormcaller adds its nodes to them the same way. Not bundled.
+- No files of Skill Tree, More RPG Classes – Skill Tree, Samurai RPG Class or Pufferfish's Skills are copied or bundled:
+  the class branch, the Lightning Bolt nodes, their spell files and the layout files (`class_branch.json`,
+  `weapon_branch.json`) are my own. Their nodes, tabs and ids are only read while the game runs.
 - [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios) by C4 (LGPL-3.0-or-later): optional. Compiled
   against its API for the jewelry and relics. Not bundled.
 - Accessories by Blodhgarm, chyzman, Dr.Zeal and its Curios compatibility layer (MIT): optional, no direct use. Not
   bundled.
 - [Combat Roll](https://www.curseforge.com/minecraft/mc-mods/combat-roll) by Daedelus (GPL-3.0): optional. Two passives
-  of the skill tab use Spell Engine's roll trigger, which Combat Roll fires. Not bundled.
+  of the Stormcaller branch use Spell Engine's roll trigger, which Combat Roll fires. Not bundled.
 - [Better End](https://www.curseforge.com/minecraft/mc-mods/betterend-neoforge) by quiqueck, paulevs and others (MIT,
   CC BY-NC-SA 4.0 for some assets): optional. Its Amber Gem and Aeternium Ingot are used by id in one recipe, the Amber Gem
   also as repair material. Not bundled.
