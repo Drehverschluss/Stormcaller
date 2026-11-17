@@ -49,3 +49,6 @@ libs/
 
 ### Probe test (dedicated server dir)
 run-server/
+
+### Real Forge 1.20.1 test server (BP2)
+run-prod/

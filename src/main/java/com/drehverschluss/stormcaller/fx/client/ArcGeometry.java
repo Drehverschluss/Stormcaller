@@ -207,7 +207,7 @@ final class ArcGeometry {
     }
 
     private static void vertex(VertexConsumer vc, Matrix4f m, Vec3 cam, Vec3 p, int r, int g, int b, int a) {
-        vc.addVertex(m, (float) (p.x - cam.x), (float) (p.y - cam.y), (float) (p.z - cam.z)).setColor(r, g, b, a);
+        vc.vertex(m, (float) (p.x - cam.x), (float) (p.y - cam.y), (float) (p.z - cam.z)).color(r, g, b, a).endVertex();
     }
 
     private static int alphaInt(float alpha) {

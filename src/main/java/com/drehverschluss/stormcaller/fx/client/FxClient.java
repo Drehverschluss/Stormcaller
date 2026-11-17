@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller.fx.client;
 
+import net.minecraftforge.eventbus.api.EventPriority;
 import com.drehverschluss.stormcaller.entity.BallLightningEntity;
 import com.drehverschluss.stormcaller.entity.StormElementalEntity;
 import com.drehverschluss.stormcaller.fx.ArcStyle;
@@ -20,10 +21,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.entity.SpellProjectile;
 import org.joml.Matrix4f;
@@ -45,12 +46,15 @@ public final class FxClient {
         ProjectileTrails.registerDefaults();
         StormcallerFx.setClientHandler(FxClient::accept);
         StormcallerFx.setBallHandler(BallLightningFx::accept);
-        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TickEvent.ClientTickEvent.class, event -> {
+            if (event.phase != TickEvent.Phase.END) {
+                return;
+            }
             tick();
             SummonFx.tick();
         });
-        NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, FxClient::render);
-        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, RenderLevelStageEvent.class, FxClient::render);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ClientPlayerNetworkEvent.LoggingOut.class, event -> {
             EFFECTS.clear();
             PuffGlows.clear();
             BallLightningFx.clear();
@@ -279,7 +283,7 @@ public final class FxClient {
         if (level == null) {
             return;
         }
-        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+        float partialTick = event.getPartialTick();
         Camera camera = event.getCamera();
         Vec3 cam = camera.getPosition();
         Matrix4f matrix = event.getPoseStack().last().pose();

@@ -18,11 +18,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.spell_engine.api.effect.SpellEngineEffects;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class ShockHandler {
     public static final ResourceKey<DamageType> LIGHTNING_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE,
-            ResourceLocation.fromNamespaceAndPath("spell_power", "lightning"));
+            new ResourceLocation("spell_power", "lightning"));
     public static final TagKey<EntityType<?>> SHOCK_IMMUNE = TagKey.create(Registries.ENTITY_TYPE, Stormcaller.id("shock_immune"));
     public static final TagKey<EntityType<?>> SHOCK_RESISTANT = TagKey.create(Registries.ENTITY_TYPE, Stormcaller.id("shock_resistant"));
 
@@ -74,10 +75,17 @@ public final class ShockHandler {
     private ShockHandler() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(LivingDamageEvent.Post.class, ShockHandler::onDamage);
-        NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEvent.class, ShockHandler::onIncomingDamage);
-        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> rollPending());
-        NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, event -> {
+        // Forge 1.20.1: LivingDamageEvent comes right before the health drops (1.21.1: LivingDamageEvent.Post after it); LOWEST so
+        // other mods have changed or cancelled it already
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, LivingDamageEvent.class, ShockHandler::onDamage);
+        // Forge 1.20.1: LivingHurtEvent is the hook before armor and absorption (1.21.1: LivingIncomingDamageEvent)
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, LivingHurtEvent.class, ShockHandler::onIncomingDamage);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                rollPending();
+            }
+        });
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ServerStoppedEvent.class, event -> {
             PENDING.clear();
             CLAIMED.clear();
             SHOCKED_HITS.clear();
@@ -88,9 +96,9 @@ public final class ShockHandler {
     // ------------------------------------------------------------------------------------------------ rolls
 
     /** Server: lightning damage was dealt. Remember the hit, the roll comes at the end of the tick (see class doc). */
-    private static void onDamage(LivingDamageEvent.Post event) {
+    private static void onDamage(LivingDamageEvent event) {
         LivingEntity target = event.getEntity();
-        if (target.level().isClientSide() || event.getNewDamage() <= 0.0F) {
+        if (target.level().isClientSide() || event.getAmount() <= 0.0F) {
             return;
         }
         DamageSource source = event.getSource();
@@ -171,14 +179,14 @@ public final class ShockHandler {
      */
     private static Result roll(LivingEntity target, LivingEntity source, double baseChance, int stunTicks, int extraSlowTicks,
                                boolean alwaysStun) {
-        boolean charged = source.hasEffect(StormcallerEffects.CHARGED_ROLL);
+        boolean charged = source.hasEffect(StormcallerEffects.CHARGED_ROLL.get());
         double chance = charged ? 1.0 : Math.min(1.0, Math.max(0.0, baseChance) + StormcallerAttributes.shockChance(source));
         if (chance <= 0.0 || (chance < 1.0 && target.getRandom().nextDouble() >= chance)) {
             return Result.NONE;
         }
         Result result = shock(target, source, stunTicks, extraSlowTicks, alwaysStun);
         if (charged && result != Result.NONE) {
-            source.removeEffect(StormcallerEffects.CHARGED_ROLL);
+            source.removeEffect(StormcallerEffects.CHARGED_ROLL.get());
         }
         return result;
     }
@@ -192,14 +200,14 @@ public final class ShockHandler {
     // ------------------------------------------------------------------------------------------------ damage bonus
 
     /**
-     * Extra lightning damage on "Shocked" targets. Runs in {@link LivingIncomingDamageEvent}, before armor, enchantments
+     * Extra lightning damage on "Shocked" targets. Runs in {@link LivingHurtEvent}, before armor, enchantments
      * and absorption, and only for {@code spell_power:lightning}. Other damage types are not touched.
      */
-    private static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    private static void onIncomingDamage(LivingHurtEvent event) {
         if (!event.getSource().is(LIGHTNING_DAMAGE)) {
             return;
         }
-        MobEffectInstance shocked = event.getEntity().getEffect(StormcallerEffects.SHOCKED);
+        MobEffectInstance shocked = event.getEntity().getEffect(StormcallerEffects.SHOCKED.get());
         if (shocked == null) {
             return;
         }
@@ -212,8 +220,8 @@ public final class ShockHandler {
     /** The entity whose shock chance counts: the attacker itself, or the owner of a summon. */
     @Nullable
     public static LivingEntity shockSource(@Nullable Entity attacker) {
-        if (attacker instanceof OwnableEntity ownable && ownable.getOwner() instanceof LivingEntity owner) {
-            return owner;
+        if (attacker instanceof OwnableEntity ownable && ownable.getOwner() != null) {
+            return ownable.getOwner();
         }
         return attacker instanceof LivingEntity living ? living : null;
     }
@@ -270,7 +278,7 @@ public final class ShockHandler {
         int pauseTicks = seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_PAUSE_SECONDS));
         if (pauseTicks <= 0) {
             // no pause: as before 0.3.0, every shock stuns (a running stun is only lengthened by a longer one)
-            target.addEffect(new MobEffectInstance(SpellEngineEffects.STUN.entry, stunTicks), source);
+            target.addEffect(new MobEffectInstance(SpellEngineEffects.STUN.effect, stunTicks), source);
             return true;
         }
         long now = target.level().getGameTime();
@@ -284,14 +292,14 @@ public final class ShockHandler {
                 data.remove(STUN_READY_KEY);
             }
         }
-        MobEffectInstance running = target.getEffect(SpellEngineEffects.STUN.entry);
+        MobEffectInstance running = target.getEffect(SpellEngineEffects.STUN.effect);
         if (running != null && !alwaysStun) {
             // a stun outside our pause window is one of another mod or a command: leave it alone
             return false;
         }
         int before = running == null ? 0 : running.getDuration();
-        target.addEffect(new MobEffectInstance(SpellEngineEffects.STUN.entry, stunTicks), source);
-        MobEffectInstance stun = target.getEffect(SpellEngineEffects.STUN.entry);
+        target.addEffect(new MobEffectInstance(SpellEngineEffects.STUN.effect, stunTicks), source);
+        MobEffectInstance stun = target.getEffect(SpellEngineEffects.STUN.effect);
         if (stun == null || before >= stunTicks || stun.getDuration() != stunTicks) {
             // no stun (blocked by another mod), or the Nova did not lengthen a running stun: not ours, no new pause
             return false;
@@ -307,14 +315,14 @@ public final class ShockHandler {
         if (duration <= 0) {
             return;
         }
-        MobEffectInstance current = target.getEffect(StormcallerEffects.SHOCKED);
+        MobEffectInstance current = target.getEffect(StormcallerEffects.SHOCKED.get());
         int amplifier = current == null ? 0 : Math.min(current.getAmplifier() + 1, maxStages - 1);
         if (current != null && current.getAmplifier() >= amplifier) {
             // already at the cap: only refresh the duration
-            target.removeEffect(StormcallerEffects.SHOCKED);
+            target.removeEffect(StormcallerEffects.SHOCKED.get());
         }
         // no vanilla swirl particles: the arcs on the body come from the client (fx.client.ShockAura)
-        target.addEffect(new MobEffectInstance(StormcallerEffects.SHOCKED, duration, amplifier, false, false, true), source);
+        target.addEffect(new MobEffectInstance(StormcallerEffects.SHOCKED.get(), duration, amplifier, false, false, true), source);
     }
 
     /** Short slow for resistant targets, at most once per cooldown. */
@@ -332,7 +340,7 @@ public final class ShockHandler {
         if (slowTicks <= 0) {
             return false;
         }
-        target.addEffect(new MobEffectInstance(StormcallerEffects.SHOCK_SLOW, slowTicks, 0, false, false, false), source);
+        target.addEffect(new MobEffectInstance(StormcallerEffects.SHOCK_SLOW.get(), slowTicks, 0, false, false, false), source);
         target.getPersistentData().putLong(SLOW_READY_KEY, now + slowTicks + cooldownTicks);
         return true;
     }

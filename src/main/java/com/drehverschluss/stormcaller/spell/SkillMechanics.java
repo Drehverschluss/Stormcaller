@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller.spell;
 
+import net.minecraftforge.eventbus.api.EventPriority;
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.entity.StormCloudEntity;
 import com.drehverschluss.stormcaller.fx.ArcStyle;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -20,10 +22,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.event.TickEvent;
 import net.spell_engine.api.effect.InstantCast;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.event.SpellEvents;
@@ -82,20 +84,32 @@ public final class SkillMechanics {
         SpellHandlers.registerCustomImpact(ROLLING_THUNDER, (spell, power, caster, target, context) ->
                 rollingThunder(caster, target, context.position()));
         SpellEvents.SPELL_CAST.register(SkillMechanics::onSpellCast);
-        NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEvent.class, SkillMechanics::onIncomingDamage);
-        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> DOUBLED.clear());
-        NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, event -> DOUBLED.clear());
-        InstantCast.register(StormcallerEffects.EYE_OF_THE_STORM, EYE_OF_THE_STORM);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, LivingHurtEvent.class, SkillMechanics::onIncomingDamage);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TickEvent.ServerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END) {
+                DOUBLED.clear();
+            }
+        });
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ServerStoppedEvent.class, event -> DOUBLED.clear());
+    }
+
+    /**
+     * Common setup (Forge 1.20.1): the effect only exists after registration, so Eye of the Storm is linked to Spell Engine
+     * here instead of in {@link #init} (1.21.1 used the holder of the effect before it was registered).
+     */
+    public static void commonSetup() {
+        InstantCast.register(StormcallerEffects.EYE_OF_THE_STORM.get(), EYE_OF_THE_STORM);
     }
 
     // ------------------------------------------------------------------------------------------------ stash duration
 
     /** Server, release of a cast: lengthens the stashed effect by the {@code spawn_duration_add} of the modifiers. */
     private static void onSpellCast(SpellEvents.SpellCastEvent.Args args) {
-        if (args.action() != SpellCast.Action.RELEASE || !(args.caster() instanceof Player player)
-                || player.level().isClientSide()) {
+        if (args.action() != SpellCast.Action.RELEASE || args.caster() == null
+                || args.caster().level().isClientSide()) {
             return;
         }
+        Player player = args.caster();
         Spell spell = args.spell().value();
         if (spell.deliver == null || spell.deliver.type != Spell.Delivery.Type.STASH_EFFECT || spell.deliver.stash_effect == null) {
             return;
@@ -109,7 +123,7 @@ public final class SkillMechanics {
         if (extraTicks <= 0 || effectId == null) {
             return;
         }
-        Holder<MobEffect> effect = BuiltInRegistries.MOB_EFFECT.getHolder(effectId).map(h -> (Holder<MobEffect>) h).orElse(null);
+        MobEffect effect = BuiltInRegistries.MOB_EFFECT.getOptional(effectId).orElse(null);
         MobEffectInstance current = effect == null ? null : player.getEffect(effect);
         if (current != null) {
             player.addEffect(new MobEffectInstance(effect, current.getDuration() + extraTicks, current.getAmplifier(),
@@ -130,7 +144,7 @@ public final class SkillMechanics {
         if (!marked) {
             return;
         }
-        Holder<Spell> field = SpellRegistry.from(level).getHolder(GROUND_FIELD_SPELL).map(h -> (Holder<Spell>) h).orElse(null);
+        Holder<Spell> field = SpellRegistry.from(level).getHolder(ResourceKey.create(SpellRegistry.KEY, GROUND_FIELD_SPELL)).map(h -> (Holder<Spell>) h).orElse(null);
         if (field == null) {
             return;
         }
@@ -152,7 +166,7 @@ public final class SkillMechanics {
             return NO_EFFECT;
         }
         int stage = ShockHandler.isResistant(living) ? 0 : 1;
-        living.addEffect(new MobEffectInstance(StormcallerEffects.STATIC_RAIN, STATIC_RAIN_TICKS, stage, false, false, true), caster);
+        living.addEffect(new MobEffectInstance(StormcallerEffects.STATIC_RAIN.get(), STATIC_RAIN_TICKS, stage, false, false, true), caster);
         return new SpellHandlers.ImpactResult(true, false);
     }
 
@@ -182,7 +196,7 @@ public final class SkillMechanics {
     }
 
     /** Doubles the next lightning damage of a marked hit (runs before armor, like the bonus of "Shocked"). */
-    private static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    private static void onIncomingDamage(LivingHurtEvent event) {
         if (DOUBLED.isEmpty() || !event.getSource().is(ShockHandler.LIGHTNING_DAMAGE)) {
             return;
         }

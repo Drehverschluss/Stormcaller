@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "stormcaller:stormbringer_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "stormcaller:lightning_robe_legs"
+  },
+  "addition": {
+    "item": "stormcaller:stormbringers_lost_crystal"
+  },
+  "result": {
+    "item": "stormcaller:fulgurite_robe_legs"
+  }
+}

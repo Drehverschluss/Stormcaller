@@ -1,0 +1,104 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="https://github.com/Drehverschluss/Stormcaller/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+displayURL="https://github.com/Drehverschluss/Stormcaller"
+authors="${mod_authors}"
+credits="Unofficial addon for Wizards (RPG Series) by Daedelus, not affiliated with him. Built on Spell Engine, Spell Power Attributes and Armor Model API by Daedelus. See CREDITS.md in the source repository."
+# Pixel art icon: keep it sharp in the mod list
+logoFile="stormcaller_logo.png"
+logoBlur=false
+description='''${mod_description}'''
+
+# Forge 1.20.1: mixin configs are listed in the jar manifest (MixinConfigs), not here.
+
+[[dependencies.${mod_id}]]
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Spell Engine pulls in Cloth Config and playerAnimator as its own required dependencies
+    modId="spell_engine"
+    mandatory=true
+    versionRange="${spell_engine_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Lightning school, spell power attributes
+    modId="spell_power"
+    mandatory=true
+    versionRange="${spell_power_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Wizards pulls in Structure Pool API; Runes provides the Lightning Rune that our spells cost
+    modId="wizards"
+    mandatory=true
+    versionRange="${wizards_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Robe models (comes with Wizards)
+    modId="armor_model_api"
+    mandatory=true
+    versionRange="${armor_model_api_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the Stormcaller skill tab
+    modId="skill_tree_rpgs"
+    mandatory=false
+    versionRange="${skill_tree_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the skill tab runs on Pufferfish's Skills (comes with Skill Tree)
+    modId="puffish_skills"
+    mandatory=false
+    versionRange="${puffish_skills_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: rings, amulets and relics (Curios slots ring, necklace, spell_trinket); without Curios they do not exist
+    modId="curios"
+    mandatory=false
+    versionRange="${curios_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the roll passives of the skill tab (Static Trap, Charged Roll) are triggered by a combat roll
+    modId="combatroll"
+    mandatory=false
+    versionRange="${combat_roll_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # Optional: the Amber Lightning Staff (item and recipe) only exists with BetterEnd: Before Dawn (mod id betterend)
+    modId="betterend"
+    mandatory=false
+    versionRange="${betterend_version_range}"
+    ordering="NONE"
+    side="BOTH"

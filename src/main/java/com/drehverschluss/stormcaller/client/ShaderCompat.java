@@ -4,7 +4,7 @@ import com.drehverschluss.stormcaller.Stormcaller;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * Optional link to the Iris shader API ({@code net.irisshaders.iris.api.v0.IrisApi}, also offered by Oculus), only by

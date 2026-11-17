@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller.fx.client;
 
+import net.minecraftforge.eventbus.api.EventPriority;
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.shock.ShockImpacts;
@@ -19,8 +20,8 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.registry.SpellRegistry;
 import net.spell_engine.api.spell.tooltip.TooltipTokens;
@@ -69,7 +70,7 @@ public final class ShockTooltips {
     private ShockTooltips() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, event -> scan());
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ClientPlayerNetworkEvent.LoggingIn.class, event -> scan());
     }
 
     /** The spells come from the server: look for shock impacts after joining. */
@@ -232,7 +233,7 @@ public final class ShockTooltips {
      */
     private static String fieldTokens(String description, Holder<Spell> entry, Player player) {
         ResourceLocation id = entry.unwrapKey().map(k -> k.location()).orElse(null);
-        Spell field = id == null ? null : spell(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_field"));
+        Spell field = id == null ? null : spell(new ResourceLocation(id.getNamespace(), id.getPath() + "_field"));
         if (field == null || field.deliver == null || field.deliver.clouds == null || field.deliver.clouds.isEmpty()) {
             return description;
         }

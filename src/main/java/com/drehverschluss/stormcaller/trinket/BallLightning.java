@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller.trinket;
 
+import net.minecraftforge.eventbus.api.EventPriority;
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.entity.BallLightningEntity;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,10 +30,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.event.SpellHandlers;
 import net.spell_engine.api.spell.registry.SpellRegistry;
@@ -124,19 +126,19 @@ public final class BallLightning {
     public static void init() {
         SpellHandlers.registerCustomDelivery(DELIVERY, BallLightning::deliver);
         SpellHandlers.registerCustomDelivery(STAFF_DELIVERY, BallLightning::deliverStaff);
-        NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, event -> {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ServerStoppedEvent.class, event -> {
             ACTIVE.clear();
             STAFF.clear();
         });
         // with doImmediateRespawn the ball never sees its owner dead, so end it on the death itself
-        NeoForge.EVENT_BUS.addListener(LivingDeathEvent.class, event -> {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, LivingDeathEvent.class, event -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 endAll(player.getUUID());
             }
         });
         // the balls notice a missing owner on their next tick anyway; these end them in the same tick
-        NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedOutEvent.class, event -> endAll(event.getEntity().getUUID()));
-        NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerChangedDimensionEvent.class, event -> endAll(event.getEntity().getUUID()));
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerEvent.PlayerLoggedOutEvent.class, event -> endAll(event.getEntity().getUUID()));
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerEvent.PlayerChangedDimensionEvent.class, event -> endAll(event.getEntity().getUUID()));
     }
 
     public static Config config() {
@@ -207,7 +209,7 @@ public final class BallLightning {
 
     @Nullable
     private static Holder<Spell> spell(Level level, ResourceLocation id) {
-        return SpellRegistry.from(level).getHolder(id).map(holder -> (Holder<Spell>) holder).orElse(null);
+        return SpellRegistry.from(level).getHolder(ResourceKey.create(SpellRegistry.KEY, id)).map(holder -> (Holder<Spell>) holder).orElse(null);
     }
 
     /** Custom delivery of {@code ball_lightning} (relic): creates the ball. False (no cooldown) if the player still has one. */
@@ -269,7 +271,7 @@ public final class BallLightning {
         Vec3 spawn = chest.add(direction.scale(Math.max(0.0, config.spawn_distance)));
         boolean stuck = false;
         BlockHitResult hit = level.clip(new ClipContext(chest, spawn.add(direction.scale(BallLightningEntity.RADIUS)),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, (Entity) null));
         if (hit.getType() != HitResult.Type.MISS) {
             double free = Math.max(0.0, hit.getLocation().distanceTo(chest) - BallLightningEntity.RADIUS);
             spawn = chest.add(direction.scale(free));
@@ -286,7 +288,7 @@ public final class BallLightning {
             return null;
         }
         StormcallerFx.ball(level, spawn, new BallFxPayload(BallFxPayload.Kind.SPAWN, ball.getId(), -1, spawn, level.getRandom().nextInt()));
-        SoundEvent release = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse("spell_engine:generic_lightning_release"));
+        SoundEvent release = BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation("spell_engine:generic_lightning_release"));
         if (release != null) {
             level.playSound(null, spawn.x, spawn.y, spawn.z, release, SoundSource.PLAYERS, 0.6F, 1.5F);
         }

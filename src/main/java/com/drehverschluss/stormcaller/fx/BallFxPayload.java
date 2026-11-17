@@ -1,9 +1,6 @@
 package com.drehverschluss.stormcaller.fx;
 
-import com.drehverschluss.stormcaller.Stormcaller;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -17,9 +14,8 @@ import net.minecraft.world.phys.Vec3;
  * @param pos      ball center when the server sent it
  * @param seed     random seed for the zigzag, so every player sees the same shape
  */
-public record BallFxPayload(Kind kind, int ballId, int targetId, Vec3 pos, int seed) implements CustomPacketPayload {
-    public static final Type<BallFxPayload> TYPE = new Type<>(Stormcaller.id("ball_fx"));
-    public static final StreamCodec<FriendlyByteBuf, BallFxPayload> STREAM_CODEC = StreamCodec.of(BallFxPayload::write, BallFxPayload::read);
+public record BallFxPayload(Kind kind, int ballId, int targetId, Vec3 pos, int seed) {
+    // Forge 1.20.1: sent through the SimpleChannel of StormcallerFx (encoder write, decoder read)
 
     public enum Kind {
         /** Lightning from the ball to an enemy nearby. */
@@ -32,7 +28,7 @@ public record BallFxPayload(Kind kind, int ballId, int targetId, Vec3 pos, int s
         SPAWN
     }
 
-    private static void write(FriendlyByteBuf buf, BallFxPayload p) {
+    static void write(FriendlyByteBuf buf, BallFxPayload p) {
         buf.writeByte(p.kind.ordinal());
         buf.writeVarInt(p.ballId);
         buf.writeVarInt(p.targetId + 1);
@@ -42,7 +38,7 @@ public record BallFxPayload(Kind kind, int ballId, int targetId, Vec3 pos, int s
         buf.writeInt(p.seed);
     }
 
-    private static BallFxPayload read(FriendlyByteBuf buf) {
+    static BallFxPayload read(FriendlyByteBuf buf) {
         Kind[] kinds = Kind.values();
         int kindId = buf.readByte();
         Kind kind = kindId >= 0 && kindId < kinds.length ? kinds[kindId] : Kind.POP;
@@ -50,10 +46,5 @@ public record BallFxPayload(Kind kind, int ballId, int targetId, Vec3 pos, int s
         int target = buf.readVarInt() - 1;
         Vec3 pos = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
         return new BallFxPayload(kind, ball, target, pos, buf.readInt());
-    }
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
     }
 }

@@ -15,17 +15,16 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.model.BakedModelWrapper;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -44,7 +43,8 @@ import org.joml.Vector3f;
 public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRenderer {
     public static final ResourceLocation ITEM_ID = Stormcaller.id("staff_stormbringer");
     /** The 3D model, loaded on its own so this renderer can draw its quads. */
-    public static final ModelResourceLocation IN_HAND = ModelResourceLocation.standalone(Stormcaller.id("item/staff_stormbringer_in_hand"));
+    // Forge 1.20.1: extra models are registered and looked up by plain ResourceLocation
+    public static final ResourceLocation IN_HAND = Stormcaller.id("item/staff_stormbringer_in_hand");
 
     /** Crystal colour of the tier 2/3 robes (gem2 of robe_palette.json) for the glow, white core like all arcs. */
     private static final int GLOW_R = 0x6a, GLOW_G = 0xe6, GLOW_B = 0xff;
@@ -65,8 +65,8 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
 
     /** Hand contexts get a model that asks for this renderer; everything else stays as baked. */
     public static void wrapModel(ModelEvent.ModifyBakingResult event) {
-        Map<ModelResourceLocation, BakedModel> models = event.getModels();
-        ModelResourceLocation key = ModelResourceLocation.inventory(ITEM_ID);
+        Map<ResourceLocation, BakedModel> models = event.getModels();
+        ModelResourceLocation key = new ModelResourceLocation(ITEM_ID, "inventory");
         BakedModel original = models.get(key);
         if (original == null) {
             return;
@@ -88,9 +88,12 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
         });
     }
 
-    public static void registerExtensions(RegisterClientExtensionsEvent event) {
-        Item item = BuiltInRegistries.ITEM.get(ITEM_ID);
-        event.registerItem(new IClientItemExtensions() {
+    /**
+     * TODO BP4: on 1.21.1 RegisterClientExtensionsEvent attaches this renderer to the item. Forge 1.20.1 has no such event
+     * (the extensions come from Item#initializeClient of the item class, which Spell Engine creates). Not called yet.
+     */
+    public static IClientItemExtensions extensions() {
+        return new IClientItemExtensions() {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 if (instance == null) {
@@ -98,7 +101,7 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
                 }
                 return instance;
             }
-        }, item);
+        };
     }
 
     private static boolean isHand(ItemDisplayContext context) {

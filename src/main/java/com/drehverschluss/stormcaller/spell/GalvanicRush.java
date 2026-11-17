@@ -25,7 +25,7 @@ public final class GalvanicRush {
             "Moving faster, charged by your own lightning",
             new CustomStatusEffect(MobEffectCategory.BENEFICIAL, StaticShield.COLOR),
             new EffectConfig(List.of(new AttributeModifier("minecraft:generic.movement_speed", SPEED_PER_STAGE,
-                    Operation.ADD_MULTIPLIED_BASE))));
+                    Operation.MULTIPLY_BASE))));
 
     private GalvanicRush() {}
 }

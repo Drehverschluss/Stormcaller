@@ -110,7 +110,7 @@ public class StormCloudEntity extends SpellCloud {
             }
             Vec3 to = from.add(0.0, free, 0.0);
             BlockHitResult hit = level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
-                    CollisionContext.empty()));
+                    (Entity) null));
             if (hit.getType() != HitResult.Type.MISS) {
                 free = Math.min(free, hit.getLocation().y - ground.y);
             }
@@ -144,7 +144,7 @@ public class StormCloudEntity extends SpellCloud {
                 result.add(entity);
             }
         }
-        return MaxTargets.limit(result, caster, MaxTargets.of(spell, caster), getRandom());
+        return MaxTargets.limit(result, caster, MaxTargets.of(spell, caster), this.random);
     }
 
     @Override

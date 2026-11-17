@@ -4,8 +4,11 @@ import java.util.function.Consumer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import com.drehverschluss.stormcaller.Stormcaller;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 /**
  * Server API for the lightning visuals of Stormcaller. Every call sends one small packet to the players near the
@@ -76,7 +79,7 @@ public final class StormcallerFx {
     /** Visual of a ball lightning (zap, discharge, pop), see {@link BallFxPayload}. */
     public static void ball(ServerLevel level, Vec3 pos, BallFxPayload payload) {
         double radius = Math.max(MIN_RADIUS, level.getServer().getPlayerList().getViewDistance() * 16.0);
-        PacketDistributor.sendToPlayersNear(level, null, pos.x, pos.y, pos.z, radius, payload);
+        CHANNEL.send(near(level, pos, radius), payload);
     }
 
     /** Center of an entity's bounding box. */
@@ -90,15 +93,35 @@ public final class StormcallerFx {
 
     private static void send(ServerLevel level, Vec3 pos, FxPayload payload) {
         double radius = Math.max(MIN_RADIUS, level.getServer().getPlayerList().getViewDistance() * 16.0);
-        PacketDistributor.sendToPlayersNear(level, null, pos.x, pos.y, pos.z, radius, payload);
+        CHANNEL.send(near(level, pos, radius), payload);
+    }
+
+    private static PacketDistributor.PacketTarget near(ServerLevel level, Vec3 pos, double radius) {
+        return PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.x, pos.y, pos.z, radius, level.dimension()));
     }
 
     // ------------------------------------------------------------------------------------------------ network
 
-    public static void registerPayloads(RegisterPayloadHandlersEvent event) {
-        event.registrar("1")
-                .playToClient(FxPayload.TYPE, FxPayload.STREAM_CODEC, (payload, context) -> clientHandler.accept(payload))
-                .playToClient(BallFxPayload.TYPE, BallFxPayload.STREAM_CODEC, (payload, context) -> ballHandler.accept(payload));
+    /** Protocol version of the channel; client and server must match. */
+    private static final String PROTOCOL = "1";
+    /** Forge 1.20.1 network channel of Stormcaller (the 1.21.1 payload registrar does not exist here). */
+    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(Stormcaller.id("main"),
+            () -> PROTOCOL, PROTOCOL::equals, PROTOCOL::equals);
+    private static int nextId;
+
+    /** Called once from the mod constructor. Handlers run on the client main thread. */
+    public static void registerPayloads() {
+        CHANNEL.messageBuilder(FxPayload.class, nextId++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((payload, buf) -> FxPayload.write(buf, payload)).decoder(FxPayload::read)
+                .consumerMainThread((payload, context) -> clientHandler.accept(payload)).add();
+        CHANNEL.messageBuilder(BallFxPayload.class, nextId++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder((payload, buf) -> BallFxPayload.write(buf, payload)).decoder(BallFxPayload::read)
+                .consumerMainThread((payload, context) -> ballHandler.accept(payload)).add();
+    }
+
+    /** Next free message id of {@link #CHANNEL}, for messages registered elsewhere (skill tree, BP5). */
+    public static int nextMessageId() {
+        return nextId++;
     }
 
     /** Called once by the client mod class. */

@@ -1,8 +1,7 @@
 package com.drehverschluss.stormcaller.config;
 
-import net.neoforged.fml.config.IConfigSpec;
 import java.util.Arrays;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 /**
  * Server config of Stormcaller ({@code config/stormcaller-server.toml}).
@@ -11,47 +10,45 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * values the server uses for the real attributes.
  */
 public final class StormcallerConfig {
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
 
-    public static final ModConfigSpec.BooleanValue WIZARDS_TIER_ONE_ENABLED;
-    public static final ModConfigSpec.DoubleValue WIZARD_ROBE_LIGHTNING;
-    public static final ModConfigSpec.DoubleValue WIZARD_STAFF_LIGHTNING;
+    public static final ForgeConfigSpec.BooleanValue WIZARDS_TIER_ONE_ENABLED;
+    public static final ForgeConfigSpec.DoubleValue WIZARD_ROBE_LIGHTNING;
+    public static final ForgeConfigSpec.DoubleValue WIZARD_STAFF_LIGHTNING;
 
-    public static final ModConfigSpec.DoubleValue SHOCK_STUN_SECONDS;
-    public static final ModConfigSpec.DoubleValue NOVA_STUN_SECONDS;
-    public static final ModConfigSpec.DoubleValue SHOCK_STUN_PAUSE_SECONDS;
-    public static final ModConfigSpec.BooleanValue SHOCK_STUN_PLAYERS;
-    public static final ModConfigSpec.DoubleValue SHOCKED_DAMAGE_PER_STAGE;
-    public static final ModConfigSpec.IntValue SHOCKED_MAX_STAGES;
-    public static final ModConfigSpec.DoubleValue SHOCKED_SECONDS;
-    public static final ModConfigSpec.BooleanValue SLOW_ENABLED;
-    public static final ModConfigSpec.DoubleValue SLOW_AMOUNT;
-    public static final ModConfigSpec.DoubleValue SLOW_SECONDS;
-    public static final ModConfigSpec.DoubleValue SLOW_COOLDOWN_SECONDS;
+    public static final ForgeConfigSpec.DoubleValue SHOCK_STUN_SECONDS;
+    public static final ForgeConfigSpec.DoubleValue NOVA_STUN_SECONDS;
+    public static final ForgeConfigSpec.DoubleValue SHOCK_STUN_PAUSE_SECONDS;
+    public static final ForgeConfigSpec.BooleanValue SHOCK_STUN_PLAYERS;
+    public static final ForgeConfigSpec.DoubleValue SHOCKED_DAMAGE_PER_STAGE;
+    public static final ForgeConfigSpec.IntValue SHOCKED_MAX_STAGES;
+    public static final ForgeConfigSpec.DoubleValue SHOCKED_SECONDS;
+    public static final ForgeConfigSpec.BooleanValue SLOW_ENABLED;
+    public static final ForgeConfigSpec.DoubleValue SLOW_AMOUNT;
+    public static final ForgeConfigSpec.DoubleValue SLOW_SECONDS;
+    public static final ForgeConfigSpec.DoubleValue SLOW_COOLDOWN_SECONDS;
 
-    public static final ModConfigSpec.BooleanValue RICOCHET_FIX_ALL_SPELLS;
+    public static final ForgeConfigSpec.BooleanValue RICOCHET_FIX_ALL_SPELLS;
     static final String RICOCHET_SECTION = "ricochet";
     static final String RICOCHET_FIX_ALL_SPELLS_KEY = "fix_ricochet_all_spells";
-    /** Name of {@link #RICOCHET_FIX_ALL_SPELLS} up to 0.2.0 (renamed in 0.3.0), see {@link MigratingConfigSpec}. */
-    static final String RICOCHET_FIX_ALL_SPELLS_OLD_KEY = "fix_all_spells";
 
-    public static final ModConfigSpec.BooleanValue TRADES_WIZARD_MERCHANT;
+    public static final ForgeConfigSpec.BooleanValue TRADES_WIZARD_MERCHANT;
 
-    public static final ModConfigSpec.ConfigValue<String> SKILL_TREE_MODE;
-    public static final ModConfigSpec.ConfigValue<String> SKILL_TREE_CLASS_TREE_LAYOUT;
-    public static final ModConfigSpec.BooleanValue SKILL_TREE_WEAPON_SKILLS;
-    public static final ModConfigSpec.BooleanValue SKILL_TREE_CLASS_LOCK;
+    public static final ForgeConfigSpec.ConfigValue<String> SKILL_TREE_MODE;
+    public static final ForgeConfigSpec.ConfigValue<String> SKILL_TREE_CLASS_TREE_LAYOUT;
+    public static final ForgeConfigSpec.BooleanValue SKILL_TREE_WEAPON_SKILLS;
+    public static final ForgeConfigSpec.BooleanValue SKILL_TREE_CLASS_LOCK;
 
-    public static final ModConfigSpec.IntValue BALL_MAX_STAFF_BALLS;
+    public static final ForgeConfigSpec.IntValue BALL_MAX_STAFF_BALLS;
 
-    public static final ModConfigSpec.IntValue STORED_CHARGE_MAX;
-    public static final ModConfigSpec.IntValue STORED_CHARGE_EXTRA_RICOCHETS;
-    public static final ModConfigSpec.DoubleValue STORED_CHARGE_DECAY_SECONDS;
-    public static final ModConfigSpec.DoubleValue STORED_CHARGE_SHOCK_CHANCE;
-    public static final ModConfigSpec.BooleanValue STORED_CHARGE_DISCHARGE_HITS_CHARGE;
+    public static final ForgeConfigSpec.IntValue STORED_CHARGE_MAX;
+    public static final ForgeConfigSpec.IntValue STORED_CHARGE_EXTRA_RICOCHETS;
+    public static final ForgeConfigSpec.DoubleValue STORED_CHARGE_DECAY_SECONDS;
+    public static final ForgeConfigSpec.DoubleValue STORED_CHARGE_SHOCK_CHANCE;
+    public static final ForgeConfigSpec.BooleanValue STORED_CHARGE_DISCHARGE_HITS_CHARGE;
 
     static {
-        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
         builder.comment("Lightning values for the tier 1 equipment of Wizards (Wizard Robe and Wizard Staff).",
                         "They use the same modifier IDs as Spell Engine, so an entry for spell_power:lightning in",
@@ -219,28 +216,31 @@ public final class StormcallerConfig {
 
     private StormcallerConfig() {}
 
-    /** The spec to register: {@link #SPEC} plus taking over the values of renamed keys from older files. */
-    public static IConfigSpec registeredSpec() {
-        return new MigratingConfigSpec(SPEC);
+    /**
+     * The spec to register. On 1.21.1 a wrapper took over the value of keys renamed since 0.2.0 ([ricochet] fix_all_spells);
+     * the 1.20.1 version starts at 0.4.1 without older config files, so it registers {@link #SPEC} directly.
+     */
+    public static ForgeConfigSpec registeredSpec() {
+        return SPEC;
     }
 
     /** Value of a config entry, or its default while the server config is not loaded (e.g. in the main menu). */
-    public static boolean get(ModConfigSpec.BooleanValue value) {
+    public static boolean get(ForgeConfigSpec.BooleanValue value) {
         return SPEC.isLoaded() ? value.get() : value.getDefault();
     }
 
     /** Value of a config entry, or its default while the server config is not loaded (e.g. in the main menu). */
-    public static int get(ModConfigSpec.IntValue value) {
+    public static int get(ForgeConfigSpec.IntValue value) {
         return SPEC.isLoaded() ? value.get() : value.getDefault();
     }
 
     /** Value of a config entry, or its default while the server config is not loaded (e.g. in the main menu). */
-    public static double get(ModConfigSpec.DoubleValue value) {
+    public static double get(ForgeConfigSpec.DoubleValue value) {
         return SPEC.isLoaded() ? value.get() : value.getDefault();
     }
 
     /** Value of a config entry, or its default while the server config is not loaded (e.g. in the main menu). */
-    public static String get(ModConfigSpec.ConfigValue<String> value) {
+    public static String get(ForgeConfigSpec.ConfigValue<String> value) {
         return SPEC.isLoaded() ? value.get() : value.getDefault();
     }
 }

@@ -5,7 +5,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -19,21 +18,25 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.ResourceKey;
 import net.spell_engine.api.spell.registry.SpellRegistry;
 import net.spell_engine.internals.casting.SpellCaster;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * A Stormcaller ring, amulet or relic in a Curios slot.
  * <ul>
  *   <li>Attributes come from {@code trinkets.json} and are only given through {@link #getAttributeModifiers} (no vanilla
- *   attribute component, so they never work from the hand). The modifier id contains the slot id, so the same ring in
- *   two ring slots counts twice.</li>
- *   <li>Relics carry their spell in the {@code spell_engine:spell_container} component (set in {@link CuriosItems}) and
+ *   attribute modifiers, so they never work from the hand). The modifier UUID is derived from the UUID Curios gives each
+ *   slot, so the same ring in two ring slots counts twice (Forge 1.20.1: UUIDs instead of ids).</li>
+ *   <li>Relics carry their spell in the {@code spell_engine:spell_container} item data (set in {@link CuriosItems}) and
  *   cannot be taken off while that spell (or the item) is on cooldown, like the relics of Relics (RPG Series).</li>
  * </ul>
  */
@@ -50,24 +53,25 @@ public class StormcallerCurioItem extends Item implements ICurioItem {
     }
 
     @Override
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
-        Multimap<Holder<Attribute>, AttributeModifier> modifiers = LinkedHashMultimap.create();
-        modifiers.putAll(ICurioItem.super.getAttributeModifiers(slotContext, id, stack));
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext, UUID uuid, ItemStack stack) {
+        Multimap<Attribute, AttributeModifier> modifiers = LinkedHashMultimap.create();
+        modifiers.putAll(ICurioItem.super.getAttributeModifiers(slotContext, uuid, stack));
         String itemPath = BuiltInRegistries.ITEM.getKey(this).getPath();
         for (net.spell_engine.rpg_series.config.AttributeModifier entry : StormcallerTrinkets.attributes(def)) {
             ResourceLocation attributeId = ResourceLocation.tryParse(entry.attribute);
             if (attributeId == null) {
                 continue;
             }
-            BuiltInRegistries.ATTRIBUTE.getHolder(attributeId).ifPresent(attribute -> modifiers.put(attribute,
-                    new AttributeModifier(id.withSuffix("/" + itemPath + "/" + attributeId.getPath()), entry.value, entry.operation)));
+            UUID modifierId = UUID.nameUUIDFromBytes((uuid + "/" + itemPath + "/" + attributeId).getBytes(StandardCharsets.UTF_8));
+            BuiltInRegistries.ATTRIBUTE.getOptional(attributeId).ifPresent(attribute -> modifiers.put(attribute,
+                    new AttributeModifier(modifierId, itemPath, entry.value, entry.operation)));
         }
         return modifiers;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, level, tooltip, flag);
         if (def.kind() == StormcallerTrinkets.Kind.JEWELRY) {
             tooltip.add(Component.translatable(Util.makeDescriptionId("item", def.id()) + ".lore")
                     .withStyle(ChatFormatting.ITALIC, ChatFormatting.GOLD));
@@ -109,14 +113,14 @@ public class StormcallerCurioItem extends Item implements ICurioItem {
         if (def.spell() == null || !(player instanceof SpellCaster.Player caster)) {
             return false;
         }
-        return SpellRegistry.from(player.level()).getHolder(def.spell())
+        return SpellRegistry.from(player.level()).getHolder(ResourceKey.create(SpellRegistry.KEY, def.spell()))
                 .map(spell -> caster.getCooldownManager().isCoolingDown(spell))
                 .orElse(false);
     }
 
     private SoundEvent equipSound() {
         return def.kind() == StormcallerTrinkets.Kind.JEWELRY
-                ? SoundEvents.ARMOR_EQUIP_GOLD.value()
-                : SoundEvents.ARMOR_EQUIP_GENERIC.value();
+                ? SoundEvents.ARMOR_EQUIP_GOLD
+                : SoundEvents.ARMOR_EQUIP_GENERIC;
     }
 }

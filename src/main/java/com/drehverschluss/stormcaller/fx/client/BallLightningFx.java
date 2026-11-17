@@ -47,7 +47,7 @@ public final class BallLightningFx {
     private static final int GLINTS = 4;
     private static final int GROW_TICKS = 4;
     private static final float SPARK_RATE = 0.45F;
-    private static final ResourceLocation CRACKLE = ResourceLocation.parse("spell_engine:generic_lightning_casting");
+    private static final ResourceLocation CRACKLE = new ResourceLocation("spell_engine:generic_lightning_casting");
 
     private static final RandomSource RANDOM = RandomSource.create();
     private static final Set<Integer> SOUNDING = new HashSet<>();

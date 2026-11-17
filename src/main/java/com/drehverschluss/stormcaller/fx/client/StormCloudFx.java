@@ -94,7 +94,7 @@ public final class StormCloudFx {
         Vec3 top = new Vec3(ground.x + Math.cos(angle) * distance, ground.y + base + 0.2, ground.z + Math.sin(angle) * distance);
         Vec3 bottom = new Vec3(top.x, ground.y - 3.0, top.z);
         BlockHitResult hit = cloud.level().clip(new ClipContext(top, bottom, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY,
-                CollisionContext.empty()));
+                (net.minecraft.world.entity.Entity) null));
         if (hit.getType() == HitResult.Type.MISS) {
             return;
         }

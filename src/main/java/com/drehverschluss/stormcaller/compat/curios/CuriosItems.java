@@ -6,7 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.spell_engine.PlatformEvents;
-import net.spell_engine.api.spell.SpellDataComponents;
+import net.spell_engine.api.item.SpellItemData;
 import net.spell_engine.api.spell.container.SpellContainers;
 
 import java.util.ArrayList;
@@ -27,7 +27,8 @@ final class CuriosItems {
                 properties = properties.fireResistant();
             }
             if (def.spell() != null) {
-                properties = properties.component(SpellDataComponents.SPELL_CONTAINER, SpellContainers.forRelic(def.spell()));
+                // Forge 1.20.1: item default (written as NBT by Spell Engine) instead of a data component
+                SpellItemData.defaults(properties).spellContainer(SpellContainers.forRelic(def.spell()));
             }
             Item item = Registry.register(BuiltInRegistries.ITEM, def.id(), new StormcallerCurioItem(properties, def));
             items.add(item);

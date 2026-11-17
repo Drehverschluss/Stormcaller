@@ -1,5 +1,6 @@
 package com.drehverschluss.stormcaller.shock;
 
+import net.minecraftforge.eventbus.api.EventPriority;
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.spell.StoredCharge;
@@ -13,8 +14,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.api.spell.event.SpellHandlers;
 import net.spell_engine.api.spell.registry.SpellRegistry;
@@ -74,7 +75,7 @@ public final class ShockImpacts {
             int ticks = ShockHandler.seconds(StormcallerConfig.get(StormcallerConfig.SHOCK_STUN_SECONDS)) + extra;
             return result(ShockHandler.onShockReroll(living, caster, base, ticks, extra));
         });
-        NeoForge.EVENT_BUS.addListener(ServerAboutToStartEvent.class, ShockImpacts::onServerAboutToStart);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ServerAboutToStartEvent.class, ShockImpacts::onServerAboutToStart);
     }
 
     /** Registers the handler {@code stormcaller:shock/<value>} if it parses. */

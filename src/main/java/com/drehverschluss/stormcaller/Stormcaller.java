@@ -4,10 +4,6 @@ import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
 import com.drehverschluss.stormcaller.compat.WizardMerchantTrades;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
 import com.drehverschluss.stormcaller.compat.curios.CuriosCompat;
-import com.drehverschluss.stormcaller.compat.skilltree.ClassLockPayload;
-import com.drehverschluss.stormcaller.compat.skilltree.SkillTab;
-import com.drehverschluss.stormcaller.compat.skilltree.SkillTreeCompat;
-import com.drehverschluss.stormcaller.compat.skilltree.SkillTreePack;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.entity.StormcallerEntities;
 import com.drehverschluss.stormcaller.fx.FxSpellHooks;
@@ -22,18 +18,22 @@ import com.drehverschluss.stormcaller.spell.StoredCharge;
 import com.drehverschluss.stormcaller.trinket.BallLightning;
 import com.drehverschluss.stormcaller.trinket.StormcallerTrinkets;
 import com.mojang.logging.LogUtils;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
-import net.neoforged.neoforge.event.village.VillagerTradesEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 @Mod(Stormcaller.MODID)
@@ -41,39 +41,48 @@ public class Stormcaller {
     public static final String MODID = "stormcaller";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Stormcaller(IEventBus modEventBus, ModContainer modContainer) {
-        modContainer.registerConfig(ModConfig.Type.SERVER, StormcallerConfig.registeredSpec());
+    public Stormcaller() {
+        // Forge 1.20.1: no constructor injection, the mod bus and the config registration come from the loading contexts
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, StormcallerConfig.registeredSpec());
         StormcallerAttributes.register(modEventBus);
         StormcallerEffects.register(modEventBus);
         StormcallerItems.init();
         StormcallerTrinkets.init();
-        modEventBus.addListener(RegisterEvent.class, StormcallerItems::onRegister);
-        modEventBus.addListener(RegisterEvent.class, StaticShield::onRegister);
-        modEventBus.addListener(RegisterEvent.class, StormcallerTrinkets::onRegister);
-        modEventBus.addListener(RegisterEvent.class, StormcallerEntities::onRegister);
+        modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, StormcallerItems::onRegister);
+        modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, StaticShield::onRegister);
+        modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, StormcallerTrinkets::onRegister);
+        modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, StormcallerEntities::onRegister);
         StaticShield.init();
         // HIGHEST: sorts the lightning line in before other mods append theirs (WizardsTierOne)
-        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
-        NeoForge.EVENT_BUS.addListener(VillagerTradesEvent.class, WizardMerchantTrades::onVillagerTrades);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, VillagerTradesEvent.class, WizardMerchantTrades::onVillagerTrades);
         ShockHandler.register();
-        modEventBus.addListener(RegisterPayloadHandlersEvent.class, StormcallerFx::registerPayloads);
-        modEventBus.addListener(RegisterPayloadHandlersEvent.class, ClassLockPayload::register);
+        StormcallerFx.registerPayloads();
+        // TODO BP5 (skill tree): ClassLockPayload.register() on the network channel of StormcallerFx
         FxSpellHooks.register();
         NearestTarget.init();
         BallLightning.init();
         StoredCharge.init();
         SkillMechanics.init();
-        if (SkillTab.enabled()) {
-            // Stormcaller skill tab: built-in data pack, respec, class lock (Skill Tree classes only behind this check)
-            modEventBus.addListener(AddPackFindersEvent.class, SkillTreePack::onAddPackFinders);
-            SkillTreeCompat.init();
-        }
+        modEventBus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class,
+                event -> event.enqueueWork(SkillMechanics::commonSetup));
+        // TODO BP5 (skill tree): if (SkillTab.enabled()) { built-in skill tree data pack (SkillTreePack), SkillTreeCompat.init() }
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> StormcallerClient.init(modEventBus));
         LOGGER.info("Stormcaller {} loaded (rings, amulets and relics: {}, skill tab: {})",
-                modContainer.getModInfo().getVersion(), CuriosCompat.isLoaded() ? "on" : "off, needs Curios API",
-                SkillTab.enabled() ? "on" : "off, needs Skill Tree");
+                ModLoadingContext.get().getActiveContainer().getModInfo().getVersion(),
+                CuriosCompat.isLoaded() ? "on" : "off, needs Curios API", "not ported yet (BP5)");
     }
 
     public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+        return new ResourceLocation(MODID, path);
+    }
+
+    /**
+     * Fixed UUID for an attribute modifier (Forge 1.20.1 identifies modifiers by UUID, 1.21.1 by id). Derived from the
+     * modifier id of the 1.21.1 version, so it is the same in every world and on every start.
+     */
+    public static UUID uuid(String modifierId) {
+        return UUID.nameUUIDFromBytes((MODID + ":" + modifierId).getBytes(StandardCharsets.UTF_8));
     }
 }

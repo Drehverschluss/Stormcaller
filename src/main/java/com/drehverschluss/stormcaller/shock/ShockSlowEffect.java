@@ -2,9 +2,10 @@ package com.drehverschluss.stormcaller.shock;
 
 import com.drehverschluss.stormcaller.Stormcaller;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
-import net.minecraft.resources.ResourceLocation;
+import java.util.UUID;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -15,26 +16,28 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
  * modifier of the effect.
  */
 public class ShockSlowEffect extends MobEffect {
-    private static final ResourceLocation MODIFIER_ID = Stormcaller.id("shock_slow");
+    /** Forge 1.20.1: modifiers are identified by UUID (1.21.1: id {@code stormcaller:shock_slow}). */
+    private static final UUID MODIFIER_ID = Stormcaller.uuid("shock_slow");
 
     public ShockSlowEffect() {
         super(MobEffectCategory.HARMFUL, ShockedEffect.COLOR);
     }
 
     @Override
-    public void addAttributeModifiers(AttributeMap attributeMap, int amplifier) {
-        super.addAttributeModifiers(attributeMap, amplifier);
+    public void addAttributeModifiers(LivingEntity entity, AttributeMap attributeMap, int amplifier) {
+        super.addAttributeModifiers(entity, attributeMap, amplifier);
         AttributeInstance speed = attributeMap.getInstance(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
             speed.removeModifier(MODIFIER_ID);
             double amount = StormcallerConfig.get(StormcallerConfig.SLOW_AMOUNT);
-            speed.addTransientModifier(new AttributeModifier(MODIFIER_ID, -amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            speed.addTransientModifier(new AttributeModifier(MODIFIER_ID, "Shock slow", -amount,
+                    AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
     }
 
     @Override
-    public void removeAttributeModifiers(AttributeMap attributeMap) {
-        super.removeAttributeModifiers(attributeMap);
+    public void removeAttributeModifiers(LivingEntity entity, AttributeMap attributeMap, int amplifier) {
+        super.removeAttributeModifiers(entity, attributeMap, amplifier);
         AttributeInstance speed = attributeMap.getInstance(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
             speed.removeModifier(MODIFIER_ID);

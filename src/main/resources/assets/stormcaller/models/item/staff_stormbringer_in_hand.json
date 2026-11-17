@@ -135,7 +135,7 @@
 			"from": [7.5, 12, 7.5],
 			"to": [8.5, 12.25, 8.5],
 			"shade": false,
-			"neoforge_data": {
+			"forge_data": {
 				"block_light": 15,
 				"sky_light": 15
 			},
@@ -151,7 +151,7 @@
 			"from": [7.25, 12.25, 7.5],
 			"to": [8.75, 15, 8.5],
 			"shade": false,
-			"neoforge_data": {
+			"forge_data": {
 				"block_light": 15,
 				"sky_light": 15
 			},
@@ -169,7 +169,7 @@
 			"from": [7.5, 15, 7.5],
 			"to": [8.5, 15.5, 8.5],
 			"shade": false,
-			"neoforge_data": {
+			"forge_data": {
 				"block_light": 15,
 				"sky_light": 15
 			},
@@ -186,7 +186,7 @@
 			"from": [7.75, 15.5, 7.75],
 			"to": [8.25, 16, 8.25],
 			"shade": false,
-			"neoforge_data": {
+			"forge_data": {
 				"block_light": 15,
 				"sky_light": 15
 			},

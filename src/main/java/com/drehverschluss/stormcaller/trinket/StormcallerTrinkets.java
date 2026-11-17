@@ -7,7 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.minecraftforge.registries.RegisterEvent;
 import net.spell_engine.api.effect.CustomStatusEffect;
 import net.spell_engine.api.effect.Effects;
 import net.spell_engine.rpg_series.config.AttributeModifier;

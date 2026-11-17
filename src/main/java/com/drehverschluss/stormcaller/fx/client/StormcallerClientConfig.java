@@ -1,6 +1,6 @@
 package com.drehverschluss.stormcaller.fx.client;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 /**
  * Client config of Stormcaller ({@code config/stormcaller-client.toml}). Only changes what this client draws.
@@ -8,15 +8,15 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class StormcallerClientConfig {
     public enum Strength { REDUCED, FULL }
 
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
 
-    public static final ModConfigSpec.BooleanValue ARCS_ENABLED;
-    public static final ModConfigSpec.EnumValue<Strength> STRENGTH;
-    public static final ModConfigSpec.IntValue MAX_ARCS;
-    public static final ModConfigSpec.BooleanValue CRYSTAL_ARCS;
+    public static final ForgeConfigSpec.BooleanValue ARCS_ENABLED;
+    public static final ForgeConfigSpec.EnumValue<Strength> STRENGTH;
+    public static final ForgeConfigSpec.IntValue MAX_ARCS;
+    public static final ForgeConfigSpec.BooleanValue CRYSTAL_ARCS;
 
     static {
-        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         builder.comment("Lightning visuals of the Stormcaller spells.").push("fx");
         ARCS_ENABLED = builder
                 .comment("Draw lightning arcs: jumps between targets, arcs at impacts, the Lightning Nova ring and strikes.",

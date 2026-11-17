@@ -100,7 +100,7 @@ public final class StoredCharge {
 
     /** Charges of a player (0 without the effect). */
     public static int charges(LivingEntity entity) {
-        MobEffectInstance effect = entity.getEffect(StormcallerEffects.STORED_CHARGE);
+        MobEffectInstance effect = entity.getEffect(StormcallerEffects.STORED_CHARGE.get());
         return effect == null ? 0 : effect.getAmplifier() + 1;
     }
 
@@ -116,7 +116,7 @@ public final class StoredCharge {
         int before = Math.min(charges(player), max);
         int after = Math.min(before + 1, max);
         int ticks = Math.max(1, (int) Math.round(decaySeconds() * 20.0));
-        player.addEffect(new MobEffectInstance(StormcallerEffects.STORED_CHARGE, ticks, after - 1, false, false, true));
+        player.addEffect(new MobEffectInstance(StormcallerEffects.STORED_CHARGE.get(), ticks, after - 1, false, false, true));
         if (after > before) {
             Vec3 hand = handPosition(player);
             boolean full = after >= max;
@@ -160,7 +160,7 @@ public final class StoredCharge {
             perks.ricochet += extraRicochets();
         }
         projectile.getPersistentData().putBoolean(DISCHARGE_TAG, true);
-        caster.removeEffect(StormcallerEffects.STORED_CHARGE);
+        caster.removeEffect(StormcallerEffects.STORED_CHARGE.get());
         if (caster.level() instanceof ServerLevel level) {
             Vec3 hand = handPosition(caster);
             level.sendParticles(ParticleTypes.ELECTRIC_SPARK, hand.x, hand.y, hand.z, 20, 0.15, 0.15, 0.15, 0.35);

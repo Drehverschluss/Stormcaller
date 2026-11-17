@@ -1,0 +1,29 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "betterend"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "P": {
+      "item": "minecraft:lightning_rod"
+    },
+    "C": {
+      "item": "betterend:amber_gem"
+    },
+    "M": {
+      "item": "betterend:aeternium_ingot"
+    }
+  },
+  "pattern": [
+    " CP",
+    " MC",
+    "M  "
+  ],
+  "result": {
+    "item": "stormcaller:staff_amber_lightning"
+  }
+}

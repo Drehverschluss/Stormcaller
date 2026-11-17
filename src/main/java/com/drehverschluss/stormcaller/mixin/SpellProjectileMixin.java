@@ -53,9 +53,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(SpellProjectile.class)
 public abstract class SpellProjectileMixin {
-    @Shadow
+    // Forge 1.20.1: members that only exist in Spell Engine are not remapped (no SRG name)
+    @Shadow(remap = false)
     private boolean skipTravel;
-    @Shadow
+    @Shadow(remap = false)
     protected Set<Integer> impactHistory;
 
     @WrapOperation(method = "tick",
@@ -71,10 +72,10 @@ public abstract class SpellProjectileMixin {
         return original.call(projectile, filter);
     }
 
-    @WrapOperation(method = "ricochetFrom",
+    @WrapOperation(method = "ricochetFrom", remap = false,
             at = @At(value = "INVOKE",
                     target = "Lnet/spell_engine/entity/SpellProjectile;getBoundingBox()Lnet/minecraft/world/phys/AABB;",
-                    ordinal = 0))
+                    ordinal = 0, remap = true))
     private AABB stormcaller$ricochetSearchBox(SpellProjectile self, Operation<AABB> original,
                                               @Local(argsOnly = true) Entity target) {
         AABB box = original.call(self);
@@ -88,7 +89,8 @@ public abstract class SpellProjectileMixin {
 
     @WrapOperation(method = "onHitEntity",
             at = @At(value = "INVOKE",
-                    target = "Lnet/spell_engine/internals/impact/SpellImpacts;projectileImpact(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/Holder;Lnet/spell_engine/internals/SpellExecution$ImpactContext;)Z"))
+                    target = "Lnet/spell_engine/internals/impact/SpellImpacts;projectileImpact(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/Holder;Lnet/spell_engine/internals/SpellExecution$ImpactContext;)Z",
+                    remap = false))
     private boolean stormcaller$projectileImpact(LivingEntity caster, Entity projectile, Entity target, Holder<Spell> spell,
                                                  SpellExecution.ImpactContext context, Operation<Boolean> original) {
         boolean discharge = StoredCharge.isDischarge(projectile);
@@ -100,7 +102,7 @@ public abstract class SpellProjectileMixin {
         }
     }
 
-    @Inject(method = "ricochetFrom", at = @At("RETURN"))
+    @Inject(method = "ricochetFrom", at = @At("RETURN"), remap = false)
     private void stormcaller$afterRicochet(Entity target, LivingEntity caster, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValueZ()) {
             return;
@@ -119,7 +121,7 @@ public abstract class SpellProjectileMixin {
      * Falling projectiles (METEOR): visuals at the landing point for the spells in {@code #stormcaller:fx/sky_strike}, and
      * the charged ground of the skill tree ({@code spell.SkillMechanics}).
      */
-    @Inject(method = "finishFalling", at = @At("HEAD"))
+    @Inject(method = "finishFalling", at = @At("HEAD"), remap = false)
     private void stormcaller$beforeFallImpact(CallbackInfo ci) {
         SpellProjectile self = (SpellProjectile) (Object) this;
         if (!self.level().isClientSide()) {

@@ -117,13 +117,14 @@ public class BallLightningEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DIR_X, 0.0F);
-        builder.define(DIR_Y, 0.0F);
-        builder.define(DIR_Z, 1.0F);
-        builder.define(SPEED, 0.0F);
-        builder.define(STUCK, false);
-        builder.define(FADE_START, -1);
+    protected void defineSynchedData() {
+        // Forge 1.20.1: defined on the entity data directly (1.21.1: SynchedEntityData.Builder)
+        this.entityData.define(DIR_X, 0.0F);
+        this.entityData.define(DIR_Y, 0.0F);
+        this.entityData.define(DIR_Z, 1.0F);
+        this.entityData.define(SPEED, 0.0F);
+        this.entityData.define(STUCK, false);
+        this.entityData.define(FADE_START, -1);
     }
 
     // ------------------------------------------------------------------------------------------------ state
@@ -211,7 +212,7 @@ public class BallLightningEntity extends Entity {
         Vec3 step = dir.scale(speed);
         Vec3 probe = from.add(step).add(dir.scale(RADIUS));
         BlockHitResult hit = level().clip(new ClipContext(from, probe, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
-                CollisionContext.empty()));
+                (Entity) null));
         if (hit.getType() == HitResult.Type.MISS) {
             setPos(getX() + step.x, getY() + step.y, getZ() + step.z);
             return;
@@ -320,7 +321,7 @@ public class BallLightningEntity extends Entity {
     }
 
     private static boolean clear(ServerLevel server, Vec3 from, Vec3 to) {
-        return server.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()))
+        return server.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, (Entity) null))
                 .getType() == HitResult.Type.MISS;
     }
 
@@ -367,7 +368,7 @@ public class BallLightningEntity extends Entity {
     }
 
     @Override
-    public boolean canUsePortal(boolean allowPassengers) {
+    public boolean canChangeDimensions() {
         return false;
     }
 

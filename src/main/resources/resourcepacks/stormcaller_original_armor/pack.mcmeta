@@ -1,6 +1,6 @@
 {
   "pack": {
-    "pack_format": 34,
+    "pack_format": 15,
     "description": {
       "translate": "pack.stormcaller.original_armor.description",
       "fallback": "The original Stormcaller robes from 0.1/0.2"

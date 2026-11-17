@@ -297,19 +297,20 @@ public final class PuffQuads {
     }
 
     private static void vertex(Style style, PoseStack.Pose pose, float x, float y, float z, int[] c, float u, float v) {
-        VertexConsumer vertex = style.buffer().addVertex(pose, x, y, z)
-                .setColor(c[0], c[1], c[2], c[3])
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(style.light());
+        // Forge 1.20.1: classic vertex chain (vertex/color/uv/overlayCoords/uv2/normal, then endVertex)
+        VertexConsumer vertex = style.buffer().vertex(pose.pose(), x, y, z)
+                .color(c[0], c[1], c[2], c[3])
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(style.light());
         if (style.shader()) {
             // corners lean outwards: the pack lights the flat puff like a ball
             float nx = Math.signum(x);
             float ny = Math.signum(y);
             float len = (float) Math.sqrt(nx * nx + ny * ny + 1.0F);
-            vertex.setNormal(pose, nx / len, ny / len, 1.0F / len);
+            vertex.normal(pose.normal(), nx / len, ny / len, 1.0F / len).endVertex();
         } else {
-            vertex.setNormal(pose, 0.0F, 1.0F, 0.0F);
+            vertex.normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
         }
     }
 

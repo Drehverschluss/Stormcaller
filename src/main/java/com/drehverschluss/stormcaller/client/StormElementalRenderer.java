@@ -80,7 +80,8 @@ public class StormElementalRenderer extends EntityRenderer<StormElementalEntity>
         if (style == null) {
             return;
         }
-        float[] color = PuffQuads.baseColor(e.level(), partialTick, style);
+        // Forge 1.20.1: OwnableEntity.level() returns EntityGetter, the entity level is a Level
+        float[] color = PuffQuads.baseColor((net.minecraft.world.level.Level) e.level(), partialTick, style);
         float motion = PuffQuads.motion(style);
         List<Puff> puffs = layoutFor(e.getId());
         for (int i = 0; i < puffs.size(); i++) {

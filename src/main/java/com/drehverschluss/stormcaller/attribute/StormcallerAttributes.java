@@ -7,10 +7,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 
 /**
  * Attributes of Stormcaller.
@@ -21,19 +21,19 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class StormcallerAttributes {
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, Stormcaller.MODID);
 
-    public static final DeferredHolder<Attribute, Attribute> SHOCK_CHANCE = ATTRIBUTES.register("shock_chance",
+    public static final RegistryObject<Attribute> SHOCK_CHANCE = ATTRIBUTES.register("shock_chance",
             () -> new RangedAttribute("attribute.name.stormcaller.shock_chance", 100.0, 100.0, 1000.0).setSyncable(true));
 
     private StormcallerAttributes() {}
 
     public static void register(IEventBus modBus) {
         ATTRIBUTES.register(modBus);
-        modBus.addListener(EntityAttributeModificationEvent.class, StormcallerAttributes::onAttributeModification);
+        modBus.addListener(StormcallerAttributes::onAttributeModification);
     }
 
     private static void onAttributeModification(EntityAttributeModificationEvent event) {
-        if (!event.has(EntityType.PLAYER, SHOCK_CHANCE)) {
-            event.add(EntityType.PLAYER, SHOCK_CHANCE);
+        if (!event.has(EntityType.PLAYER, SHOCK_CHANCE.get())) {
+            event.add(EntityType.PLAYER, SHOCK_CHANCE.get());
         }
     }
 
@@ -41,7 +41,7 @@ public final class StormcallerAttributes {
      * Shock chance of an entity as a fraction (0.08 = 8 %). Entities without the attribute have 0.
      */
     public static double shockChance(LivingEntity entity) {
-        AttributeInstance instance = entity.getAttribute(SHOCK_CHANCE);
+        AttributeInstance instance = entity.getAttribute(SHOCK_CHANCE.get());
         if (instance == null) {
             return 0.0;
         }

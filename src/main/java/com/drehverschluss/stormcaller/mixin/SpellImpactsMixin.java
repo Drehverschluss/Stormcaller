@@ -36,7 +36,8 @@ import org.spongepowered.asm.mixin.injection.At;
  * impacts of a discharging Lightning Bolt are wrapped, so the trigger of the passive can tell that the hit came from the
  * discharge ({@link StoredCharge#wrapScheduled}). Tasks scheduled at any other time are passed on unchanged.
  */
-@Mixin(SpellImpacts.class)
+// Forge 1.20.1: all targets are Spell Engine code, nothing to remap
+@Mixin(value = SpellImpacts.class, remap = false)
 public abstract class SpellImpactsMixin {
     @WrapOperation(method = "performImpact",
             at = @At(value = "INVOKE", target = "Lnet/spell_engine/utils/WorldScheduler;schedule(ILjava/lang/Runnable;)V"))

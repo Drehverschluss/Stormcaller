@@ -10,6 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Stormbringer crystal: the addition of the tier 4 smithing recipes (robes, Stormbringer Staff and Wand). Shows a hint
@@ -19,7 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
  */
 public class UpgradeCrystalItem extends Item {
     private static final Component APPLIES_TO = Component.translatable(
-            Util.makeDescriptionId("item", ResourceLocation.withDefaultNamespace("smithing_template.applies_to")))
+            Util.makeDescriptionId("item", new ResourceLocation("smithing_template.applies_to")))
             .withStyle(ChatFormatting.GRAY);
     private static final Component HINT = Component.translatable(
             Util.makeDescriptionId("item", Stormcaller.id("upgrade_crystal.hint")))
@@ -38,8 +40,8 @@ public class UpgradeCrystalItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, level, tooltip, flag);
         tooltip.add(HINT);
         tooltip.add(CommonComponents.EMPTY);
         tooltip.add(APPLIES_TO);

@@ -1,9 +1,6 @@
 package com.drehverschluss.stormcaller.fx;
 
-import com.drehverschluss.stormcaller.Stormcaller;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -17,13 +14,12 @@ import net.minecraft.world.phys.Vec3;
  * @param count number of arcs of an impact
  * @param seed  random seed for the zigzag, so every player sees the same shape
  */
-public record FxPayload(Kind kind, Vec3 a, Vec3 b, int style, float size, int count, int seed) implements CustomPacketPayload {
-    public static final Type<FxPayload> TYPE = new Type<>(Stormcaller.id("fx"));
-    public static final StreamCodec<FriendlyByteBuf, FxPayload> STREAM_CODEC = StreamCodec.of(FxPayload::write, FxPayload::read);
+public record FxPayload(Kind kind, Vec3 a, Vec3 b, int style, float size, int count, int seed) {
+    // Forge 1.20.1: sent through the SimpleChannel of StormcallerFx (encoder write, decoder read)
 
     public enum Kind { ARC, FLASH, IMPACT, STRIKE, RING }
 
-    private static void write(FriendlyByteBuf buf, FxPayload p) {
+    static void write(FriendlyByteBuf buf, FxPayload p) {
         buf.writeByte(p.kind.ordinal());
         writeVec(buf, p.a);
         if (p.kind == Kind.ARC) {
@@ -35,7 +31,7 @@ public record FxPayload(Kind kind, Vec3 a, Vec3 b, int style, float size, int co
         buf.writeInt(p.seed);
     }
 
-    private static FxPayload read(FriendlyByteBuf buf) {
+    static FxPayload read(FriendlyByteBuf buf) {
         Kind[] kinds = Kind.values();
         int kindId = buf.readByte();
         Kind kind = kindId >= 0 && kindId < kinds.length ? kinds[kindId] : Kind.FLASH;
@@ -60,10 +56,5 @@ public record FxPayload(Kind kind, Vec3 a, Vec3 b, int style, float size, int co
 
     private static Vec3 readVec(FriendlyByteBuf buf) {
         return new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
-    }
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
     }
 }

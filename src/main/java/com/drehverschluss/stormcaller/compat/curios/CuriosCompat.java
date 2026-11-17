@@ -1,6 +1,6 @@
 package com.drehverschluss.stormcaller.compat.curios;
 
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * Gate to the Curios integration. This class has no Curios reference; {@link CuriosItems} and
