@@ -23,7 +23,7 @@ import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -31,6 +31,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
@@ -54,8 +55,13 @@ public class Stormcaller {
         modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, StormcallerTrinkets::onRegister);
         modEventBus.addListener(EventPriority.NORMAL, false, RegisterEvent.class, StormcallerEntities::onRegister);
         StaticShield.init();
-        // HIGHEST: sorts the lightning line in before other mods append theirs (WizardsTierOne)
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, ItemAttributeModifierEvent.class, WizardsTierOne::onItemAttributeModifiers);
+        // Lightning Spell Power of the Wizards tier 1 equipment: written into the item modifiers of Spell Engine with the
+        // defaults at setup, then again whenever the server config loads, reloads or its values change (WizardsTierOne)
+        modEventBus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class, event -> event.enqueueWork(WizardsTierOne::apply));
+        modEventBus.addListener(EventPriority.NORMAL, false, ModConfigEvent.Loading.class, WizardsTierOne::onConfig);
+        modEventBus.addListener(EventPriority.NORMAL, false, ModConfigEvent.Reloading.class, WizardsTierOne::onConfig);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TickEvent.ServerTickEvent.class, WizardsTierOne::onTick);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TickEvent.ClientTickEvent.class, WizardsTierOne::onTick);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, VillagerTradesEvent.class, WizardMerchantTrades::onVillagerTrades);
         ShockHandler.register();
         StormcallerFx.registerPayloads();
