@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.1
+
+- **Fix: Lightning Bolt and Chain Lightning lost jumps in tight groups.** Against 3 enemies standing close together,
+  Lightning Bolt hit only 2 of them, also with Arc Jump or a full Stored Charge. The cause is in Spell Engine: after a
+  jump, its hit check stops at the nearest enemy on the way, even one the bolt has already hit. That enemy hid the next
+  target, and the fast bolt flew past it. The ricochet fix now leaves the enemies that were already hit out of that
+  check. In my tests:
+  - Lightning Bolt against 3 close targets: 3 hits instead of 2, about +50 % damage on every tier.
+  - With Arc Jump or a full Stored Charge every jump lands, also against 4 and 5 close targets.
+  - Chain Lightning: 3 instead of 2 hits against 3 close targets, 5 instead of 4 against 5.
+  - With the full lightning rotation against 3 close targets about +30 to +50 %, against single targets and 10
+    spread-out targets no change.
+  - Static Burst still gives about +35 to +40 % against 3 close targets, Arc Jump about +35 to +45 % against 10
+    spread-out targets.
+  - Spark and the Storm Elemental's bolt use the same fix. With `fix_ricochet_all_spells = true` it applies to the
+    projectiles of other mods too.
+- **Config:** the comment of `fix_ricochet_all_spells` now says the right version: the key was called `fix_all_spells`
+  up to 0.2.0 (it was renamed in 0.3.0).
+
 ## 0.4.0
 
 - **Skill Tree (RPG Series): Stormcaller is now a class in the Class Skills tab.** With Skill Tree, the Stormcaller

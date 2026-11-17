@@ -5,10 +5,13 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.drehverschluss.stormcaller.spell.StoredCharge;
+import java.util.Set;
+import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.spell_engine.api.spell.Spell;
 import net.spell_engine.entity.SpellProjectile;
@@ -36,6 +39,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * to one step in front of that target, so a target straight behind it has to be up to one step closer than the range
  * (with velocity 2.5 about 2.6 blocks). For the same spells we center the box on the target that was hit.
  * <p>
+ * Third ricochet problem: the hit check of each tick ({@code ProjectileUtil.getHitResultOnMoveVector}) only returns the
+ * nearest entity on the move, and that may be one the projectile has already hit. Spell Engine then ignores the hit
+ * ({@code onHitEntity} checks {@code impactHistory}) but still moves the projectile the full step. If an earlier target
+ * lies on the way to the new one, the projectile passes the new target (velocity 3.0 against 3 close targets: 2 hits
+ * instead of 3). For the same spells the hit check skips the entities in {@code impactHistory}.
+ * <p>
  * Another hook: right before a falling projectile (METEOR) performs its impacts, for the strike from the sky of
  * Lightning Strike.
  * <p>
@@ -46,6 +55,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SpellProjectileMixin {
     @Shadow
     private boolean skipTravel;
+    @Shadow
+    protected Set<Integer> impactHistory;
+
+    @WrapOperation(method = "tick",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/projectile/ProjectileUtil;getHitResultOnMoveVector(Lnet/minecraft/world/entity/Entity;Ljava/util/function/Predicate;)Lnet/minecraft/world/phys/HitResult;"))
+    private HitResult stormcaller$skipHitTargets(Entity projectile, Predicate<Entity> filter, Operation<HitResult> original) {
+        SpellProjectile self = (SpellProjectile) (Object) this;
+        if (!self.level().isClientSide() && impactHistory != null && !impactHistory.isEmpty()
+                && FxSpellHooks.ricochetFix(self.getSpellEntry())) {
+            Set<Integer> hit = impactHistory;
+            filter = filter.and(entity -> !hit.contains(entity.getId()));
+        }
+        return original.call(projectile, filter);
+    }
 
     @WrapOperation(method = "ricochetFrom",
             at = @At(value = "INVOKE",

@@ -64,9 +64,7 @@ conditions).
   they load (only at runtime, in memory). Not bundled.
 - More RPG Classes – Skill Tree by Fichte (All Rights Reserved): optional, tested with 1.3.1. It brings its own versions
   of the Class Skills and Weapon Skills tabs; Stormcaller adds its nodes to them the same way. Not bundled.
-- Samurai RPG Class (All Rights Reserved): optional, tested with 1.0.4. It brings its own versions of the Class Skills and
-  Weapon Skills tabs; Stormcaller adds its nodes to them the same way. Not bundled.
-- No files of Skill Tree, More RPG Classes – Skill Tree, Samurai RPG Class or Pufferfish's Skills are copied or bundled:
+- No files of Skill Tree, More RPG Classes – Skill Tree or Pufferfish's Skills are copied or bundled:
   the class branch, the Lightning Bolt nodes, their spell files and the layout files (`class_branch.json`,
   `weapon_branch.json`) are my own. Their nodes, tabs and ids are only read while the game runs.
 - [Curios API](https://www.curseforge.com/minecraft/mc-mods/curios) by C4 (LGPL-3.0-or-later): optional. Compiled

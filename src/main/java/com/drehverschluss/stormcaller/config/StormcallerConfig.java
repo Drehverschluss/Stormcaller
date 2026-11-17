@@ -32,7 +32,7 @@ public final class StormcallerConfig {
     public static final ModConfigSpec.BooleanValue RICOCHET_FIX_ALL_SPELLS;
     static final String RICOCHET_SECTION = "ricochet";
     static final String RICOCHET_FIX_ALL_SPELLS_KEY = "fix_ricochet_all_spells";
-    /** Name of {@link #RICOCHET_FIX_ALL_SPELLS} up to 0.3.0, see {@link MigratingConfigSpec}. */
+    /** Name of {@link #RICOCHET_FIX_ALL_SPELLS} up to 0.2.0 (renamed in 0.3.0), see {@link MigratingConfigSpec}. */
     static final String RICOCHET_FIX_ALL_SPELLS_OLD_KEY = "fix_all_spells";
 
     public static final ModConfigSpec.BooleanValue TRADES_WIZARD_MERCHANT;
@@ -127,11 +127,12 @@ public final class StormcallerConfig {
                         "check, so fast projectiles fly through the next target. The fix keeps the projectile in place for",
                         "that one tick. It also looks for the next target around the target that was hit, not around the",
                         "projectile (which is still up to one step in front of it), so the full ricochet range counts in",
-                        "every direction. It always applies to the spells in #stormcaller:fx/ricochet_fix.")
+                        "every direction, and its hit check skips the targets it has already hit (otherwise one of them",
+                        "can hide the next target). It always applies to the spells in #stormcaller:fx/ricochet_fix.")
                 .push(RICOCHET_SECTION);
         RICOCHET_FIX_ALL_SPELLS = builder
                 .comment("Apply the ricochet fix to the projectiles of all spells, also those of other mods.",
-                         "Up to 0.3.0 this key was called fix_all_spells; an old value is taken over once.")
+                         "Up to 0.2.0 this key was called fix_all_spells; an old value is taken over once.")
                 .define(RICOCHET_FIX_ALL_SPELLS_KEY, false);
         builder.pop();
 
