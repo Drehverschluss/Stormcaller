@@ -14,7 +14,7 @@ import java.util.Optional;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import net.puffish.skillsmod.api.config.ConfigContext;
 import net.puffish.skillsmod.api.json.JsonPath;
 import net.puffish.skillsmod.api.util.Problem;
@@ -198,7 +198,7 @@ public final class ClassBranchHook {
         addLinks(connections, "exclusive", settings.exclusive(), WEAPON_PREFIX);
 
         String base = namespace + ":puffish_skills/categories/" + id + "/";
-        Result<CategoryConfig, Problem> result = CategoryConfig.parse(ResourceLocation.fromNamespaceAndPath(namespace, id), position,
+        Result<CategoryConfig, Problem> result = CategoryConfig.parse(new ResourceLocation(namespace, id), position,
                 wrap(general, base + "category.json"), wrap(definitions, base + "definitions.json (+stormcaller)"),
                 wrap(skills, base + "skills.json (+stormcaller)"), wrap(connections, base + "connections.json (+stormcaller)"),
                 optional(reader, id, "experience.json"), optional(reader, id, "exchange.json"), context);
@@ -278,7 +278,7 @@ public final class ClassBranchHook {
         String base = namespace + ":puffish_skills/categories/" + id + "/";
         Optional<net.puffish.skillsmod.api.json.JsonElement> experience = optional(reader, id, "experience.json");
         Optional<net.puffish.skillsmod.api.json.JsonElement> exchange = optional(reader, id, "exchange.json");
-        Result<CategoryConfig, Problem> result = CategoryConfig.parse(ResourceLocation.fromNamespaceAndPath(namespace, id), position,
+        Result<CategoryConfig, Problem> result = CategoryConfig.parse(new ResourceLocation(namespace, id), position,
                 wrap(general, base + "category.json"), wrap(definitions, base + "definitions.json (+stormcaller)"),
                 wrap(skills, base + "skills.json (+stormcaller)"), wrap(connections, base + "connections.json (+stormcaller)"),
                 experience, exchange, context);

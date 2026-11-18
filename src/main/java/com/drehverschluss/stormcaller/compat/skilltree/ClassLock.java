@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.event.TickEvent;
 import net.puffish.skillsmod.api.Category;
 import net.puffish.skillsmod.api.SkillsAPI;
 import org.jetbrains.annotations.Nullable;
@@ -41,13 +41,13 @@ public final class ClassLock {
             }
         });
         // login, config changes, commands, other mods: compare once per second, send on change
-        NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Post.class, event -> {
-            if (event.getEntity() instanceof ServerPlayer player && player.tickCount % 20 == 0) {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, TickEvent.PlayerTickEvent.class, event -> {
+            if (event.phase == TickEvent.Phase.END && event.player instanceof ServerPlayer player && player.tickCount % 20 == 0) {
                 sync(player, ClassLockPayload.TOAST_NONE, false);
             }
         });
-        NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedOutEvent.class, event -> SENT.remove(event.getEntity().getUUID()));
-        NeoForge.EVENT_BUS.addListener(ServerStoppedEvent.class, event -> SENT.clear());
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, PlayerEvent.PlayerLoggedOutEvent.class, event -> SENT.remove(event.getEntity().getUUID()));
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ServerStoppedEvent.class, event -> SENT.clear());
     }
 
     /** Switched on in the config and the own Stormcaller tab is loaded (in the Class Skills tab exclusive_root does it). */
@@ -83,7 +83,7 @@ public final class ClassLock {
             return;
         }
         SENT.put(player.getUUID(), bits);
-        PacketDistributor.sendToPlayer(player, new ClassLockPayload(enabled, stormcallerBlocked, classBlocked, classTree, toast));
+        ClassLockPayload.send(player, new ClassLockPayload(enabled, stormcallerBlocked, classBlocked, classTree, toast));
     }
 
     private static int bits(boolean enabled, boolean stormcallerBlocked, boolean classBlocked) {

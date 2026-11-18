@@ -7,8 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 
 /**
  * Client side of the class lock: the last state the server sent ({@link ClassLockPayload}), read by the skill screen
@@ -21,7 +22,7 @@ public final class ClassLockClient {
 
     public static void init() {
         ClassLockPayload.setClientHandler(ClassLockClient::accept);
-        NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class,
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, ClientPlayerNetworkEvent.LoggingOut.class,
                 event -> state = new ClassLockPayload(false, false, false, false, ClassLockPayload.TOAST_NONE));
     }
 
@@ -30,7 +31,7 @@ public final class ClassLockClient {
         if (payload.toast() != ClassLockPayload.TOAST_NONE) {
             Minecraft mc = Minecraft.getInstance();
             String body = payload.toast() == ClassLockPayload.TOAST_STORMCALLER ? "stormcaller" : "class";
-            mc.execute(() -> SystemToast.addOrUpdate(mc.getToasts(), SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
+            mc.execute(() -> SystemToast.addOrUpdate(mc.getToasts(), SystemToast.SystemToastIds.PERIODIC_NOTIFICATION,
                     Component.translatable("skill." + Stormcaller.MODID + ".class_lock.toast.title"),
                     Component.translatable("skill." + Stormcaller.MODID + ".class_lock.toast." + body)));
         }

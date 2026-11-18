@@ -7,16 +7,14 @@ import java.util.Set;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import net.skill_tree_rpgs.utils.TranslationUtil;
-import net.spell_engine.mixin.client.ItemStackTooltipAccessor;
 
 /**
  * Tooltips of the Stormcaller skill nodes. Each definition has the description {@code {"skill_definition_id": id}},
@@ -31,7 +29,7 @@ import net.spell_engine.mixin.client.ItemStackTooltipAccessor;
 public final class SkillTreeClient {
     /** Bonus of the root and every boost, same as in definitions.json ({@code gen_phase5a_data.py}). */
     private static final double BOOST_VALUE = 0.01;
-    private static final ResourceLocation LIGHTNING_POWER = ResourceLocation.fromNamespaceAndPath("spell_power", "lightning");
+    private static final ResourceLocation LIGHTNING_POWER = new ResourceLocation("spell_power", "lightning");
 
     /** Spells of the nodes; the definition id is {@code stormcaller_<spell>} (definitions.json). */
     private static final List<String> SPELL_NODES = List.of(
@@ -50,7 +48,8 @@ public final class SkillTreeClient {
             "weapon_lightning_root", "weapon_lightning_jump", "weapon_lightning_burst");
     /** Passives with the ROLL trigger: they only work with Combat Roll. */
     private static final Set<String> ROLL_NODES = Set.of("static_trap", "charged_roll");
-    private static final String COMBAT_ROLL = "combat_roll";
+    // Forge 1.20.1: the mod id of Combat Roll is "combatroll" (1.21.1: "combat_roll")
+    private static final String COMBAT_ROLL = "combatroll";
 
     private SkillTreeClient() {}
 
@@ -86,18 +85,22 @@ public final class SkillTreeClient {
         return lines;
     }
 
-    /** "+1% Lightning Spell Power", in the same form as on items. */
+    /**
+     * "+1% Lightning Spell Power", in the same form as on items. Forge 1.20.1: Spell Engine has no accessor for the
+     * vanilla tooltip line here (1.21.1: {@code ItemStackTooltipAccessor}), so the line is built like
+     * {@code ItemStack.getTooltipLines} of 1.20.1 does it for a positive modifier: blue,
+     * {@code attribute.modifier.plus.<operation>}, multipliers shown times 100.
+     */
     private static List<Component> attributeLines() {
         LocalPlayer player = Minecraft.getInstance().player;
-        Holder<Attribute> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(LIGHTNING_POWER).map(h -> (Holder<Attribute>) h).orElse(null);
+        Attribute attribute = BuiltInRegistries.ATTRIBUTE.getOptional(LIGHTNING_POWER).orElse(null);
         if (player == null || attribute == null) {
             return List.of();
         }
-        List<Component> lines = new ArrayList<>();
-        AttributeModifier modifier = new AttributeModifier(Stormcaller.id("skill_boost"), BOOST_VALUE,
-                AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-        ((ItemStackTooltipAccessor) (Object) ItemStack.EMPTY)
-                .spellEngine_appendAttributeModifierTooltip(lines::add, player, attribute, modifier);
-        return lines;
+        AttributeModifier.Operation operation = AttributeModifier.Operation.MULTIPLY_BASE;
+        double shown = operation == AttributeModifier.Operation.ADDITION ? BOOST_VALUE : BOOST_VALUE * 100.0;
+        return List.of(Component.translatable("attribute.modifier.plus." + operation.toValue(),
+                        ItemStack.ATTRIBUTE_MODIFIER_FORMAT.format(shown), Component.translatable(attribute.getDescriptionId()))
+                .withStyle(ChatFormatting.BLUE));
     }
 }

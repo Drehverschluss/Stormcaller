@@ -34,23 +34,8 @@ repositories {
     }
 }
 
-// --- Parts of the 1.21.1 sources that are not ported yet (nothing deleted, only left out of the build) ---
-// BP5: skill tree (compat/skilltree, mixin/skills, built-in skill tree data pack)
-def notPortedYet = [
-        'com/drehverschluss/stormcaller/compat/skilltree/**',
-        'com/drehverschluss/stormcaller/mixin/skills/**',
-]
-def notPortedYetResources = [
-        'resourcepacks/skill_tree/**',
-        'stormcaller.skills.mixins.json',
-]
-
 sourceSets.main {
-    java {
-        exclude notPortedYet
-    }
     resources {
-        exclude notPortedYetResources
         // Exclude common development only resources from finalized outputs
         exclude '**/*.bbmodel'
     }
@@ -77,6 +62,8 @@ legacyForge {
 mixin {
     add sourceSets.main, "${mod_id}.refmap.json"
     config "${mod_id}.mixins.json"
+    // Pufferfish's Skills (skill tree): only applied when Skill Tree and Pufferfish are loaded (SkillsMixinPlugin)
+    config "${mod_id}.skills.mixins.json"
 }
 
 dependencies {
@@ -138,7 +125,7 @@ tasks.named('jar', Jar).configure {
     // Ship the MIT license text in the root of the jar.
     from('LICENSE')
     // Forge 1.20.1 reads the mixin configs from the manifest ([[mixins]] in mods.toml only exists on NeoForge)
-    manifest.attributes('MixinConfigs': "${mod_id}.mixins.json")
+    manifest.attributes('MixinConfigs': "${mod_id}.mixins.json,${mod_id}.skills.mixins.json")
 }
 
 publishing {

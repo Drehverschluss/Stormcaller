@@ -7,10 +7,10 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.puffish.skillsmod.api.Category;
 import net.puffish.skillsmod.api.Experience;
 import net.puffish.skillsmod.api.SkillsAPI;
@@ -35,18 +35,18 @@ public final class BranchTransition {
     /** Last variant this player had, in the player's persistent data: "class" or "own". */
     private static final String LAST_VARIANT = Stormcaller.MODID + "_skill_variant";
     private static final net.minecraft.resources.ResourceLocation WEAPON_CATEGORY =
-            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(ClassBranchHook.SKILL_TREE_NAMESPACE, ClassBranchHook.WEAPON_TAB);
+            new net.minecraft.resources.ResourceLocation(ClassBranchHook.SKILL_TREE_NAMESPACE, ClassBranchHook.WEAPON_TAB);
 
     private BranchTransition() {}
 
     static void init() {
-        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, PlayerEvent.PlayerLoggedInEvent.class, event -> {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, false, PlayerEvent.PlayerLoggedInEvent.class, event -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 run(player);
             }
         });
         // /reload: Pufferfish's Skills loads in the same event (normal priority), this runs after it
-        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, OnDatapackSyncEvent.class, event -> {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, false, OnDatapackSyncEvent.class, event -> {
             if (event.getPlayer() == null) {
                 event.getPlayerList().getPlayers().forEach(BranchTransition::run);
             }

@@ -4,6 +4,9 @@ import com.drehverschluss.stormcaller.client.OriginalArmorPack;
 import com.drehverschluss.stormcaller.client.StormCloudRenderer;
 import com.drehverschluss.stormcaller.client.StormElementalRenderer;
 import com.drehverschluss.stormcaller.client.StormcallerArmorRenderers;
+import com.drehverschluss.stormcaller.compat.skilltree.SkillTab;
+import com.drehverschluss.stormcaller.compat.skilltree.client.ClassLockClient;
+import com.drehverschluss.stormcaller.compat.skilltree.client.SkillTreeClient;
 import com.drehverschluss.stormcaller.entity.StormcallerEntities;
 import com.drehverschluss.stormcaller.fx.client.FxClient;
 import com.drehverschluss.stormcaller.fx.client.ShieldAura;
@@ -53,6 +56,9 @@ public final class StormcallerClient {
         ShockTooltips.register();
         FxClient.init();
         ShieldAura.register();
-        // TODO BP5 (skill tree): ClassLockClient.init(); if (SkillTab.enabled()) SkillTreeClient.init();
+        ClassLockClient.init();
+        if (SkillTab.enabled()) {
+            SkillTreeClient.init();
+        }
     }
 }

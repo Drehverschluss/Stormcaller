@@ -3,6 +3,10 @@ package com.drehverschluss.stormcaller;
 import com.drehverschluss.stormcaller.attribute.StormcallerAttributes;
 import com.drehverschluss.stormcaller.compat.WizardMerchantTrades;
 import com.drehverschluss.stormcaller.compat.WizardsTierOne;
+import com.drehverschluss.stormcaller.compat.skilltree.ClassLockPayload;
+import com.drehverschluss.stormcaller.compat.skilltree.SkillTab;
+import com.drehverschluss.stormcaller.compat.skilltree.SkillTreeCompat;
+import com.drehverschluss.stormcaller.compat.skilltree.SkillTreePack;
 import com.drehverschluss.stormcaller.compat.curios.CuriosCompat;
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
 import com.drehverschluss.stormcaller.entity.StormcallerEntities;
@@ -23,6 +27,7 @@ import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -65,7 +70,8 @@ public class Stormcaller {
         MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, false, VillagerTradesEvent.class, WizardMerchantTrades::onVillagerTrades);
         ShockHandler.register();
         StormcallerFx.registerPayloads();
-        // TODO BP5 (skill tree): ClassLockPayload.register() on the network channel of StormcallerFx
+        // class lock message: always registered (same message ids on client and server), like the payload on 1.21.1
+        ClassLockPayload.register();
         FxSpellHooks.register();
         NearestTarget.init();
         BallLightning.init();
@@ -73,11 +79,18 @@ public class Stormcaller {
         SkillMechanics.init();
         modEventBus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class,
                 event -> event.enqueueWork(SkillMechanics::commonSetup));
-        // TODO BP5 (skill tree): if (SkillTab.enabled()) { built-in skill tree data pack (SkillTreePack), SkillTreeCompat.init() }
+        if (SkillTab.enabled()) {
+            // Stormcaller skill tab: built-in data pack, respec, class lock (Skill Tree classes only behind this check)
+            modEventBus.addListener(EventPriority.NORMAL, false, AddPackFindersEvent.class, SkillTreePack::onAddPackFinders);
+            SkillTreeCompat.init();
+            modEventBus.addListener(EventPriority.NORMAL, false, FMLCommonSetupEvent.class,
+                    event -> event.enqueueWork(SkillTreeCompat::commonSetup));
+        }
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> StormcallerClient.init(modEventBus));
         LOGGER.info("Stormcaller {} loaded (rings, amulets and relics: {}, skill tab: {})",
                 ModLoadingContext.get().getActiveContainer().getModInfo().getVersion(),
-                CuriosCompat.isLoaded() ? "on" : "off, needs Curios API", "not ported yet (BP5)");
+                CuriosCompat.isLoaded() ? "on" : "off, needs Curios API",
+                SkillTab.enabled() ? "on" : "off, needs Skill Tree");
     }
 
     public static ResourceLocation id(String path) {

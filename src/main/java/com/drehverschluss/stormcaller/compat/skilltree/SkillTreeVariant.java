@@ -1,7 +1,7 @@
 package com.drehverschluss.stormcaller.compat.skilltree;
 
 import com.drehverschluss.stormcaller.config.StormcallerConfig;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * Which variant of the Stormcaller skills the config asks for ({@code [skill_tree] mode}). Whether the branch really is in
