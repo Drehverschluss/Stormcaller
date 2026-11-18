@@ -33,12 +33,13 @@ public final class StormcallerClient {
             StormcallerArmorRenderers.register();
             // Spell Engine keeps these in plain maps: register on the main thread
             event.enqueueWork(ShockAura::register);
+            // Stormbringer Staff: the hand renderer (1.21.1: RegisterClientExtensionsEvent)
+            event.enqueueWork(StormbringerStaffRenderer::attach);
         });
         // Stormbringer Staff: 3D model with crystal arcs in the hand
         modEventBus.addListener(EventPriority.NORMAL, false, ModelEvent.RegisterAdditional.class, StormbringerStaffRenderer::registerModels);
         modEventBus.addListener(EventPriority.NORMAL, false, ModelEvent.ModifyBakingResult.class, StormbringerStaffRenderer::wrapModel);
-        // TODO BP4: the item extension of the Stormbringer Staff (RegisterClientExtensionsEvent on 1.21.1) and the HUD of
-        //  Stored Charge (StoredChargeHud, IClientMobEffectExtensions) need another hook on Forge 1.20.1.
+        // The HUD of Stored Charge (StoredChargeHud) comes from the effect itself (StormcallerEffects.STORED_CHARGE)
         // the robe look of 0.1/0.2 as a built-in resource pack, off by default
         modEventBus.addListener(EventPriority.NORMAL, false, AddPackFindersEvent.class, OriginalArmorPack::onAddPackFinders);
         modEventBus.addListener(EventPriority.NORMAL, false, EntityRenderersEvent.RegisterRenderers.class, event -> {

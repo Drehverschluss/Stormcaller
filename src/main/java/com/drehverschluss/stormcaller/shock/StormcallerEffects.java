@@ -1,12 +1,15 @@
 package com.drehverschluss.stormcaller.shock;
 
 import com.drehverschluss.stormcaller.Stormcaller;
+import com.drehverschluss.stormcaller.fx.client.StoredChargeHud;
 import com.drehverschluss.stormcaller.spell.StormWardEffect;
+import java.util.function.Consumer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -52,7 +55,16 @@ public final class StormcallerEffects {
      * next Lightning Bolt cast with the staff discharges ({@link com.drehverschluss.stormcaller.spell.StoredCharge}).
      */
     public static final RegistryObject<MobEffect> STORED_CHARGE = EFFECTS.register("stored_charge",
-            () -> new CustomStatusEffect(MobEffectCategory.BENEFICIAL, 0xF2A93B));
+            () -> new CustomStatusEffect(MobEffectCategory.BENEFICIAL, 0xF2A93B) {
+                /**
+                 * Forge 1.20.1: client extensions come from the effect itself (1.21.1: RegisterClientExtensionsEvent).
+                 * Forge calls this on the client only; the HUD class is loaded only then.
+                 */
+                @Override
+                public void initializeClient(Consumer<IClientMobEffectExtensions> consumer) {
+                    consumer.accept(StoredChargeHud.extensions());
+                }
+            });
 
     private StormcallerEffects() {}
 

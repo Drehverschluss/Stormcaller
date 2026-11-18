@@ -39,8 +39,6 @@ repositories {
 def notPortedYet = [
         'com/drehverschluss/stormcaller/compat/skilltree/**',
         'com/drehverschluss/stormcaller/mixin/skills/**',
-        // BP4: HUD of Stored Charge (IClientMobEffectExtensions through RegisterClientExtensionsEvent on 1.21.1)
-        'com/drehverschluss/stormcaller/fx/client/StoredChargeHud.java',
 ]
 def notPortedYetResources = [
         'resourcepacks/skill_tree/**',

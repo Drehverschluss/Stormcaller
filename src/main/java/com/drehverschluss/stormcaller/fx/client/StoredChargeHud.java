@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
 /**
  * Stored Charge (Amber Lightning Staff): the HUD icon shows the number of charges in its corner, like a stack count.
@@ -19,8 +18,12 @@ public final class StoredChargeHud {
 
     private StoredChargeHud() {}
 
-    public static void register(RegisterClientExtensionsEvent event) {
-        event.registerMobEffect(new IClientMobEffectExtensions() {
+    /**
+     * The extension of the effect. Forge 1.20.1 asks the effect for it ({@code MobEffect#initializeClient}, overridden in
+     * {@link StormcallerEffects#STORED_CHARGE}); on 1.21.1 it came through RegisterClientExtensionsEvent.
+     */
+    public static IClientMobEffectExtensions extensions() {
+        return new IClientMobEffectExtensions() {
             @Override
             public boolean renderGuiIcon(MobEffectInstance instance, Gui gui, GuiGraphics graphics, int x, int y, float z, float alpha) {
                 Minecraft mc = Minecraft.getInstance();
@@ -35,6 +38,6 @@ public final class StoredChargeHud {
                 graphics.pose().popPose();
                 return true;
             }
-        }, StormcallerEffects.STORED_CHARGE.get());
+        };
     }
 }

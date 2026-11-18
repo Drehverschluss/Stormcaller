@@ -15,16 +15,18 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.client.model.BakedModelWrapper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -52,6 +54,8 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
     private static final int WINDOW = 40;
     private static final double MAX_DISTANCE = 48.0;
     private static StormbringerStaffRenderer instance;
+    /** The hand renderer is attached to the item ({@link #attach}); only then do the hand contexts ask for it. */
+    private static volatile boolean attached;
 
     private StormbringerStaffRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
@@ -75,7 +79,7 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
             @Override
             public BakedModel applyTransform(ItemDisplayContext context, PoseStack poseStack, boolean leftHand) {
                 BakedModel transformed = originalModel.applyTransform(context, poseStack, leftHand);
-                if (isHand(context) && StormcallerClientConfig.crystalArcs()) {
+                if (attached && isHand(context) && StormcallerClientConfig.crystalArcs()) {
                     return new BakedModelWrapper<>(transformed) {
                         @Override
                         public boolean isCustomRenderer() {
@@ -89,10 +93,31 @@ public final class StormbringerStaffRenderer extends BlockEntityWithoutLevelRend
     }
 
     /**
-     * TODO BP4: on 1.21.1 RegisterClientExtensionsEvent attaches this renderer to the item. Forge 1.20.1 has no such event
-     * (the extensions come from Item#initializeClient of the item class, which Spell Engine creates). Not called yet.
+     * Client setup: attaches this renderer to the item (1.21.1: RegisterClientExtensionsEvent). On Forge 1.20.1 the
+     * extensions come from {@code Item#initializeClient} of the item class, and that class is Spell Engine's staff (it
+     * sets no extensions of its own). So the result goes straight into the field Forge fills from initializeClient
+     * ({@code Item.renderProperties}, read by {@code IClientItemExtensions.of}). Without it the wrapped hand model would
+     * ask for a custom renderer that does not exist and the staff would be invisible in the hand.
      */
-    public static IClientItemExtensions extensions() {
+    public static void attach() {
+        Item item = BuiltInRegistries.ITEM.get(ITEM_ID);
+        if (item == Items.AIR) {
+            return;
+        }
+        try {
+            Object current = item.getRenderPropertiesInternal();
+            if (current != null) {
+                Stormcaller.LOGGER.warn("Stormbringer Staff already has client extensions ({}), crystal arcs left out", current);
+                return;
+            }
+            ObfuscationReflectionHelper.setPrivateValue(Item.class, item, extensions(), "renderProperties");
+            attached = true;
+        } catch (RuntimeException e) {
+            Stormcaller.LOGGER.error("Stormbringer Staff: could not attach the hand renderer, crystal arcs left out", e);
+        }
+    }
+
+    private static IClientItemExtensions extensions() {
         return new IClientItemExtensions() {
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {

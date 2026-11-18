@@ -51,9 +51,10 @@ public final class StormcallerConfig {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
         builder.comment("Lightning values for the tier 1 equipment of Wizards (Wizard Robe and Wizard Staff).",
-                        "They use the same modifier IDs as Spell Engine, so an entry for spell_power:lightning in",
-                        "config/wizards/equipment_v2.json always wins and nothing is counted twice.",
-                        "Changes need a server restart (players keep the old values until then).")
+                        "They are added to the item attributes that Spell Engine keeps for these items. If",
+                        "config/wizards/equipment_v2.json already gives an item spell_power:lightning, that entry wins",
+                        "and nothing is counted twice.",
+                        "Changes need a server restart.")
                 .push("wizards_tier_one");
         WIZARDS_TIER_ONE_ENABLED = builder
                 .comment("Add Lightning Spell Power to the Wizard Robe and the Wizard Staff.")
