@@ -39,7 +39,7 @@ the RPG Series mods are copied.
 ## Mods Stormcaller works with (not bundled)
 
 Stormcaller contains no code, textures, models, sounds or translations of these mods. It is compiled against the APIs
-listed below and otherwise only refers to their ids (items, spells, tags, sounds, models, `neoforge:mod_loaded`
+listed below and otherwise only refers to their ids (items, spells, tags, sounds, models, `forge:mod_loaded`
 conditions).
 
 - [Wizards (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/wizards) by Daedelus (All Rights Reserved):
@@ -52,7 +52,9 @@ conditions).
   The lightning school, its attribute and damage type. Compiled against it, not bundled.
 - [Armor Model API](https://www.curseforge.com/minecraft/mc-mods/armor-model-api) by Daedelus (MIT): required. Draws the
   robe models. Compiled against it, not bundled.
-- Runes by Daedelus (All Rights Reserved): comes with Wizards. The Lightning Rune and the rune crafting recipe type are
+- [Runes](https://www.curseforge.com/minecraft/mc-mods/rune-crafting) by Daedelus (All Rights Reserved): required. On
+  NeoForge 1.21.1 it comes with Wizards; on Forge 1.20.1 install it yourself, Wizards lists it as optional there. The
+  Lightning Rune and the rune crafting recipe type are
   used by id. Not bundled.
 - [Skill Tree (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/skill-tree) by Daedelus (All Rights Reserved):
   optional. Compiled against it for the respec. When its Class Skills and Weapon Skills tabs load, Stormcaller adds its
@@ -62,7 +64,7 @@ conditions).
   The separate skill tab is a datapack for it; compiled against its API for the class lock and for moving nodes between
   tabs. Stormcaller has mixins in Pufferfish's Skills that add its nodes to the Class Skills and Weapon Skills tabs while
   they load (only at runtime, in memory). Not bundled.
-- More RPG Classes – Skill Tree by Fichte (All Rights Reserved): optional, tested with 1.3.1. It brings its own versions
+- More RPG Classes – Skill Tree by Fichte (All Rights Reserved): optional, tested with 1.3.1 (Forge 1.20.1: 1.3.0 with More RPG Library 2.7.3). It brings its own versions
   of the Class Skills and Weapon Skills tabs; Stormcaller adds its nodes to them the same way. Not bundled.
 - No files of Skill Tree, More RPG Classes – Skill Tree or Pufferfish's Skills are copied or bundled:
   the class branch, the Lightning Bolt nodes, their spell files and the layout files (`class_branch.json`,
@@ -75,7 +77,9 @@ conditions).
   of the Stormcaller branch use Spell Engine's roll trigger, which Combat Roll fires. Not bundled.
 - [Better End](https://www.curseforge.com/minecraft/mc-mods/betterend-neoforge) by quiqueck, paulevs and others (MIT,
   CC BY-NC-SA 4.0 for some assets): optional. Its Amber Gem and Aeternium Ingot are used by id in one recipe, the Amber Gem
-  also as repair material. Not bundled.
+  also as repair material. Not bundled. On Forge 1.20.1 the same items come from
+  [BetterEnd: Before Dawn](https://www.curseforge.com/minecraft/mc-mods/betterend-forge), the Forge port with the same
+  mod id (MIT, CC BY-NC-SA 4.0 for some assets; tested 20.0.13 with BCLib and WunderLib: Before Dawn). Not bundled.
 - [Better Combat](https://www.curseforge.com/minecraft/mc-mods/better-combat-by-daedelus) by Daedelus (All Rights
   Reserved): recommended. The weapon files refer to its presets `bettercombat:wand` and `bettercombat:staff`. Not
   bundled.
@@ -83,6 +87,12 @@ conditions).
   direct use; it gives the lightning spells mana costs by their tier. Not bundled.
 - Other ids that are only used in optional tag entries: `#c:bosses`, `#mrpg_lib:stun_immune` (More RPG Library),
   `#wizards:armor_type/generic_robes`, `#rpg_series:*` loot tags.
+
+## Bundled library
+
+- [MixinExtras](https://github.com/LlamaLad7/MixinExtras) by LlamaLad7 (MIT): bundled in the Forge 1.20.1 jar (as a
+  jar-in-jar, `mixinextras-forge` 0.5.5), because Forge 1.20.1 does not bring it. Stormcaller's mixins use it. The
+  NeoForge 1.21.1 version uses the copy that comes with NeoForge.
 
 ## License
 

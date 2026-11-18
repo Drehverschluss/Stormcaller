@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.1+1.20.1
+
+- **First version for Forge 1.20.1.** It has the same content and the same values as 0.4.1 for NeoForge 1.21.1: all spells, shock, equipment, jewelry and relics, loot, trades, advancements and the skill tree with the Class Skills and Weapon Skills tabs. I measured the spells, shock, sets, summons and all skill nodes on a Forge server against 0.4.1, and they match.
+- The 1.20.1 version gets bug fixes only. New features come to the 1.21.1 version.
+- What is different on Forge 1.20.1:
+  - There is no RunelessRPG for 1.20.1, so the lightning spells cost Lightning Runes, like the Wizards spells. Install Runes too, Wizards lists it as optional on 1.20.1.
+  - The Amber Lightning Staff needs BetterEnd: Before Dawn (mod id `betterend`), with the same items as Better End.
+  - The Ball Lightning gives off no light: there is no dynamic lights mod for Forge 1.20.1 that supports it.
+  - Shaders: tested with Oculus and Complementary Unbound.
+  - A broken spell or equipment set file (for example from a datapack) stops the world from loading on 1.20.1.
+  - For pack makers: the server config is per world (`serverconfig/stormcaller-server.toml`), the datapack folders use the 1.20.1 names (`recipes`, `advancements`, `tags/items` …), the JSON configs use the operations `ADDITION`, `MULTIPLY_BASE` and `MULTIPLY_TOTAL`, and the built-in skill tree datapack has the id `builtin/stormcaller_skill_tab`. All differences are on the wiki page [Forge 1.20.1](https://github.com/Drehverschluss/Stormcaller/wiki/Forge-1.20.1).
+- The jar contains MixinExtras (MIT), which Forge 1.20.1 does not bring itself.
+- NeoForge 1.20.1 is not supported.
+
+The entries below are from the NeoForge 1.21.1 version.
+
 ## 0.4.1
 
 - **Fix: Lightning Bolt and Chain Lightning lost jumps in tight groups.** Against 3 enemies standing close together, Lightning Bolt hit only 2 of them, also with Arc Jump or a full Stored Charge. The cause is in Spell Engine: after a jump, its hit check stops at the nearest enemy on the way, even one the bolt has already hit. That enemy hid the next target, and the fast bolt flew past it. The ricochet fix now leaves the enemies that were already hit out of that check. In my tests:
