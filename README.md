@@ -9,6 +9,7 @@ Stormcaller (RPG Series Plus) adds Lightning as a fourth school of magic to Wiza
 Stormcaller is an unofficial addon for [Wizards (RPG Series)](https://www.curseforge.com/minecraft/mc-mods/wizards) by Daedelus. It is not made by or affiliated with the original author.
 
 - Minecraft 1.21.1 / NeoForge
+- A version for Forge 1.20.1 (bug fixes only) is in the branch [1.20.1](https://github.com/Drehverschluss/Stormcaller/tree/1.20.1).
 - Install it on both client and server.
 
 <p align="center">
